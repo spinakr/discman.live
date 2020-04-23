@@ -1,5 +1,6 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
+import { push, CallHistoryMethodAction } from "connected-react-router";
 
 export interface User {
   username: string;
@@ -20,7 +21,10 @@ export interface LoginFailedAction {
   errorMessage: string;
 }
 
-export type KnownAction = LoginSuccessAction | LoginFailedAction;
+export type KnownAction =
+  | CallHistoryMethodAction
+  | LoginSuccessAction
+  | LoginFailedAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -51,6 +55,7 @@ export const actionCreators = {
           user: data,
         });
         localStorage.setItem("user", JSON.stringify(data));
+        dispatch(push("/"));
       });
   },
 };
