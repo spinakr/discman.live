@@ -11,7 +11,7 @@ namespace Web
         {
             var store = DocumentStore.For(_ =>
             {
-                _.DatabaseSchemaName = $"guesswork_{hostEnvironment.EnvironmentName}";
+                _.DatabaseSchemaName = $"disclive_{hostEnvironment.EnvironmentName}";
                 _.Connection(configuration.GetValue<string>("POSTGRES_CON_STRING"));
 
                 _.CreateDatabasesForTenants(c =>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { RouteComponentProps } from "react-router";
 import { ApplicationState } from "../store";
 import * as LoginStore from "../store/Login";
 import "./Login.css";
@@ -11,10 +10,7 @@ const connector = connect(mapState, LoginStore.actionCreators);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux &
-  RouteComponentProps & {
-    passedProp: string;
-  };
+type Props = PropsFromRedux & {};
 
 const Login = (props: Props) => {
   const [login, setLogin] = useState({ username: "", password: "" });

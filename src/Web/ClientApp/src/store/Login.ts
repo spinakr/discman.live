@@ -55,7 +55,6 @@ export const actionCreators = {
           user: data,
         });
         localStorage.setItem("user", JSON.stringify(data));
-        dispatch(push("/"));
       });
   },
 };

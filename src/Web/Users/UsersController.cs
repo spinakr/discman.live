@@ -75,17 +75,5 @@ namespace Web.Users
 
             return Ok(authenticatedUser);
         }
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var users = _users.Values;
-            foreach (var user in users)
-            {
-                user.Password = null;
-            }
-
-            return Ok(users);
-        }
     }
 }
