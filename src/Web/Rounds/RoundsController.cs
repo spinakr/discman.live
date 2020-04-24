@@ -25,9 +25,14 @@ namespace Web.Matches
         }
 
         [HttpGet("{username}")]
-        public IActionResult GetUserRounds(string username)
+        public IActionResult GetUserRounds(string username, [FromQuery] int start = 0 )
         {
-            var rounds = _documentSession.Query<Round>().Where(r => r.Players.Any(p => p == username));
+            var rounds = _documentSession
+                .Query<Round>()
+                .Where(r => r.Players.Any(p => p == username))
+                .OrderByDescending(x => x.StartTime)
+                .Skip(start)
+                .Take(5);
             return Ok(rounds);
         }
         

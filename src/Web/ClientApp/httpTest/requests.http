@@ -18,7 +18,7 @@ content-type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjkyZGUzOTYzLWRhMTItNDUzOS05ZWI1LTQ0MTgyOTFmOWJmMyIsIm5iZiI6MTU4NzM4MzYxMywiZXhwIjoxNTg3OTg4NDEzLCJpYXQiOjE1ODczODM2MTN9.VXOKAvCK-F6n9kUdDCOGMOzvr-F8xMpZAiC2l5UqA0I
 
 {
-    "course": "Muselunden",
+    "course": "Ekeberg",
     "players": [
         "kofoed",
         "cbg"

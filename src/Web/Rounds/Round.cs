@@ -8,12 +8,16 @@ namespace Web.Matches
 {
     public class Round
     {
+        public Round()
+        {
+        }
+
         public Guid Id { get; set; }
         public string CourseName { get; set; }
         public DateTime StartTime { get; set; }
         public List<string> Players { get; set; }
         public List<HoleScore> Scores { get; set; }
-        
+
         public Round(Course course, List<string> players)
         {
             Id = Guid.NewGuid();
@@ -28,7 +32,7 @@ namespace Web.Matches
             return courseHoles
                 .Select(h => new HoleScore
                 {
-                    Hole = h, 
+                    Hole = h,
                     Scores = players.Select(p => new Score {Player = p}).ToList()
                 }).ToList();
         }
