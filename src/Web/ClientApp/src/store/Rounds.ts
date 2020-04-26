@@ -42,7 +42,15 @@ export interface FetchRoundSuccessAction {
   round: Round;
 }
 
-export type KnownAction = FetchRoundsSuccessAction | FetchRoundSuccessAction;
+export interface ScoreUpdatedSuccessAction {
+  type: "SCORE_UPDATED_SUCCESS";
+  roundId: string;
+}
+
+export type KnownAction =
+  | FetchRoundsSuccessAction
+  | FetchRoundSuccessAction
+  | ScoreUpdatedSuccessAction;
 
 const initialState: RoundsState = { rounds: [], round: null, activeHole: 1 };
 
@@ -94,23 +102,29 @@ export const actionCreators = {
     getState
   ) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
-      return;
-    const roundId = appState.rounds?.round?.id;
+    const loggedInUser = appState?.login?.user;
 
-    fetch(`api/rounds/${roundId}`, {
+    const roundId = appState.rounds?.round?.id;
+    const hole = appState.rounds?.activeHole;
+    if (!loggedInUser || !roundId) return;
+
+    fetch(`api/rounds/${roundId}/scores`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${loggedInUser.token}`,
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify({
+        hole: hole,
+        strokes: score,
+        username: loggedInUser.username,
+      }),
     })
       .then((response) => response.json() as Promise<Round>)
       .then((data) => {
         dispatch({
-          type: "FETCH_ROUND_SUCCEED",
-          round: data,
+          type: "SCORE_UPDATED_SUCCESS",
+          roundId: roundId,
         });
       });
   },

@@ -96,7 +96,10 @@ namespace Web.Matches
             round.Scores
                 .Single(s => s.Hole.Number == request.Hole)
                 .UpdateScore(username, request.Strokes);
-                
+
+            _documentSession.Update(round);
+            _documentSession.SaveChanges();
+            
             return Ok(round);
         }
     }

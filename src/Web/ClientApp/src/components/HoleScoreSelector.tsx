@@ -3,12 +3,9 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import { useParams } from "react-router";
-import RoundScoreCard from "./RoundScoreCard";
-import HoleScoreSelector from "./HoleScoreSelector";
 
 const mapState = (state: ApplicationState) => {
   return {
-    login: state.login,
     rounds: state.rounds && state.rounds,
   };
 };
@@ -19,19 +16,24 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-const Round = (props: Props) => {
-  const { rounds, fetchRound } = props;
-  let { roundId } = useParams();
-  useEffect(() => {
-    fetchRound(roundId as string);
-  }, [fetchRound, roundId]);
+const HoleScoreSelector = (props: Props) => {
+  const { rounds, setScore } = props;
 
   return rounds && rounds.round ? (
-    <div>
-      <RoundScoreCard round={rounds.round} />
-      <HoleScoreSelector />
+    <div className="panel is-primary">
+      <div className="panel-block">
+        <div className="field is-grouped">
+          {[...Array(4)].map((element, i) => (
+            <div className="control" key={i}>
+              <button className="button" onClick={() => setScore(i + 2)}>
+                {i + 2}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   ) : null;
 };
 
-export default connector(Round);
+export default connector(HoleScoreSelector);
