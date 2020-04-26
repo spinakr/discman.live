@@ -96,8 +96,7 @@ export const actionCreators = {
     const appState = getState();
     if (!appState.login || !appState.login.loggedIn || !appState.login.user)
       return;
-    const roundId =
-      appState.rounds && appState.rounds.round && appState.rounds.round.id;
+    const roundId = appState.rounds?.round?.id;
 
     fetch(`api/rounds/${roundId}`, {
       method: "PUT",
