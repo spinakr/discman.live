@@ -40,6 +40,13 @@ namespace Web.Matches
 
     public class HoleScore
     {
+        public void UpdateScore(string username, int strokes)
+        {
+            var score = Scores.Single(s => s.Player == username);
+            score.Strokes = strokes;
+            score.RelativeToPar = strokes - Hole.Par;
+        }
+        
         public Hole Hole { get; set; }
         public List<Score> Scores { get; set; }
     }

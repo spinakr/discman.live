@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
-import * as LoginStore from "../store/Login";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -10,7 +9,7 @@ const mapState = (state: ApplicationState) => {
   };
 };
 
-const connector = connect(mapState, LoginStore.actionCreators);
+const connector = connect(mapState);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -21,7 +20,9 @@ const Rounds = (props: Props) => (
     {props.rounds &&
       props.rounds.map((r) => (
         <li key={r.id}>
-          {r.courseName} - {r.startTime}
+          <a href={`/rounds/${r.id}`}>
+            {r.courseName} - {r.startTime}
+          </a>
         </li>
       ))}
   </ul>

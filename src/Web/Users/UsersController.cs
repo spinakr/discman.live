@@ -4,11 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using Marten;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Web.Matches;
 
 namespace Web.Users
 {
@@ -20,12 +22,14 @@ namespace Web.Users
     {
         private readonly ILogger<UsersController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IDocumentSession _documentSession;
         private readonly Dictionary<string, User> _users;
 
-        public UsersController(ILogger<UsersController> logger, IConfiguration configuration)
+        public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession)
         {
             _logger = logger;
             _configuration = configuration;
+            _documentSession = documentSession;
             _users = new Dictionary<string, User>
             {
                 {
@@ -64,7 +68,7 @@ namespace Web.Users
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Username)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -75,5 +79,6 @@ namespace Web.Users
 
             return Ok(authenticatedUser);
         }
+        
     }
 }
