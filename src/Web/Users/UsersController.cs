@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Marten;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,7 @@ namespace Web.Users
         private readonly IConfiguration _configuration;
         private readonly IDocumentSession _documentSession;
         private readonly Dictionary<string, User> _users;
+        private static List<DateTime> FailedLoginRequests = new List<DateTime>();
 
         public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession)
         {
@@ -47,6 +49,14 @@ namespace Web.Users
                         Username = "test1",
                         Password = "password"
                     }
+                },
+                {
+                    "cbg", new User
+                    {
+                        Id = Guid.Parse("19be140f-2d0d-4e99-bd1c-37820e5c1d6f"),
+                        Username = "cbg",
+                        Password = "password"
+                    }
                 }
             };
         }
@@ -56,11 +66,21 @@ namespace Web.Users
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] AuthenticationRequest model)
         {
+            var requestsLast10Sec = FailedLoginRequests.Count(r => r > DateTime.Now.AddSeconds(-10));
+            FailedLoginRequests.RemoveAll(r => r < DateTime.Now.AddSeconds(-20));
+            if (requestsLast10Sec > 2)
+            {
+                return StatusCode(StatusCodes.Status429TooManyRequests);
+            }
+            
             var secret = _configuration.GetValue<string>("TOKEN_SECRET");
             var userExists = _users.TryGetValue(model.Username, out var user);
 
             if (!userExists || model.Password != user.Password)
+            {
+                FailedLoginRequests.Add(DateTime.Now);
                 return BadRequest(new {message = "Username or password is incorrect"});
+            }
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secret);
@@ -79,6 +99,5 @@ namespace Web.Users
 
             return Ok(authenticatedUser);
         }
-        
     }
 }

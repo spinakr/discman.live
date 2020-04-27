@@ -148,7 +148,7 @@ export const reducer: Reducer<RoundsState> = (
     case "FETCH_ROUND_SUCCEED":
       const round = action.round as Round;
       const activeHole = round.scores.find((s) =>
-        s.scores.some((x) => x.strokes !== 0)
+        s.scores.some((x) => x.strokes === 0)
       );
       return {
         ...state,

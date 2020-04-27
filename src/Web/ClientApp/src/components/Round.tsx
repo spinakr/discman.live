@@ -28,7 +28,7 @@ const Round = (props: Props) => {
 
   return rounds && rounds.round ? (
     <div>
-      <RoundScoreCard round={rounds.round} />
+      <RoundScoreCard round={rounds.round} activeHole={rounds.activeHole} />
       <HoleScoreSelector />
     </div>
   ) : null;

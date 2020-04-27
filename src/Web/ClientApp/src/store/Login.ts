@@ -10,6 +10,7 @@ export interface User {
 export interface LoginState {
   loggedIn: boolean;
   user: User | null;
+  failedLoginMessage: string | null;
 }
 
 export interface LoginSuccessAction {
@@ -21,10 +22,15 @@ export interface LoginFailedAction {
   errorMessage: string;
 }
 
+export interface LogUserOutAction {
+  type: "LOG_USER_OUT";
+}
+
 export type KnownAction =
   | CallHistoryMethodAction
   | LoginSuccessAction
-  | LoginFailedAction;
+  | LoginFailedAction
+  | LogUserOutAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -32,8 +38,8 @@ if (userString) {
   user = JSON.parse(userString);
 }
 const initialState: LoginState = user
-  ? { loggedIn: true, user }
-  : { loggedIn: false, user: null };
+  ? { loggedIn: true, user, failedLoginMessage: null }
+  : { loggedIn: false, user: null, failedLoginMessage: null };
 
 export const actionCreators = {
   requestLogin: (
@@ -48,14 +54,29 @@ export const actionCreators = {
       },
       body: JSON.stringify({ username, password }),
     })
-      .then((response) => response.json() as Promise<User>)
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<User>;
+        }
+        throw new Error("No joy!");
+      })
       .then((data) => {
         dispatch({
           type: "LOGIN_SUCCEED",
           user: data,
         });
         localStorage.setItem("user", JSON.stringify(data));
+      })
+      .catch((err: Error) => {
+        dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });
+        setTimeout(() => {
+          dispatch({ type: "LOG_USER_OUT" });
+        }, 2000);
       });
+  },
+  logout: () => (dispatch: (action: KnownAction) => void) => {
+    localStorage.removeItem("user");
+    dispatch({ type: "LOG_USER_OUT" });
   },
 };
 
@@ -73,9 +94,24 @@ export const reducer: Reducer<LoginState> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case "LOGIN_SUCCEED":
-      return { ...state, loggedIn: true, user: action.user };
+      return {
+        ...state,
+        loggedIn: true,
+        user: action.user,
+        failedLoginMessage: null,
+      };
     case "LOGIN_FAILED":
-      return { ...state, loggedIn: false };
+      return {
+        ...state,
+        loggedIn: false,
+        failedLoginMessage: action.errorMessage,
+      };
+    case "LOG_USER_OUT":
+      return {
+        ...state,
+        loggedIn: false,
+        failedLoginMessage: null,
+      };
     default:
       return state;
   }

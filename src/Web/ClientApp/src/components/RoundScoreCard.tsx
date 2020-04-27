@@ -3,9 +3,10 @@ import { Round } from "../store/Rounds";
 
 export interface ScoreCardProps {
   round: Round;
+  activeHole: number;
 }
 
-export default ({ round }: ScoreCardProps) => (
+export default ({ round, activeHole }: ScoreCardProps) => (
   <table className="table">
     <thead>
       <tr>
@@ -20,7 +21,12 @@ export default ({ round }: ScoreCardProps) => (
         <tr key={p}>
           <td>{p}</td>
           {round.scores.map((s) => (
-            <td key={s.hole.number}>{s.scores[i].strokes}</td>
+            <td
+              className={s.hole.number === activeHole ? "is-selected" : ""}
+              key={s.hole.number}
+            >
+              {s.scores[i].strokes}
+            </td>
           ))}
         </tr>
       ))}

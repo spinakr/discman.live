@@ -15,6 +15,10 @@ type Props = PropsFromRedux & {};
 const Login = (props: Props) => {
   const [login, setLogin] = useState({ username: "", password: "" });
 
+  if (props.failedLoginMessage) {
+    return <div>Loggin failed: {props.failedLoginMessage}</div>;
+  }
+
   return (
     <div className="columns is-centered">
       <div className="column is-4">
