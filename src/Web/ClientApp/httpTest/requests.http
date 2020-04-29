@@ -46,3 +46,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6I
         "cbg"
     ]
 }
+
+###
+POST http://localhost:5000/api/courses
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImtvZm9lZCIsIm5iZiI6MTU4Nzk3MDI1MCwiZXhwIjoxNTg4NTc1MDUwLCJpYXQiOjE1ODc5NzAyNTB9.eRtWAiCQxJDL02fhf-vvri8rPoF0Lx5oPCbq5JUz1e4
+
+{
+    "courseName": "Muselunden"
+}

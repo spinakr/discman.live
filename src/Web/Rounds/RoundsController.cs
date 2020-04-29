@@ -61,18 +61,19 @@ namespace Web.Matches
         [HttpPost]
         public IActionResult StartNewRound([FromBody] NewRoundsRequest request)
         {
-            var holes = new List<Hole>();
-            for (int i = 1; i < 19; i++)
-            {
-                holes.Add(new Hole(i, 3));
-            }
-
-            var course = new Course {Name = "Muselunden", Holes = holes};
+            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var players = request.Players;
+            if(!players.Any()) players.Add(username);
+            
+            var course = _documentSession
+                .Query<Course>()
+                .Single(x => x.Name == request.Course);
+            
             var round = new Round(course, request.Players);
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 
-            return Ok();
+            return Ok(round);
         }
         
         [HttpPut("{roundId}/scores")]
@@ -83,16 +84,10 @@ namespace Web.Matches
             var round = _documentSession
                 .Query<Round>()
                 .SingleOrDefault(x => x.Id == roundId);
-            if (round is null)
-            {
-                return NotFound();
-            }
 
-            if (round.Players.All(p => p != username) || request.Username != username)
-            {
-                return Unauthorized("Cannot update other players rounds");
-            }
-
+            var (isAuthorized, result) = IsUserAuthorized(request.Username, username, round);
+            if (!isAuthorized) return result;
+            
             round.Scores
                 .Single(s => s.Hole.Number == request.Hole)
                 .UpdateScore(username, request.Strokes);
@@ -102,6 +97,19 @@ namespace Web.Matches
             
             return Ok(round);
         }
+
+        private (bool, IActionResult) IsUserAuthorized(string requestedUsername, string authenticatedUsername, Round round)
+        {
+            if (round is null) return (false, NotFound());
+            if (round.Players.Any(p => p == authenticatedUsername) && requestedUsername == authenticatedUsername) return (true, Ok());
+            return (false, Unauthorized("Cannot update other players rounds"));
+        }
+    }
+
+    public class UpdateRoundRequest
+    {
+        public string CourseName { get; set; }
+        public List<string> NewPlayers { get; set; }
     }
 
     public class UpdateScoreRequest

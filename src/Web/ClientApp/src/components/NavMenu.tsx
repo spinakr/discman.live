@@ -1,18 +1,16 @@
 import * as React from "react";
+import NewRound from "./NewRound";
 
-export default () => {
-  return (
-    <nav
-      className="navbar is-fixed-bottom is-light"
-      role="navigation"
-      aria-label="main navigation"
-    >
-      <div className="navbar-menu is-active">
-        <a className="navbar-item" href="/">
-          {" "}
-          Home
-        </a>
+export default () => (
+  <nav
+    className="navbar is-fixed-bottom is-light"
+    role="navigation"
+    aria-label="main navigation"
+  >
+    <div className="navbar-menu is-active">
+      <div className="navbar-item">
+        <NewRound />
       </div>
-    </nav>
-  );
-};
+    </div>
+  </nav>
+);

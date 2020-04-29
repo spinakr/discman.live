@@ -11,6 +11,12 @@ export interface LoginState {
   loggedIn: boolean;
   user: User | null;
   failedLoginMessage: string | null;
+  friendUsers: string[];
+}
+
+export interface FetchFriendUsersSuccessAction {
+  type: "FETCH_FRIEND_USERS_SUCCEED";
+  friends: string[];
 }
 
 export interface LoginSuccessAction {
@@ -30,6 +36,7 @@ export type KnownAction =
   | CallHistoryMethodAction
   | LoginSuccessAction
   | LoginFailedAction
+  | FetchFriendUsersSuccessAction
   | LogUserOutAction;
 
 let user: User | null = null;
@@ -38,8 +45,8 @@ if (userString) {
   user = JSON.parse(userString);
 }
 const initialState: LoginState = user
-  ? { loggedIn: true, user, failedLoginMessage: null }
-  : { loggedIn: false, user: null, failedLoginMessage: null };
+  ? { loggedIn: true, user, failedLoginMessage: null, friendUsers: [] }
+  : { loggedIn: false, user: null, failedLoginMessage: null, friendUsers: [] };
 
 export const actionCreators = {
   requestLogin: (
@@ -78,6 +85,30 @@ export const actionCreators = {
     localStorage.removeItem("user");
     dispatch({ type: "LOG_USER_OUT" });
   },
+  fetchUsers: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+      return;
+    fetch(`api/users?friendsOf=${appState.login.user.username}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.login.user.token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<string[]>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        dispatch({
+          type: "FETCH_FRIEND_USERS_SUCCEED",
+          friends: data,
+        });
+      });
+  },
 };
 
 // ----------------
@@ -111,6 +142,11 @@ export const reducer: Reducer<LoginState> = (
         ...state,
         loggedIn: false,
         failedLoginMessage: null,
+      };
+    case "FETCH_FRIEND_USERS_SUCCEED":
+      return {
+        ...state,
+        friendUsers: action.friends,
       };
     default:
       return state;

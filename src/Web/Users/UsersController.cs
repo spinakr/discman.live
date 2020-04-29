@@ -99,5 +99,12 @@ namespace Web.Users
 
             return Ok(authenticatedUser);
         }
+
+        [HttpGet]
+        public IActionResult GetFriendsOf([FromQuery] string friendsOf)
+        {
+            var users = _users.Select(u => u.Value.Username).ToList();
+            return Ok(users);
+        }
     }
 }

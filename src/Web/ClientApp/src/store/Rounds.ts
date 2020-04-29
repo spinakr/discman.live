@@ -1,5 +1,6 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
+import { push, CallHistoryMethodAction } from "connected-react-router";
 
 export interface Hole {
   number: number;
@@ -20,7 +21,7 @@ export interface HoleScore {
 export interface Round {
   id: string;
   courseName: string;
-  startTime: Date;
+  startTime: string;
   players: string[];
   scores: HoleScore[];
 }
@@ -42,15 +43,22 @@ export interface FetchRoundSuccessAction {
   round: Round;
 }
 
+export interface NewRoundCreatedAction {
+  type: "NEW_ROUND_CREATED";
+  round: Round;
+}
+
 export interface ScoreUpdatedSuccessAction {
   type: "SCORE_UPDATED_SUCCESS";
-  roundId: string;
+  round: Round;
 }
 
 export type KnownAction =
   | FetchRoundsSuccessAction
   | FetchRoundSuccessAction
-  | ScoreUpdatedSuccessAction;
+  | ScoreUpdatedSuccessAction
+  | NewRoundCreatedAction
+  | CallHistoryMethodAction;
 
 const initialState: RoundsState = { rounds: [], round: null, activeHole: 1 };
 
@@ -97,6 +105,33 @@ export const actionCreators = {
         });
       });
   },
+  newRound: (
+    course: string,
+    players: string[]
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+      return;
+    fetch(`api/rounds`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.login.user.token}`,
+      },
+      body: JSON.stringify({
+        course: course,
+        players: players,
+      }),
+    })
+      .then((response) => response.json() as Promise<Round>)
+      .then((data) => {
+        dispatch({
+          type: "NEW_ROUND_CREATED",
+          round: data,
+        });
+        dispatch(push(`rounds/${data.id}`));
+      });
+  },
   setScore: (score: number): AppThunkAction<KnownAction> => (
     dispatch,
     getState
@@ -124,7 +159,7 @@ export const actionCreators = {
       .then((data) => {
         dispatch({
           type: "SCORE_UPDATED_SUCCESS",
-          roundId: roundId,
+          round: data,
         });
       });
   },
@@ -132,6 +167,13 @@ export const actionCreators = {
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+
+const getActiveHolde = (round: Round) => {
+  const activeHole = round.scores.find((s) =>
+    s.scores.some((x) => x.strokes === 0)
+  );
+  return activeHole ? activeHole.hole.number : 1;
+};
 
 export const reducer: Reducer<RoundsState> = (
   state: RoundsState | undefined,
@@ -146,14 +188,18 @@ export const reducer: Reducer<RoundsState> = (
     case "FETCH_ROUNDS_SUCCEED":
       return { ...state, rounds: action.rounds };
     case "FETCH_ROUND_SUCCEED":
-      const round = action.round as Round;
-      const activeHole = round.scores.find((s) =>
-        s.scores.some((x) => x.strokes === 0)
-      );
       return {
         ...state,
         round: action.round,
-        activeHole: activeHole ? activeHole.hole.number : 1,
+        activeHole: getActiveHolde(action.round as Round),
+      };
+    case "NEW_ROUND_CREATED":
+      return { ...state, round: action.round };
+    case "SCORE_UPDATED_SUCCESS":
+      return {
+        ...state,
+        round: action.round,
+        activeHole: getActiveHolde(action.round as Round),
       };
     default:
       return state;

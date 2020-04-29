@@ -8,6 +8,18 @@ namespace Web.Courses
 {
     public class Course
     {
+        public Course(string courseName)
+        {
+            Id= Guid.NewGuid();
+            Name = courseName;
+            var holes = new List<Hole>();
+            for (int i = 1; i < 19; i++)
+            {
+                holes.Add(new Hole(i, 3));
+            }
+            Holes = holes;
+        }
+            
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Hole> Holes { get; set; }

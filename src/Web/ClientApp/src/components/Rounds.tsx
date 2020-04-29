@@ -23,16 +23,16 @@ const Rounds = (props: Props) => {
   }, [fetchLast5Rounds]);
 
   return (
-    <ul>
-      {props.rounds &&
-        props.rounds.map((r) => (
-          <li key={r.id}>
-            <a href={`/rounds/${r.id}`}>
-              {r.courseName} - {r.startTime}
+    <section className="section">
+      <div className="list">
+        {props.rounds &&
+          props.rounds.map((r) => (
+            <a className="list-item" key={r.id} href={`/rounds/${r.id}`}>
+              {r.courseName} - {new Date(r.startTime).toLocaleDateString()}
             </a>
-          </li>
-        ))}
-    </ul>
+          ))}
+      </div>
+    </section>
   );
 };
 
