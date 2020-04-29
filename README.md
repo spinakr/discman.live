@@ -1,5 +1,6 @@
 ## Running the project
 Set environment variables as follows:
+
 `export DOTNET_POSTGRES_CON_STRING="host=postgres;database=guesswork;password=Password12!;username=postgres"`
 
 `export DOTNET_TOKEN_SECRET="THISISTHETOKENSECRET"`
