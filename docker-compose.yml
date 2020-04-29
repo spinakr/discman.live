@@ -11,23 +11,11 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
-      - guesswork_network
+      - disclive_network
     healthcheck:
       test: "pg_isready -U postgres"
       interval: 10s
       timeout: 5s
-      retries: 5
-  rabbitmq:
-    container_name: rabbitmq
-    image: "rabbitmq:3-management"
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    networks:
-      - guesswork_network
-    healthcheck:
-      test: ["CMD-SHELL", "if rabbitmqctl status; then \nexit 0 \nfi \nexit 1"]
-      interval: 10s
       retries: 5
   web:
     build:
@@ -37,14 +25,12 @@ services:
     ports:
       - "80:80"
     depends_on:
-      rabbitmq:
-        condition: service_healthy
       postgres:
         condition: service_healthy
     networks:
-      - guesswork_network
+      - disclive_network
 networks:
-  guesswork_network:
+  disclive_network:
     driver: bridge
 volumes:
   db-data:
