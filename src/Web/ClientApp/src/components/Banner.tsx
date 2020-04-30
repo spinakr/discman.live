@@ -15,20 +15,20 @@ const Banner = (props: Props) => (
         Disclive
       </a>
     </div>
-    <div className="navbar-menu">
+    <div className="navbar-menu is-active">
       <div className="navbar-end">
         <a className="navbar-item" href="/user">
           {props.user ? props.user.username : null}
         </a>
-      </div>
-      <div className="navbar-item">
-        <a
-          className="button is-warning is-light"
-          onClick={() => props.logout()}
-          href="/"
-        >
-          Logout
-        </a>
+        <div className="navbar-item">
+          <a
+            className="button is-warning is-light"
+            onClick={() => props.logout()}
+            href="/"
+          >
+            Logout
+          </a>
+        </div>
       </div>
     </div>
   </nav>

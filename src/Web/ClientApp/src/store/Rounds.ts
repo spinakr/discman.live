@@ -48,9 +48,22 @@ export interface NewRoundCreatedAction {
   round: Round;
 }
 
+export interface RoundWasUpdatedAction {
+  type: "ROUND_WAS_UPDATED";
+  round: Round;
+}
+
 export interface ScoreUpdatedSuccessAction {
   type: "SCORE_UPDATED_SUCCESS";
   round: Round;
+}
+
+export interface ConnectToHubAction {
+  type: "CONNECT_TO_HUB";
+}
+
+export interface DisconnectToHubAction {
+  type: "DISCONNECT_TO_HUB";
 }
 
 export type KnownAction =
@@ -58,11 +71,39 @@ export type KnownAction =
   | FetchRoundSuccessAction
   | ScoreUpdatedSuccessAction
   | NewRoundCreatedAction
-  | CallHistoryMethodAction;
+  | CallHistoryMethodAction
+  | ConnectToHubAction
+  | DisconnectToHubAction
+  | RoundWasUpdatedAction;
+
+const fetchRound = (
+  roundId: string,
+  token: string,
+  dispatch: (action: KnownAction) => void
+) => {
+  fetch(`api/rounds/${roundId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => response.json() as Promise<Round>)
+    .then((data) => {
+      dispatch({
+        type: "FETCH_ROUND_SUCCEED",
+        round: data,
+      });
+      dispatch({ type: "CONNECT_TO_HUB" });
+    });
+};
 
 const initialState: RoundsState = { rounds: [], round: null, activeHole: 1 };
 
 export const actionCreators = {
+  roundWasUpdated: (round: Round) => {
+    return { type: "ROUND_WAS_UPDATED", round: round };
+  },
   fetchLast5Rounds: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.login || !appState.login.loggedIn || !appState.login.user)
@@ -90,20 +131,17 @@ export const actionCreators = {
     const appState = getState();
     if (!appState.login || !appState.login.loggedIn || !appState.login.user)
       return;
-    fetch(`api/rounds/${roundId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
-      },
-    })
-      .then((response) => response.json() as Promise<Round>)
-      .then((data) => {
-        dispatch({
-          type: "FETCH_ROUND_SUCCEED",
-          round: data,
-        });
-      });
+    fetchRound(roundId, appState.login.user.token, dispatch);
+  },
+  refreshRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    const activeRound = appState.rounds?.round?.id;
+    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+      return;
+    activeRound && fetchRound(activeRound, appState.login.user.token, dispatch);
+  },
+  dissconnectHub: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({ type: "DISCONNECT_TO_HUB" });
   },
   newRound: (
     course: string,
@@ -191,7 +229,7 @@ export const reducer: Reducer<RoundsState> = (
       return {
         ...state,
         round: action.round,
-        activeHole: getActiveHolde(action.round as Round),
+        activeHole: getActiveHolde(action.round),
       };
     case "NEW_ROUND_CREATED":
       return { ...state, round: action.round };
@@ -199,7 +237,14 @@ export const reducer: Reducer<RoundsState> = (
       return {
         ...state,
         round: action.round,
-        activeHole: getActiveHolde(action.round as Round),
+        activeHole: getActiveHolde(action.round),
+      };
+    case "ROUND_WAS_UPDATED":
+      console.log("score updated");
+      return {
+        ...state,
+        round: action.round,
+        activeHole: getActiveHolde(action.round),
       };
     default:
       return state;

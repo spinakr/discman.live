@@ -9,6 +9,7 @@ WORKDIR /
 COPY . ./build
 RUN ls
 
+
 WORKDIR /build
 RUN dotnet publish --configuration Release -o out 
 

@@ -18,10 +18,3 @@ export const reducers = {
 export interface AppThunkAction<TAction> {
   (dispatch: (action: TAction) => void, getState: () => ApplicationState): void;
 }
-
-window.addEventListener("blur", () => {
-  console.log("BLURED");
-});
-window.addEventListener("focus", () => {
-  console.log("focused");
-});

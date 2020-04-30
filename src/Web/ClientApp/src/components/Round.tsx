@@ -5,11 +5,13 @@ import * as RoundsStore from "../store/Rounds";
 import { useParams } from "react-router";
 import RoundScoreCard from "./RoundScoreCard";
 import HoleScoreSelector from "./HoleScoreSelector";
+import WindowFocusHandler from "./WindowFocusHandler";
 
 const mapState = (state: ApplicationState) => {
   return {
     login: state.login,
-    rounds: state.rounds && state.rounds,
+    round: state.rounds?.round,
+    activeHole: state.rounds?.activeHole,
   };
 };
 
@@ -20,18 +22,21 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const Round = (props: Props) => {
-  const { rounds, fetchRound } = props;
+  const { round, activeHole, fetchRound } = props;
   let { roundId } = useParams();
   useEffect(() => {
     fetchRound(roundId as string);
   }, [fetchRound, roundId]);
 
-  return rounds && rounds.round ? (
+  return (
     <div>
-      <RoundScoreCard round={rounds.round} activeHole={rounds.activeHole} />
+      <WindowFocusHandler />
+      {round && activeHole && (
+        <RoundScoreCard round={round} activeHole={activeHole} />
+      )}
       <HoleScoreSelector />
     </div>
-  ) : null;
+  );
 };
 
 export default connector(Round);

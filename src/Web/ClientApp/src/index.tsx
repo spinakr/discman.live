@@ -1,4 +1,5 @@
-import "bulma/css/bulma.css";
+import "./styles.scss";
+import "@fortawesome/fontawesome-free/css/all.css";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -7,8 +8,6 @@ import { ConnectedRouter } from "connected-react-router";
 import { createBrowserHistory } from "history";
 import configureStore from "./store/configureStore";
 import App from "./App";
-
-import "@fortawesome/fontawesome-free/css/all.css";
 
 // Create browser history to use in the Redux store
 const baseUrl = document
