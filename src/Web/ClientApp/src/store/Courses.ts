@@ -4,6 +4,7 @@ import { push, CallHistoryMethodAction } from "connected-react-router";
 import { Hole } from "./Rounds";
 
 export interface Course {
+  id: string;
   name: string;
   holes: Hole[];
 }

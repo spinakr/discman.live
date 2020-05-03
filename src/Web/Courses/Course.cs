@@ -8,6 +8,11 @@ namespace Web.Courses
 {
     public class Course
     {
+        public Course()
+        {
+            
+        }
+        
         public Course(string courseName)
         {
             Id= Guid.NewGuid();
@@ -19,7 +24,14 @@ namespace Web.Courses
             }
             Holes = holes;
         }
-            
+
+        public Course(string courseName, List<int> holePars)
+        {
+            Id= Guid.NewGuid();
+            Name = courseName;
+            Holes = holePars.Select((h, i) => new Hole(i+1, h)).ToList();
+        }
+
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Hole> Holes { get; set; }

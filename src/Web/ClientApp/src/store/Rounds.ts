@@ -1,6 +1,7 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
 import { push, CallHistoryMethodAction } from "connected-react-router";
+import { Course } from "./Courses";
 
 export interface Hole {
   number: number;
@@ -144,7 +145,7 @@ export const actionCreators = {
     dispatch({ type: "DISCONNECT_TO_HUB" });
   },
   newRound: (
-    course: string,
+    course: Course,
     players: string[]
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
@@ -157,7 +158,7 @@ export const actionCreators = {
         Authorization: `Bearer ${appState.login.user.token}`,
       },
       body: JSON.stringify({
-        course: course,
+        courseId: course.id,
         players: players,
       }),
     })
@@ -179,7 +180,7 @@ export const actionCreators = {
 
     const roundId = appState.rounds?.round?.id;
     const hole = appState.rounds?.activeHole;
-    if (!loggedInUser || !roundId) return;
+    if (!loggedInUser || !roundId || !hole || hole < 1) return;
 
     fetch(`api/rounds/${roundId}/scores`, {
       method: "PUT",
@@ -210,7 +211,7 @@ const getActiveHolde = (round: Round) => {
   const activeHole = round.scores.find((s) =>
     s.scores.some((x) => x.strokes === 0)
   );
-  return activeHole ? activeHole.hole.number : 1;
+  return activeHole ? activeHole.hole.number : -1;
 };
 
 export const reducer: Reducer<RoundsState> = (

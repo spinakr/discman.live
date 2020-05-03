@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Marten;
 using Microsoft.AspNetCore.Authorization;
@@ -35,7 +36,7 @@ namespace Web.Courses
         [HttpPost]
         public IActionResult CreateCourse(CreateCourseRequest request)
         {
-            var newCourse = new Course(request.CourseName);
+            var newCourse = new Course(request.CourseName, request.HolePars);
 
             _documentSession.Store(newCourse);
             _documentSession.SaveChanges();
@@ -47,5 +48,6 @@ namespace Web.Courses
     public class CreateCourseRequest
     {
         public string CourseName { get; set; }
+        public List<int> HolePars { get; set; }
     }
 }

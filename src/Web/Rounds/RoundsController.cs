@@ -72,7 +72,7 @@ namespace Web.Matches
 
             var course = _documentSession
                 .Query<Course>()
-                .Single(x => x.Name == request.Course);
+                .Single(x => x.Id == request.CourseId);
 
             var round = new Round(course, request.Players);
             _documentSession.Store(round);
@@ -129,7 +129,7 @@ namespace Web.Matches
 
     public class NewRoundsRequest
     {
-        public string Course { get; set; }
+        public Guid CourseId { get; set; }
         public List<string> Players { get; set; }
     }
 }

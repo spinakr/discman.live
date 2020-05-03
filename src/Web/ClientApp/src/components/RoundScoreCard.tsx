@@ -19,7 +19,13 @@ export default ({ round, activeHole }: ScoreCardProps) => (
     <tbody>
       {round.players.map((p, i) => (
         <tr key={p}>
-          <td>{p}</td>
+          <td>
+            {p} (
+            {round.scores.reduce((total, hole) => {
+              return total + hole.scores[i].relativeToPar;
+            }, 0)}
+            )
+          </td>
           {round.scores.map((s) => (
             <td
               className={s.hole.number === activeHole ? "is-selected" : ""}

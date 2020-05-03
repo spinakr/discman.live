@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
-import { actionCreators as coursesActionCreator } from "../store/Courses";
+import {
+  actionCreators as coursesActionCreator,
+  Course,
+} from "../store/Courses";
 import { actionCreators as loginActionCreator } from "../store/Login";
 import { actionCreators as roundsActionCreator } from "../store/Rounds";
 import "./Login.css";
@@ -26,14 +29,15 @@ type Props = PropsFromRedux & {};
 
 const NewRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState<Course>();
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([
     props.username,
   ]);
   const { fetchCourses, fetchUsers } = props;
 
-  const courseSelected = (courseName: string) => {
-    setSelectedCourse(courseName);
+  const courseSelected = (courseId: string) => {
+    props.courses &&
+      setSelectedCourse(props.courses.find((c) => c.id === courseId));
   };
   const playerAdded = (playerName: string) => {
     if (selectedPlayers.some((p) => p === playerName)) return;
@@ -67,7 +71,9 @@ const NewRound = (props: Props) => {
                   <select onChange={(e) => courseSelected(e.target.value)}>
                     <option></option>
                     {props.courses?.map((c) => (
-                      <option key={c.name}>{c.name}</option>
+                      <option key={c.name} value={c.id}>
+                        {c.name}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -99,14 +105,11 @@ const NewRound = (props: Props) => {
             <button
               className="button is-success"
               onClick={() => {
-                props.newRound(selectedCourse, selectedPlayers);
+                selectedCourse &&
+                  props.newRound(selectedCourse, selectedPlayers);
                 setShowDialog(false);
               }}
-              disabled={
-                !selectedCourse ||
-                selectedCourse === "" ||
-                selectedPlayers.length === 0
-              }
+              disabled={!selectedCourse || selectedPlayers.length === 0}
             >
               Start
             </button>
