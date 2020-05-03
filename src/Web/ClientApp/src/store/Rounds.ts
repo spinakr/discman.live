@@ -167,7 +167,7 @@ export const actionCreators = {
           type: "NEW_ROUND_CREATED",
           round: data,
         });
-        dispatch(push(`rounds/${data.id}`));
+        dispatch(push(`/rounds/${data.id}`));
       });
   },
   setScore: (score: number): AppThunkAction<KnownAction> => (

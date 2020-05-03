@@ -10,6 +10,7 @@ const mapState = (state: ApplicationState) => {
   return {
     courses: state.courses?.courses,
     friends: state.login?.friendUsers,
+    username: state.login?.user?.username || "",
   };
 };
 
@@ -26,21 +27,26 @@ type Props = PropsFromRedux & {};
 const NewRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([
+    props.username,
+  ]);
   const { fetchCourses, fetchUsers } = props;
-  useEffect(() => {
-    showDialog && fetchCourses();
-    showDialog && fetchUsers();
-  }, [fetchCourses, fetchUsers, showDialog]);
+
   const courseSelected = (courseName: string) => {
     setSelectedCourse(courseName);
   };
   const playerAdded = (playerName: string) => {
+    if (selectedPlayers.some((p) => p === playerName)) return;
     setSelectedPlayers([...selectedPlayers, playerName]);
   };
   const removePlayer = (playerName: string) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p !== playerName));
   };
+
+  useEffect(() => {
+    showDialog && fetchCourses();
+    showDialog && fetchUsers();
+  }, [fetchCourses, fetchUsers, showDialog]);
 
   return (
     <>
@@ -59,6 +65,7 @@ const NewRound = (props: Props) => {
               <div className="control">
                 <div className="select is-primary">
                   <select onChange={(e) => courseSelected(e.target.value)}>
+                    <option></option>
                     {props.courses?.map((c) => (
                       <option key={c.name}>{c.name}</option>
                     ))}
@@ -95,6 +102,11 @@ const NewRound = (props: Props) => {
                 props.newRound(selectedCourse, selectedPlayers);
                 setShowDialog(false);
               }}
+              disabled={
+                !selectedCourse ||
+                selectedCourse === "" ||
+                selectedPlayers.length === 0
+              }
             >
               Start
             </button>
