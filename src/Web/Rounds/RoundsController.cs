@@ -82,13 +82,13 @@ namespace Web.Matches
         }
 
         [HttpPut("{roundId}/scores")]
-        public IActionResult UpdateScore(Guid roundId, [FromBody] UpdateScoreRequest request)
+        public async Task<IActionResult> UpdateScore(Guid roundId, [FromBody] UpdateScoreRequest request)
         {
             var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
 
-            var round = _documentSession
+            var round = await _documentSession
                 .Query<Round>()
-                .SingleOrDefault(x => x.Id == roundId);
+                .SingleOrDefaultAsync(x => x.Id == roundId);
 
             var (isAuthorized, result) = IsUserAuthorized(request.Username, username, round);
             if (!isAuthorized) return result;
@@ -98,11 +98,11 @@ namespace Web.Matches
                 .UpdateScore(username, request.Strokes);
 
             _documentSession.Update(round);
-            _documentSession.SaveChanges();
+            await _documentSession.SaveChangesAsync();
 
-            _roundsHub.Clients.All.SendAsync("roundUpdated",
-                    JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}))
-                .GetAwaiter().GetResult();
+            await _roundsHub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
+                JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
+
             return Ok(round);
         }
 

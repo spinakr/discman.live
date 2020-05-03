@@ -18,6 +18,11 @@ namespace Web.Matches
         public List<string> Players { get; set; }
         public List<HoleScore> Scores { get; set; }
 
+        public bool IsActive
+        {
+            get { return Scores.Any(s => s.Scores.Any(s => s.Strokes == default)); }
+        }
+
         public Round(Course course, List<string> players)
         {
             Id = Guid.NewGuid();
@@ -46,7 +51,7 @@ namespace Web.Matches
             score.Strokes = strokes;
             score.RelativeToPar = strokes - Hole.Par;
         }
-        
+
         public Hole Hole { get; set; }
         public List<Score> Scores { get; set; }
     }

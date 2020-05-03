@@ -240,7 +240,8 @@ export const reducer: Reducer<RoundsState> = (
         activeHole: getActiveHolde(action.round),
       };
     case "ROUND_WAS_UPDATED":
-      console.log("score updated");
+      console.log("score update from server");
+      if (state.round?.id !== action.round.id) return state;
       return {
         ...state,
         round: action.round,
