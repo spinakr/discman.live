@@ -89,7 +89,8 @@ namespace Web.Users
         [HttpGet]
         public IActionResult GetFriendsOf([FromQuery] string friendsOf)
         {
-            return Ok();
+            var users = _documentSession.Query<User>().ToList().Select(u => u.Username);
+            return Ok(users);
         }
     }
 }

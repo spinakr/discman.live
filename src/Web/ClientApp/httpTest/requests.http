@@ -49,11 +49,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6I
 
 
 ###
-POST http://localhost:5000/api/courses
+POST https://discman.live/api/courses
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImtvZm9lZCIsIm5iZiI6MTU4ODUwOTMyMCwiZXhwIjoxNTg5MTE0MTIwLCJpYXQiOjE1ODg1MDkzMjB9.s_I0IFl-OPzkreKZ4X2oE7A2pxIXvrPdf7J9CXWdqXA
+Authorization: Bearer adsf
 
 {
-    "courseName": "Muselunden",
-    "holePars": [3,3,3,3,3,3,3,3,3,3,4,3]
+    "courseName": "Holmenkollen",
+    "holePars": [3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3]
 }
