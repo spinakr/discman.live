@@ -1,6 +1,6 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
-import { push, CallHistoryMethodAction } from "connected-react-router";
+import { CallHistoryMethodAction } from "connected-react-router";
 
 export interface User {
   username: string;
@@ -49,6 +49,38 @@ const initialState: LoginState = user
   : { loggedIn: false, user: null, failedLoginMessage: null, friendUsers: [] };
 
 export const actionCreators = {
+  createUser: (
+    username: string,
+    password: string
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    fetch(`api/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<User>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        dispatch({
+          type: "LOGIN_SUCCEED",
+          user: data,
+        });
+        localStorage.setItem("user", JSON.stringify(data));
+      })
+      .catch((err: Error) => {
+        dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });
+        setTimeout(() => {
+          dispatch({ type: "LOG_USER_OUT" });
+        }, 2000);
+      });
+  },
   requestLogin: (
     username: string,
     password: string

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Serilog;
 using Web.Matches;
+using Web.Rounds;
 
 namespace Web
 {

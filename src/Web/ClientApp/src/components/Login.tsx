@@ -53,13 +53,23 @@ const Login = (props: Props) => {
             </span>
           </p>
         </div>
-        <div className="field">
-          <button
-            className="button is-success"
-            onClick={() => props.requestLogin(login.username, login.password)}
-          >
-            Login
-          </button>
+        <div className="field is-grouped">
+          <div className="control">
+            <button
+              className="button is-success"
+              onClick={() => props.requestLogin(login.username, login.password)}
+            >
+              Login
+            </button>
+          </div>
+          <div className="control">
+            <button
+              className="button is-warning"
+              onClick={() => props.createUser(login.username, login.password)}
+            >
+              Register
+            </button>
+          </div>
         </div>
       </div>
     </div>

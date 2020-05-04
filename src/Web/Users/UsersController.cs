@@ -4,7 +4,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Marten;
+using Marten.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,47 +26,40 @@ namespace Web.Users
         private readonly ILogger<UsersController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IDocumentSession _documentSession;
-        private readonly Dictionary<string, User> _users;
-        private static List<DateTime> FailedLoginRequests = new List<DateTime>();
+        private static readonly List<DateTime> FailedLoginRequests = new List<DateTime>();
+        private readonly string _tokenSecret;
 
         public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession)
         {
             _logger = logger;
             _configuration = configuration;
             _documentSession = documentSession;
-            _users = new Dictionary<string, User>
-            {
-                {
-                    "kofoed", new User
-                    {
-                        Id = Guid.Parse("92de3963-da12-4539-9eb5-4418291f9bf3"),
-                        Username = "kofoed",
-                        Password = "password"
-                    }
-                },
-                {
-                    "test1", new User
-                    {
-                        Id = Guid.Parse("19be140f-2d0d-4e99-bd1c-37820e5c1d6d"),
-                        Username = "test1",
-                        Password = "password"
-                    }
-                },
-                {
-                    "cbg", new User
-                    {
-                        Id = Guid.Parse("19be140f-2d0d-4e99-bd1c-37820e5c1d6f"),
-                        Username = "cbg",
-                        Password = "password"
-                    }
-                }
-            };
+            _tokenSecret = _configuration.GetValue<string>("TOKEN_SECRET");
         }
 
+        
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> CreateNewUser(NewUserRequest request)
+        {
+            var userExists =  await _documentSession.Query<User>().SingleOrDefaultAsync(u => u.Username == request.Username);
+            if (userExists is object)
+            {
+                return Conflict("Username already exists");
+            }
+            
+            var hashedPw = new SaltSeasonedHashedPassword(request.Password);
+            var newUser = new User(request.Username, hashedPw);
+            
+            _documentSession.Store(newUser);
+            await _documentSession.SaveChangesAsync();
+            var authenticatedUser = newUser.Authenticated(_tokenSecret);
+            return Ok(authenticatedUser);
+        }
 
         [AllowAnonymous]
         [HttpPost("authenticate")]
-        public IActionResult Authenticate([FromBody] AuthenticationRequest model)
+        public async Task<IActionResult> Authenticate([FromBody] AuthenticationRequest request)
         {
             var requestsLast10Sec = FailedLoginRequests.Count(r => r > DateTime.Now.AddSeconds(-10));
             FailedLoginRequests.RemoveAll(r => r < DateTime.Now.AddSeconds(-20));
@@ -73,29 +68,20 @@ namespace Web.Users
                 return StatusCode(StatusCodes.Status429TooManyRequests);
             }
             
-            var secret = _configuration.GetValue<string>("TOKEN_SECRET");
-            var userExists = _users.TryGetValue(model.Username, out var user);
-
-            if (!userExists || model.Password != user.Password)
+            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == request.Username);
+            if (user is null)
+            {
+                FailedLoginRequests.Add(DateTime.Now);
+                return BadRequest(new {message = "Username or password is incorrect"});
+            }
+            var hashedPw = new SaltSeasonedHashedPassword(request.Password, user.Salt);
+            if(!hashedPw.Hash.SequenceEqual(user.Password))
             {
                 FailedLoginRequests.Add(DateTime.Now);
                 return BadRequest(new {message = "Username or password is incorrect"});
             }
 
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, user.Username)
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var authenticatedUser = user.Authenticated(tokenHandler.WriteToken(token));
+            var authenticatedUser = user.Authenticated(_tokenSecret);
 
             return Ok(authenticatedUser);
         }
@@ -103,8 +89,7 @@ namespace Web.Users
         [HttpGet]
         public IActionResult GetFriendsOf([FromQuery] string friendsOf)
         {
-            var users = _users.Select(u => u.Value.Username).ToList();
-            return Ok(users);
+            return Ok();
         }
     }
 }

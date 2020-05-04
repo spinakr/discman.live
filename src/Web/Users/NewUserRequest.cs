@@ -1,8 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Web.Users
 {
-    public class AuthenticationRequest
+    public class NewUserRequest
     {
         private string _username;
 
