@@ -44,11 +44,12 @@ namespace Web.Rounds
 
     public class HoleScore
     {
-        public void UpdateScore(string username, int strokes)
+        public void UpdateScore(string username, int strokes, string[] strokeOutcomes)
         {
             var score = Scores.Single(s => s.Player == username);
             score.Strokes = strokes;
             score.RelativeToPar = strokes - Hole.Par;
+            score.StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec {Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome)}).ToList();
         }
 
         public Hole Hole { get; set; }
@@ -60,5 +61,22 @@ namespace Web.Rounds
         public string Player { get; set; }
         public int Strokes { get; set; }
         public int RelativeToPar { get; set; }
+
+        public List<StrokeSpec> StrokeSpecs { get; set; }
+    }
+
+    public class StrokeSpec
+    {
+        public StrokeOutcome Outcome { get; set; }
+
+        public enum StrokeOutcome
+        {
+            Fairway,
+            Rough,
+            OB,
+            Circle2,
+            Circle1,
+            Basket
+        }
     }
 }

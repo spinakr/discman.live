@@ -1,6 +1,6 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
-import { push, CallHistoryMethodAction } from "connected-react-router";
+import { CallHistoryMethodAction } from "connected-react-router";
 import { Hole } from "./Rounds";
 
 export interface Course {

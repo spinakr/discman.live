@@ -96,7 +96,7 @@ namespace Web.Matches
 
             round.Scores
                 .Single(s => s.Hole.Number == request.Hole)
-                .UpdateScore(username, request.Strokes);
+                .UpdateScore(username, request.Strokes, request.StrokeOutcomes);
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync();
@@ -114,11 +114,11 @@ namespace Web.Matches
             return (false, Unauthorized("Cannot update other players rounds"));
         }
     }
-
-    public class UpdateRoundRequest
+    
+    public class NewRoundsRequest
     {
-        public string CourseName { get; set; }
-        public List<string> NewPlayers { get; set; }
+        public Guid CourseId { get; set; }
+        public List<string> Players { get; set; }
     }
 
     public class UpdateScoreRequest
@@ -126,11 +126,7 @@ namespace Web.Matches
         public int Hole { get; set; }
         public int Strokes { get; set; }
         public string Username { get; set; }
-    }
-
-    public class NewRoundsRequest
-    {
-        public Guid CourseId { get; set; }
-        public List<string> Players { get; set; }
+        
+        public string[] StrokeOutcomes { get; set; }
     }
 }

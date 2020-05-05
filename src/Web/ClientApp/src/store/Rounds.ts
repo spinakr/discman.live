@@ -12,7 +12,16 @@ export interface Score {
   player: string;
   strokes: number;
   relativeToPar: number;
+  outcoke: StrokeOutcome;
 }
+
+export type StrokeOutcome =
+  | "Fairway"
+  | "Rough"
+  | "OB"
+  | "Circle2"
+  | "Circle1"
+  | "Basket";
 
 export interface HoleScore {
   hole: Hole;
@@ -177,10 +186,10 @@ export const actionCreators = {
         dispatch(push(`/rounds/${data.id}`));
       });
   },
-  setScore: (score: number): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
+  setScore: (
+    score: number,
+    strokes: StrokeOutcome[]
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     const loggedInUser = appState?.login?.user;
 
@@ -197,6 +206,7 @@ export const actionCreators = {
       body: JSON.stringify({
         hole: hole,
         strokes: score,
+        strokeOutcomes: strokes,
         username: loggedInUser.username,
       }),
     })
@@ -261,7 +271,8 @@ export const reducer: Reducer<RoundsState> = (
         activeHole: getActiveHolde(action.round),
       };
     case "SET_ACTIVE_HOLE":
-      if (action.hole > state.activeHole) return state;
+      const nextHole = state.round ? getActiveHolde(state.round) : 1;
+      if (action.hole > nextHole) return state;
       return {
         ...state,
         activeHole: action.hole,

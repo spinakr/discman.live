@@ -55,7 +55,7 @@ const NewRound = (props: Props) => {
   return (
     <>
       <div className={showDialog ? "modal is-active" : "modal"}>
-        <a onClick={() => setShowDialog(false)}>
+        <a href="" onClick={() => setShowDialog(false)}>
           {" "}
           <div className="modal-background"></div>{" "}
         </a>

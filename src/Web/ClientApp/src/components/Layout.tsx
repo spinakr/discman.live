@@ -6,8 +6,6 @@ export default (props: { children?: React.ReactNode }) => (
   <React.Fragment>
     <Banner />
     <NavMenu />
-    <section className="section">
-      <div className="container">{props.children}</div>
-    </section>
+    <div className="container">{props.children}</div>
   </React.Fragment>
 );

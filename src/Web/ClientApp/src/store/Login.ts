@@ -53,7 +53,6 @@ export const actionCreators = {
     username: string,
     password: string
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    const appState = getState();
     fetch(`api/users`, {
       method: "POST",
       headers: {
@@ -85,7 +84,6 @@ export const actionCreators = {
     username: string,
     password: string
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    const appState = getState();
     fetch(`api/users/authenticate`, {
       method: "POST",
       headers: {

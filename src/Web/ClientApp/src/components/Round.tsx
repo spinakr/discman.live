@@ -29,7 +29,11 @@ const Round = (props: Props) => {
   }, [fetchRound, roundId]);
 
   return (
-    <div>
+    <>
+      <h1 className="title">{props.round && props.round.courseName}</h1>
+      <h2 className="subtitle">
+        {props.round && new Date(props.round.startTime).toLocaleDateString()}
+      </h2>
       <WindowFocusHandler />
       {round && activeHole && (
         <RoundScoreCard
@@ -38,8 +42,9 @@ const Round = (props: Props) => {
           setActiveHole={props.setActiveHole}
         />
       )}
+      <hr />
       <HoleScoreSelector />
-    </div>
+    </>
   );
 };
 
