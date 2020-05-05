@@ -59,6 +59,11 @@ export interface ScoreUpdatedSuccessAction {
   round: Round;
 }
 
+export interface SetActiveHoleAction {
+  type: "SET_ACTIVE_HOLE";
+  hole: number;
+}
+
 export interface ConnectToHubAction {
   type: "CONNECT_TO_HUB";
 }
@@ -75,7 +80,8 @@ export type KnownAction =
   | CallHistoryMethodAction
   | ConnectToHubAction
   | DisconnectToHubAction
-  | RoundWasUpdatedAction;
+  | RoundWasUpdatedAction
+  | SetActiveHoleAction;
 
 const fetchRound = (
   roundId: string,
@@ -202,6 +208,12 @@ export const actionCreators = {
         });
       });
   },
+  setActiveHole: (hole: number): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "SET_ACTIVE_HOLE", hole: hole });
+  },
 };
 
 // ----------------
@@ -247,6 +259,12 @@ export const reducer: Reducer<RoundsState> = (
         ...state,
         round: action.round,
         activeHole: getActiveHolde(action.round),
+      };
+    case "SET_ACTIVE_HOLE":
+      if (action.hole > state.activeHole) return state;
+      return {
+        ...state,
+        activeHole: action.hole,
       };
     default:
       return state;

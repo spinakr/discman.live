@@ -32,7 +32,11 @@ const Round = (props: Props) => {
     <div>
       <WindowFocusHandler />
       {round && activeHole && (
-        <RoundScoreCard round={round} activeHole={activeHole} />
+        <RoundScoreCard
+          round={round}
+          activeHole={activeHole}
+          setActiveHole={props.setActiveHole}
+        />
       )}
       <HoleScoreSelector />
     </div>

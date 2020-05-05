@@ -4,15 +4,18 @@ import { Round } from "../store/Rounds";
 export interface ScoreCardProps {
   round: Round;
   activeHole: number;
+  setActiveHole: (hole: number) => void;
 }
 
-export default ({ round, activeHole }: ScoreCardProps) => (
+export default ({ round, activeHole, setActiveHole }: ScoreCardProps) => (
   <table className="table">
     <thead>
       <tr>
         <th>Player</th>
         {round.scores.map((s) => (
-          <th key={s.hole.number}>{s.hole.number}</th>
+          <th key={s.hole.number} onClick={() => setActiveHole(s.hole.number)}>
+            {s.hole.number}
+          </th>
         ))}
       </tr>
     </thead>
