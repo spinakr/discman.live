@@ -14,13 +14,17 @@ type Props = PropsFromRedux & {};
 
 const Login = (props: Props) => {
   const [login, setLogin] = useState({ username: "", password: "" });
+  const isFormValid = (username: string, password: string) => {
+    if (username.length < 3 || password.length < 5) return true;
+    return false;
+  };
 
   if (props.failedLoginMessage) {
     return <div>Loggin failed: {props.failedLoginMessage}</div>;
   }
 
   return (
-    <div className="columns is-centered">
+    <div className="section columns is-centered">
       <div className="column is-4">
         <div className="field">
           <p className="control has-icons-left has-icons-right">
@@ -56,6 +60,7 @@ const Login = (props: Props) => {
         <div className="field is-grouped">
           <div className="control">
             <button
+              disabled={isFormValid(login.username, login.password)}
               className="button is-success"
               onClick={() => props.requestLogin(login.username, login.password)}
             >
@@ -64,6 +69,7 @@ const Login = (props: Props) => {
           </div>
           <div className="control">
             <button
+              disabled={isFormValid(login.username, login.password)}
               className="button is-warning"
               onClick={() => props.createUser(login.username, login.password)}
             >

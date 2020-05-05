@@ -271,7 +271,7 @@ export const reducer: Reducer<RoundsState> = (
         activeHole: getActiveHolde(action.round),
       };
     case "SET_ACTIVE_HOLE":
-      const nextHole = state.round ? getActiveHolde(state.round) : 1;
+      const nextHole = state.round ? getActiveHolde(state.round) : 100;
       if (action.hole > nextHole) return state;
       return {
         ...state,
