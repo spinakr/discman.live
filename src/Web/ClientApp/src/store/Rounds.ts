@@ -233,7 +233,7 @@ const getActiveHolde = (round: Round) => {
   const activeHole = round.scores.find((s) =>
     s.scores.some((x) => x.strokes === 0)
   );
-  return activeHole ? activeHole.hole.number : -1;
+  return activeHole ? activeHole.hole.number : 100;
 };
 
 export const reducer: Reducer<RoundsState> = (
