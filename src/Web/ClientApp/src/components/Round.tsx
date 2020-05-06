@@ -31,6 +31,7 @@ const Round = (props: Props) => {
 
   return (
     <>
+      <Tour start={round} />
       <h1 className="title">{props.round && props.round.courseName}</h1>
       <h2 className="subtitle">
         {props.round && new Date(props.round.startTime).toLocaleDateString()}
@@ -45,7 +46,6 @@ const Round = (props: Props) => {
       <hr />
       <HoleScoreSelector />
       <WindowFocusHandler />
-      <Tour />
     </>
   );
 };

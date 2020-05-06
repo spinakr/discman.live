@@ -14,17 +14,25 @@ const TOUR_STEPS = [
       "The score selector allows recording each individual stroke efficiently. The icons represent fairway, rough, circle 2 / inside 20 meters, circle 1 / inside 10 meters, in basket and OB. Clicking the basket will register your score for the hole ",
   },
 ];
+
+let tourCompleted = localStorage.getItem("completedTour") === "1";
 const tourCallback = ({ status }: any) => {
   if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
     localStorage.setItem("completedTour", "1");
+    tourCompleted = true;
   }
 };
 
 // Tour component
-const Tour = () => {
-  if (localStorage.getItem("completedTour") === "1") return null;
+const Tour = ({ start }: any) => {
+  if (tourCompleted) return null;
   return (
-    <JoyRide steps={TOUR_STEPS} continuous={true} callback={tourCallback} />
+    <JoyRide
+      steps={TOUR_STEPS}
+      continuous={true}
+      callback={tourCallback}
+      run={start}
+    />
   );
 };
 
