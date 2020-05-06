@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import RoundScoreCard from "./RoundScoreCard";
 import HoleScoreSelector from "./HoleScoreSelector";
 import WindowFocusHandler from "./WindowFocusHandler";
+import Tour from "./Tour";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -34,7 +35,6 @@ const Round = (props: Props) => {
       <h2 className="subtitle">
         {props.round && new Date(props.round.startTime).toLocaleDateString()}
       </h2>
-      <WindowFocusHandler />
       {round && activeHole && (
         <RoundScoreCard
           round={round}
@@ -44,6 +44,8 @@ const Round = (props: Props) => {
       )}
       <hr />
       <HoleScoreSelector />
+      <WindowFocusHandler />
+      <Tour />
     </>
   );
 };

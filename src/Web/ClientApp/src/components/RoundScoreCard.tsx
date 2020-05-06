@@ -8,7 +8,7 @@ export interface ScoreCardProps {
 }
 
 export default ({ round, activeHole, setActiveHole }: ScoreCardProps) => (
-  <div className="table-container">
+  <div className="table-container tour-scorecard">
     <table className="table">
       <thead>
         <tr>

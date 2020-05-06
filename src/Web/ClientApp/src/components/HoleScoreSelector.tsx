@@ -81,7 +81,7 @@ const renderDetailedSelector = (
 ) => {
   return (
     <>
-      <div className="field is-grouped">
+      <div className="field is-grouped tour-scores">
         <div className="control">
           <button
             className="button is-medium"
