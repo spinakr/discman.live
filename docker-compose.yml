@@ -1,7 +1,7 @@
 version: "2.1"
 services:
   postgres:
-    image: clkao/postgres-plv8
+    image: clkao/postgres-plv8:11-2
     container_name: postgres
     hostname: postgres
     environment:

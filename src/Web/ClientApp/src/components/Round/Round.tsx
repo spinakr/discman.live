@@ -38,6 +38,7 @@ const RoundComponent = (props: Props) => {
     return (
       <>
         <RoundScoreCard
+          username={props.login?.user?.username || ""}
           round={round}
           activeHole={activeHole}
           setActiveHole={props.setActiveHole}
@@ -52,8 +53,10 @@ const RoundComponent = (props: Props) => {
   return (
     <>
       <Tour start={round} />
-      <h1 className="title">{props.round && props.round.courseName}</h1>
-      <h2 className="subtitle">
+      <h1 className="title has-text-centered">
+        {props.round && props.round.courseName}
+      </h1>
+      <h2 className="subtitle has-text-centered">
         {props.round && new Date(props.round.startTime).toLocaleDateString()}
       </h2>
       {round && activeHole && renderRound(round, activeHole)}

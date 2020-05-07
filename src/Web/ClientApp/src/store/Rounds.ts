@@ -8,13 +8,6 @@ export interface Hole {
   par: number;
 }
 
-export interface Score {
-  player: string;
-  strokes: number;
-  relativeToPar: number;
-  outcoke: StrokeOutcome;
-}
-
 export type StrokeOutcome =
   | "Fairway"
   | "Rough"
@@ -23,18 +16,24 @@ export type StrokeOutcome =
   | "Circle1"
   | "Basket";
 
+export interface PlayerScore {
+  playerName: string;
+  scores: HoleScore[];
+}
+
 export interface HoleScore {
   hole: Hole;
-  scores: Score[];
+  strokes: number;
+  relativeToPar: number;
+  outcoke: StrokeOutcome;
 }
 
 export interface Round {
   id: string;
   courseName: string;
   startTime: string;
-  players: string[];
   isCompleted: boolean;
-  scores: HoleScore[];
+  playerScores: PlayerScore[];
 }
 
 export interface RoundsState {
@@ -254,9 +253,13 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const getActiveHolde = (round: Round) => {
-  const activeHole = round.scores.find((s) =>
-    s.scores.some((x) => x.strokes === 0)
-  );
+  const activeHole = round.playerScores
+    .map((p) => p.scores.find((s) => s.strokes === 0))
+    .sort((a, b) => {
+      return a && b ? a.hole.number - b.hole.number : 0;
+    })
+    .find(() => true);
+
   return activeHole ? activeHole.hole.number : 100;
 };
 

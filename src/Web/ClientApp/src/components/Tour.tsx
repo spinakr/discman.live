@@ -34,7 +34,7 @@ const TOUR_STEPS = [
   },
   {
     target: ".tour-score-basket",
-    content: "Use this symbol if your throw landed in the basket)",
+    content: "Use this symbol if your throw landed in the basket",
   },
   {
     target: ".tour-score-ob",

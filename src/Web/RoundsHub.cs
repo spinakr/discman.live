@@ -28,8 +28,8 @@ namespace Web
             var username = Context.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var rounds = _documentSession
                 .Query<Round>()
-                .Where(r => r.Players.Any(p => p == username))
-                .Where(r => r.IsActive)
+                .Where(r => r.PlayerScores.Any(p => p.PlayerName == username))
+                .Where(r => !r.IsCompleted)
                 .ToList();
 
             foreach (var activeRound in rounds)

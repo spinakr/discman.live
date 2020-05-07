@@ -44,11 +44,11 @@ namespace Web.Matches
                 return NotFound();
             }
 
-            if (round.Players.All(p => p != username))
+            if (round.PlayerScores.All(p => p.PlayerName != username))
             {
                 return Unauthorized("You are not part of the round");
             }
-
+            
             return Ok(round);
         }
 
@@ -57,7 +57,7 @@ namespace Web.Matches
         {
             var rounds = _documentSession
                 .Query<Round>()
-                .Where(r => r.Players.Any(p => p == username))
+                .Where(r => r.PlayerScores.Any(p => p.PlayerName == username))
                 .OrderByDescending(x => x.StartTime)
                 .Skip(start)
                 .Take(5);
@@ -93,9 +93,10 @@ namespace Web.Matches
             if (!isAuthorized) return result;
 
             var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            round.Scores
+            round.PlayerScores
+                .Single(p => p.PlayerName == authenticatedUsername).Scores
                 .Single(s => s.Hole.Number == request.Hole)
-                .UpdateScore(authenticatedUsername, request.Strokes, request.StrokeOutcomes);
+                .UpdateScore(request.Strokes, request.StrokeOutcomes);
 
             await PersistUpdatedRound(round);
 
@@ -128,7 +129,7 @@ namespace Web.Matches
             var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             requestedUsername ??= authenticatedUsername;
             if (round is null) return (false, NotFound());
-            if (round.Players.Any(p => p == authenticatedUsername) && requestedUsername == authenticatedUsername) return (true, Ok());
+            if (round.PlayerScores.Any(p => p.PlayerName == authenticatedUsername) && requestedUsername == authenticatedUsername) return (true, Ok());
             return (false, Unauthorized("Cannot update other players rounds"));
         }
     }

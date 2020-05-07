@@ -14,53 +14,46 @@ namespace Web.Rounds
         public Guid Id { get; set; }
         public string CourseName { get; set; }
         public DateTime StartTime { get; set; }
-        public List<string> Players { get; set; }
-        
-        public bool IsCompleted { get; set; }
-        public List<HoleScore> Scores { get; set; }
 
-        public bool IsActive
-        {
-            get { return Scores.Any(s => s.Scores.Any(s => s.Strokes == default)); }
-        }
+        public bool IsCompleted { get; set; }
+
+        public List<PlayerScore> PlayerScores { get; set; }
 
         public Round(Course course, List<string> players)
         {
             Id = Guid.NewGuid();
             CourseName = course.Name;
             StartTime = DateTime.Now;
-            Players = players;
-            Scores = GenerateEmptyScoreCard(course.Holes, players);
+            PlayerScores = GenerateEmptyScoreCard(course.Holes, players);
         }
 
-        private static List<HoleScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
+        private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
         {
-            return courseHoles
-                .Select(h => new HoleScore
+            return players
+                .Select(p => new PlayerScore
                 {
-                    Hole = h,
-                    Scores = players.Select(p => new Score {Player = p}).ToList()
+                    PlayerName = p,
+                    Scores = courseHoles.Select(h => new HoleScore {Hole = new Hole(h.Number, h.Par)}).ToList()
                 }).ToList();
         }
     }
 
+    public class PlayerScore
+    {
+        public string PlayerName { get; set; }
+        public List<HoleScore> Scores { get; set; }
+    }
+
     public class HoleScore
     {
-        public void UpdateScore(string username, int strokes, string[] strokeOutcomes)
+        public void UpdateScore(int strokes, string[] strokeOutcomes)
         {
-            var score = Scores.Single(s => s.Player == username);
-            score.Strokes = strokes;
-            score.RelativeToPar = strokes - Hole.Par;
-            score.StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec {Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome)}).ToList();
+            Strokes = strokes;
+            RelativeToPar = strokes - Hole.Par;
+            StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec {Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome)}).ToList();
         }
 
         public Hole Hole { get; set; }
-        public List<Score> Scores { get; set; }
-    }
-
-    public class Score
-    {
-        public string Player { get; set; }
         public int Strokes { get; set; }
         public int RelativeToPar { get; set; }
 
