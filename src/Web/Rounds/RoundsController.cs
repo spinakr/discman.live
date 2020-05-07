@@ -85,36 +85,54 @@ namespace Web.Matches
         [HttpPut("{roundId}/scores")]
         public async Task<IActionResult> UpdateScore(Guid roundId, [FromBody] UpdateScoreRequest request)
         {
-            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-
             var round = await _documentSession
                 .Query<Round>()
                 .SingleOrDefaultAsync(x => x.Id == roundId);
 
-            var (isAuthorized, result) = IsUserAuthorized(request.Username, username, round);
+            var (isAuthorized, result) = IsUserAuthorized(round, request.Username);
             if (!isAuthorized) return result;
 
+            var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             round.Scores
                 .Single(s => s.Hole.Number == request.Hole)
-                .UpdateScore(username, request.Strokes, request.StrokeOutcomes);
+                .UpdateScore(authenticatedUsername, request.Strokes, request.StrokeOutcomes);
 
-            _documentSession.Update(round);
-            await _documentSession.SaveChangesAsync();
-
-            await _roundsHub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
-                JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
+            await PersistUpdatedRound(round);
 
             return Ok(round);
         }
 
-        private (bool, IActionResult) IsUserAuthorized(string requestedUsername, string authenticatedUsername, Round round)
+
+        [HttpPut("{roundId}/complete")]
+        public async Task<IActionResult> CompleteRound(Guid roundId)
         {
+            var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == roundId);
+
+            var (isAuthorized, result) = IsUserAuthorized(round);
+            if (!isAuthorized) return result;
+            round.IsCompleted = true;
+            await PersistUpdatedRound(round);
+            return Ok();
+        }
+
+        private async Task PersistUpdatedRound(Round round)
+        {
+            _documentSession.Update(round);
+            await _documentSession.SaveChangesAsync();
+            await _roundsHub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
+                JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
+        }
+
+        private (bool, IActionResult) IsUserAuthorized(Round round, string requestedUsername = null)
+        {
+            var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            requestedUsername ??= authenticatedUsername;
             if (round is null) return (false, NotFound());
             if (round.Players.Any(p => p == authenticatedUsername) && requestedUsername == authenticatedUsername) return (true, Ok());
             return (false, Unauthorized("Cannot update other players rounds"));
         }
     }
-    
+
     public class NewRoundsRequest
     {
         public Guid CourseId { get; set; }
@@ -126,7 +144,7 @@ namespace Web.Matches
         public int Hole { get; set; }
         public int Strokes { get; set; }
         public string Username { get; set; }
-        
+
         public string[] StrokeOutcomes { get; set; }
     }
 }

@@ -15,6 +15,8 @@ namespace Web.Rounds
         public string CourseName { get; set; }
         public DateTime StartTime { get; set; }
         public List<string> Players { get; set; }
+        
+        public bool IsCompleted { get; set; }
         public List<HoleScore> Scores { get; set; }
 
         public bool IsActive

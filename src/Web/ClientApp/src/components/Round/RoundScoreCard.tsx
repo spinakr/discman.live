@@ -1,5 +1,5 @@
 import React from "react";
-import { Round } from "../store/Rounds";
+import { Round } from "../../store/Rounds";
 
 export interface ScoreCardProps {
   round: Round;
@@ -12,7 +12,7 @@ export default ({ round, activeHole, setActiveHole }: ScoreCardProps) => (
     <table className="table">
       <thead>
         <tr>
-          <th>
+          <th className="tour-score-edit">
             Hole
             <br />
             Par

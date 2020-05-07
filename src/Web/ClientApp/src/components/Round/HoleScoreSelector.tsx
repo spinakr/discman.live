@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { ApplicationState } from "../store";
-import * as RoundsStore from "../store/Rounds";
-import { StrokeOutcome } from "../store/Rounds";
+import { ApplicationState } from "../../store";
+import * as RoundsStore from "../../store/Rounds";
+import { StrokeOutcome } from "../../store/Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -84,7 +84,7 @@ const renderDetailedSelector = (
       <div className="field is-grouped tour-scores">
         <div className="control">
           <button
-            className="button is-medium"
+            className="button is-medium tour-score-fairway"
             title="Fairway"
             onClick={() => setStrokes([...strokes, "Fairway"])}
           >
@@ -95,7 +95,7 @@ const renderDetailedSelector = (
         </div>
         <div className="control">
           <button
-            className="button is-medium"
+            className="button is-medium tour-score-rough"
             title="Rough"
             onClick={() => setStrokes([...strokes, "Rough"])}
           >
@@ -106,7 +106,7 @@ const renderDetailedSelector = (
         </div>
         <div className="control">
           <button
-            className="button is-medium"
+            className="button is-medium tour-score-circle2"
             title="Circle 2 - 20 meters"
             onClick={() => setStrokes([...strokes, "Circle2"])}
           >
@@ -117,7 +117,7 @@ const renderDetailedSelector = (
         </div>
         <div className="control">
           <button
-            className="button is-medium"
+            className="button is-medium tour-score-circle1"
             title="Circle 1 - 10 meters"
             onClick={() => setStrokes([...strokes, "Circle1"])}
           >
@@ -128,7 +128,7 @@ const renderDetailedSelector = (
         </div>
         <div className="control">
           <button
-            className="button is-medium"
+            className="button is-medium tour-score-basket"
             title="In basket"
             onClick={() => {
               const newStrokes: StrokeOutcome[] = [...strokes, "Basket"];
@@ -143,7 +143,7 @@ const renderDetailedSelector = (
         </div>
         <div className="control is-pulled-right" style={{ marginLeft: "auto" }}>
           <button
-            className="button is-medium"
+            className="button is-medium tour-score-ob"
             title="In basket"
             onClick={() => setStrokes([...strokes, "OB"])}
           >
@@ -172,6 +172,22 @@ const renderDetailedSelector = (
 const HoleScoreSelector = (props: Props) => {
   const { rounds, setScore } = props;
   const [strokes, setStrokes] = useState<StrokeOutcome[]>([]);
+
+  if (rounds?.activeHole === 100 && !rounds.round?.isCompleted) {
+    return (
+      <div>
+        <button
+          className="button is-success"
+          onClick={() => {
+            props.completeRound();
+          }}
+        >
+          {" "}
+          Complete Round{" "}
+        </button>
+      </div>
+    );
+  }
 
   return rounds && rounds.round ? (
     <>

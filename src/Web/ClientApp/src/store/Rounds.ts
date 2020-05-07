@@ -33,6 +33,7 @@ export interface Round {
   courseName: string;
   startTime: string;
   players: string[];
+  isCompleted: boolean;
   scores: HoleScore[];
 }
 
@@ -73,6 +74,10 @@ export interface SetActiveHoleAction {
   hole: number;
 }
 
+export interface RoundWasCompletedAction {
+  type: "ROUND_WAS_COMPLETED";
+}
+
 export interface ConnectToHubAction {
   type: "CONNECT_TO_HUB";
 }
@@ -90,7 +95,8 @@ export type KnownAction =
   | ConnectToHubAction
   | DisconnectToHubAction
   | RoundWasUpdatedAction
-  | SetActiveHoleAction;
+  | SetActiveHoleAction
+  | RoundWasCompletedAction;
 
 const fetchRound = (
   roundId: string,
@@ -218,6 +224,24 @@ export const actionCreators = {
         });
       });
   },
+  completeRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    const loggedInUser = appState?.login?.user;
+
+    const roundId = appState.rounds?.round?.id;
+    const hole = appState.rounds?.activeHole;
+    if (!loggedInUser || !roundId || !hole || hole < 1) return;
+
+    fetch(`api/rounds/${roundId}/complete`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${loggedInUser.token}`,
+      },
+    }).then((response) => {
+      if (response.ok) dispatch({ type: "ROUND_WAS_COMPLETED" });
+    });
+  },
   setActiveHole: (hole: number): AppThunkAction<KnownAction> => (
     dispatch,
     getState
@@ -269,6 +293,12 @@ export const reducer: Reducer<RoundsState> = (
         ...state,
         round: action.round,
         activeHole: getActiveHolde(action.round),
+      };
+    case "ROUND_WAS_COMPLETED":
+      if (!state.round) return state;
+      return {
+        ...state,
+        round: { ...state.round, isCompleted: true },
       };
     case "SET_ACTIVE_HOLE":
       const nextHole = state.round ? getActiveHolde(state.round) : 100;
