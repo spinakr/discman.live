@@ -26,8 +26,7 @@ const renderRound = (r: Round) => {
   if (startedAgo < 5) style += " has-text-primary has-text-weight-bold";
   return (
     <a className={style} key={r.id} href={`/rounds/${r.id}`}>
-      {r.courseName} - {new Date(r.startTime).toLocaleDateString()} -{" "}
-      <i>{r.playerScores[0].playerName}</i>
+      {r.courseName} - <i>{new Date(r.startTime).toLocaleDateString()} </i>
     </a>
   );
 };
