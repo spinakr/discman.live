@@ -37,20 +37,22 @@ namespace Web.Users
             _tokenSecret = _configuration.GetValue<string>("TOKEN_SECRET");
         }
 
-        
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> CreateNewUser(NewUserRequest request)
         {
-            var userExists =  await _documentSession.Query<User>().SingleOrDefaultAsync(u => u.Username == request.Username);
-            if (userExists is object)
+            var userExists = await _documentSession.Query<User>().SingleOrDefaultAsync(u => u.Username == request.Username);
+
+            if (userExists is object ||
+                request.Password.Length < 5 || request.Password.Length > 200 || request.Username.Length < 3 || request.Username.Length > 30)
             {
-                return Conflict("Username already exists");
+                return BadRequest("Terrible request");
             }
-            
+
             var hashedPw = new SaltSeasonedHashedPassword(request.Password);
             var newUser = new User(request.Username, hashedPw);
-            
+
             _documentSession.Store(newUser);
             await _documentSession.SaveChangesAsync();
             var authenticatedUser = newUser.Authenticated(_tokenSecret);
@@ -67,15 +69,16 @@ namespace Web.Users
             {
                 return StatusCode(StatusCodes.Status429TooManyRequests);
             }
-            
+
             var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == request.Username);
             if (user is null)
             {
                 FailedLoginRequests.Add(DateTime.Now);
                 return BadRequest(new {message = "Username or password is incorrect"});
             }
+
             var hashedPw = new SaltSeasonedHashedPassword(request.Password, user.Salt);
-            if(!hashedPw.Hash.SequenceEqual(user.Password))
+            if (!hashedPw.Hash.SequenceEqual(user.Password))
             {
                 FailedLoginRequests.Add(DateTime.Now);
                 return BadRequest(new {message = "Username or password is incorrect"});
