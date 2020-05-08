@@ -38,6 +38,7 @@ const NewRound = (props: Props) => {
       setSelectedCourse(props.courses.find((c) => c.id === courseId));
   };
   const playerAdded = (playerName: string) => {
+    if (playerName === "") return;
     if (selectedPlayers.some((p) => p === playerName)) return;
     setSelectedPlayers([...selectedPlayers, playerName]);
   };
@@ -84,6 +85,7 @@ const NewRound = (props: Props) => {
               <div className="control">
                 <div className="select is-primary">
                   <select onChange={(e) => playerAdded(e.target.value)}>
+                    <option></option>
                     {props.friends?.map((u) => (
                       <option key={u}>{u}</option>
                     ))}

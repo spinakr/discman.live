@@ -2,6 +2,7 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
+import { Round } from "../store/Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -16,6 +17,21 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
+const renderRound = (r: Round) => {
+  let style = "list-item";
+  var startTime = new Date(r.startTime);
+  var startedAgo = new Date(
+    new Date().valueOf() - startTime.valueOf()
+  ).getMinutes();
+  if (startedAgo < 5) style += " has-text-primary has-text-weight-bold";
+  return (
+    <a className={style} key={r.id} href={`/rounds/${r.id}`}>
+      {r.courseName} - {new Date(r.startTime).toLocaleDateString()} -{" "}
+      <i>{r.playerScores[0].playerName}</i>
+    </a>
+  );
+};
+
 const Rounds = (props: Props) => {
   const { fetchLast5Rounds } = props;
   React.useEffect(() => {
@@ -25,12 +41,7 @@ const Rounds = (props: Props) => {
   return (
     <section className="section">
       <div className="list">
-        {props.rounds &&
-          props.rounds.map((r) => (
-            <a className="list-item" key={r.id} href={`/rounds/${r.id}`}>
-              {r.courseName} - {new Date(r.startTime).toLocaleDateString()}
-            </a>
-          ))}
+        {props.rounds && props.rounds.map(renderRound)}
       </div>
     </section>
   );
