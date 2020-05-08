@@ -30,9 +30,7 @@ type Props = PropsFromRedux & {};
 const NewRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course>();
-  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([
-    props.username,
-  ]);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const { fetchCourses, fetchUsers } = props;
 
   const courseSelected = (courseId: string) => {
@@ -50,7 +48,9 @@ const NewRound = (props: Props) => {
   useEffect(() => {
     showDialog && fetchCourses();
     showDialog && fetchUsers();
-  }, [fetchCourses, fetchUsers, showDialog]);
+    if (!selectedPlayers.some((p) => p === props.username))
+      setSelectedPlayers([props.username]);
+  }, [fetchCourses, fetchUsers, props.username, selectedPlayers, showDialog]);
 
   return (
     <>
