@@ -1,5 +1,9 @@
-import React, { useEffect } from "react";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useState } from "react";
+import { useSwipeable, Swipeable } from "react-swipeable";
 import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
+import RoundChart from "./RoundChart";
+import RoundPrices from "./RoundPrices";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -9,17 +13,6 @@ const playerTotal = (playerScore: PlayerScore) => {
   return playerScore.scores.reduce((total, hole) => {
     return total + hole.relativeToPar;
   }, 0);
-};
-
-const mostBetterThan = (round: Round, f: (h: HoleScore) => boolean) => {
-  const ofBetterThan = (score: PlayerScore) => score.scores.filter(f).length;
-  const byBetterThan = round.playerScores
-    .filter((s) => ofBetterThan(s) > 0)
-    .sort((a, b) => {
-      return ofBetterThan(a) - ofBetterThan(b);
-    });
-
-  return byBetterThan.length > 0 ? byBetterThan[0].playerName : null;
 };
 
 export default ({ round }: RoundSummaryProps) => {
@@ -52,82 +45,86 @@ export default ({ round }: RoundSummaryProps) => {
     );
   };
 
-  const mostBirdies = mostBetterThan(round, (s) => s.relativeToPar < 0);
-  const mostPars = mostBetterThan(round, (s) => s.relativeToPar === 0);
-  const mostBogies = mostBetterThan(round, (s) => s.relativeToPar > 0);
+  const [active, setActive] = useState(1);
+
+  const config = {};
+  const handlers = useSwipeable({
+    onSwiped: (eventData) => {
+      if (eventData.dir === "Left") {
+        if (active === 3) return;
+        setActive(active + 1);
+      }
+      if (eventData.dir === "Right") {
+        if (active === 1) return;
+        setActive(active - 1);
+      }
+    },
+    ...config,
+  });
 
   return (
-    <>
-      <div className="table-container tour-scorecard">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>
-                Hole
-                <br />
-                Par
-              </th>
-              {round.playerScores[0].scores.map((s) => (
-                <th key={s.hole.number}>
-                  {s.hole.number} <br />
-                  <i>{s.hole.par}</i>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {round.playerScores.map((p) => (
-              <tr key={p.playerName}>
-                <td>
-                  {p.playerName}&nbsp;(
-                  {playerTotal(p)})
-                </td>
-                {p.scores.map((s) => renderPlayerHoleScore(s))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <div>
+      <div className="tabs is-centered">
+        <ul>
+          <li
+            className={active === 1 ? "is-active" : ""}
+            onClick={() => setActive(1)}
+          >
+            <a>Scorecard</a>
+          </li>
+          <li
+            className={active === 2 ? "is-active" : ""}
+            onClick={() => setActive(2)}
+          >
+            <a>Prices</a>
+          </li>
+          <li
+            className={active === 3 ? "is-active" : ""}
+            onClick={() => setActive(3)}
+          >
+            <a>Roundchart</a>
+          </li>
+        </ul>
       </div>
-      <div className="columns section">
-        {mostBirdies && (
-          <div className="column">
-            <div className="card has-background-success">
-              <div className="card-content has-text-centered">
-                Most birdies:
-                <br />
-                <span className="has-text-weight-bold is-size-3">
-                  {mostBirdies}
-                </span>
-              </div>
-            </div>
+
+      {active === 1 && (
+        <div>
+          <div className="table-container tour-scorecard section">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>
+                    Hole
+                    <br />
+                    Par
+                  </th>
+                  {round.playerScores[0].scores.map((s) => (
+                    <th key={s.hole.number}>
+                      {s.hole.number} <br />
+                      <i>{s.hole.par}</i>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {round.playerScores.map((p) => (
+                  <tr key={p.playerName}>
+                    <td>
+                      {p.playerName}&nbsp;(
+                      {playerTotal(p)})
+                    </td>
+                    {p.scores.map((s) => renderPlayerHoleScore(s))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-        {mostPars && (
-          <div className="column">
-            <div className="card">
-              <div className="card-content has-text-centered">
-                Most pars: <br />
-                <span className="has-text-weight-bold is-size-3">
-                  {mostPars}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-        {mostBogies && (
-          <div className="column">
-            <div className="card has-background-warning">
-              <div className="card-content has-text-centered">
-                Most bogies or worse:
-                <br />
-                <span className="has-text-weight-bold is-size-3">
-                  {mostBogies}
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+          <div style={{ height: "300px", width: "auto" }} {...handlers}></div>
+        </div>
+      )}
+      {active === 2 && <RoundPrices round={round} swipeHandlers={handlers} />}
+
+      {active === 3 && <RoundChart round={round} swipeHandlers={handlers} />}
+    </div>
   );
 };
