@@ -6,7 +6,8 @@ import { StrokeOutcome } from "../../store/Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
-    rounds: state.rounds && state.rounds,
+    round: state.rounds && state.rounds.round,
+    activeHole: state.rounds && state.rounds.activeHole,
   };
 };
 
@@ -170,10 +171,10 @@ const renderDetailedSelector = (
 };
 
 const HoleScoreSelector = (props: Props) => {
-  const { rounds, setScore } = props;
+  const { round, activeHole, setScore } = props;
   const [strokes, setStrokes] = useState<StrokeOutcome[]>([]);
 
-  if (rounds?.activeHole === 100 && !rounds.round?.isCompleted) {
+  if (activeHole === 100 && !round?.isCompleted) {
     return (
       <div>
         <button
@@ -189,7 +190,7 @@ const HoleScoreSelector = (props: Props) => {
     );
   }
 
-  return rounds && rounds.round ? (
+  return round ? (
     <>
       {renderDetailedSelector(setScore, strokes, setStrokes)}
       <hr />

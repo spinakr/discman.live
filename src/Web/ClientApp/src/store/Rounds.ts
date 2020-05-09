@@ -198,11 +198,23 @@ export const actionCreators = {
     const appState = getState();
     const loggedInUser = appState?.login?.user;
 
-    const roundId = appState.rounds?.round?.id;
+    const round = appState.rounds?.round;
     const hole = appState.rounds?.activeHole;
-    if (!loggedInUser || !roundId || !hole || hole < 1) return;
+    if (!loggedInUser || !round || !hole || hole < 1) return;
 
-    fetch(`api/rounds/${roundId}/scores`, {
+    const playerScores = round.playerScores.find(
+      (p) => p.playerName === loggedInUser.username
+    );
+    const holeScore =
+      playerScores && playerScores.scores.find((s) => s.hole.number === hole);
+    if (holeScore && holeScore.strokes !== 0) {
+      const goOn = window.confirm(
+        "You are overwriting an existing score, continue?"
+      );
+      if (!goOn) return;
+    }
+
+    fetch(`api/rounds/${round.id}/scores`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -290,7 +302,6 @@ export const reducer: Reducer<RoundsState> = (
         activeHole: getActiveHolde(action.round),
       };
     case "ROUND_WAS_UPDATED":
-      console.log("score update from server");
       if (state.round?.id !== action.round.id) return state;
       return {
         ...state,

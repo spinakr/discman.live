@@ -16,7 +16,6 @@ const RoundScoreCard = ({
 }: ScoreCardProps) => {
   const tableRef = React.createRef<HTMLDivElement>();
   useEffect(() => {
-    console.log("effetct");
     if (tableRef.current) {
       if (activeHole > 5) tableRef.current.scrollLeft = 200;
       if (activeHole > 10) tableRef.current.scrollLeft = 400;
