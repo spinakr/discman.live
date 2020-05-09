@@ -65,7 +65,7 @@ namespace Web.Matches
         }
 
         [HttpPost]
-        public IActionResult StartNewRound([FromBody] NewRoundsRequest request)
+        public async Task<IActionResult> StartNewRound([FromBody] NewRoundsRequest request)
         {
             var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var players = request.Players;
@@ -74,6 +74,12 @@ namespace Web.Matches
             var course = _documentSession
                 .Query<Course>()
                 .Single(x => x.Id == request.CourseId);
+
+            var justStartedRound = await _documentSession
+                .Query<Round>()
+                .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
+                .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10));
+            if(justStartedRound is object) return Conflict(justStartedRound);
 
             var round = new Round(course, request.Players);
             _documentSession.Store(round);

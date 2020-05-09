@@ -182,7 +182,14 @@ export const actionCreators = {
         players: players,
       }),
     })
-      .then((response) => response.json() as Promise<Round>)
+      .then((response) => {
+        if (response.status === 409) {
+          window.alert(
+            "A round with you in it was just started, redirecting to that round"
+          );
+        }
+        return response.json() as Promise<Round>;
+      })
       .then((data) => {
         dispatch({
           type: "NEW_ROUND_CREATED",

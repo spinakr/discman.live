@@ -56,17 +56,17 @@ const renderSimpleSelector = (
 const outcomeStyle = (s: StrokeOutcome) => {
   switch (s) {
     case "Fairway":
-      return "fas fa-lg fa-check";
+      return <i className="has-text-weight-bold is-family-code">F</i>;
     case "Basket":
-      return "fas fa-lg fa-shopping-basket";
+      return <i className="fas fa-lg fa-shopping-basket"></i>;
     case "Circle1":
-      return "fas fa-lg fa-dot-circle";
+      return <i className="has-text-weight-bold is-family-code">10m</i>;
     case "Circle2":
-      return "fas fa-lg fa-circle";
+      return <i className="has-text-weight-bold is-family-code">20m</i>;
     case "Rough":
-      return "fas fa-lg fa-times";
+      return <i className="has-text-weight-bold is-family-code">R</i>;
     case "OB":
-      return "fas fa-lg fa-exclamation-triangle";
+      return <i className="has-text-weight-bold is-family-code">OB</i>;
   }
 };
 
@@ -90,7 +90,7 @@ const renderDetailedSelector = (
             onClick={() => setStrokes([...strokes, "Fairway"])}
           >
             <span className="icon is-large">
-              <i className="fas fa-lg fa-check"></i>
+              <i className="has-text-weight-bold is-family-code">F</i>
             </span>
           </button>
         </div>
@@ -101,7 +101,7 @@ const renderDetailedSelector = (
             onClick={() => setStrokes([...strokes, "Rough"])}
           >
             <span className="icon is-large">
-              <i className="fas fa-lg fa-times"></i>
+              <i className="has-text-weight-bold is-family-code">R</i>
             </span>
           </button>
         </div>
@@ -112,7 +112,7 @@ const renderDetailedSelector = (
             onClick={() => setStrokes([...strokes, "Circle2"])}
           >
             <span className="icon is-large">
-              <i className="fas fa-lg fa-circle"></i>
+              <i className="has-text-weight-bold is-family-code">20m</i>
             </span>
           </button>
         </div>
@@ -123,7 +123,7 @@ const renderDetailedSelector = (
             onClick={() => setStrokes([...strokes, "Circle1"])}
           >
             <span className="icon is-large">
-              <i className="fas fa-lg fa-dot-circle"></i>
+              <i className="has-text-weight-bold is-family-code">10m</i>
             </span>
           </button>
         </div>
@@ -149,7 +149,7 @@ const renderDetailedSelector = (
             onClick={() => setStrokes([...strokes, "OB"])}
           >
             <span className="icon is-large icon has-text-danger">
-              <i className="fas fa-lg fa-exclamation-triangle"></i>
+              <i className="has-text-weight-bold is-family-code">OB</i>
             </span>
           </button>
         </div>
@@ -157,9 +157,7 @@ const renderDetailedSelector = (
       {strokes.map((s, i) => {
         return (
           <span key={i}>
-            <span className="icon is-large">
-              <i className={outcomeStyle(s)}></i>
-            </span>
+            <span className="icon is-large">{outcomeStyle(s)}</span>
             <span className="icon is-small">
               <i className="fas fa-arrow-right"></i>
             </span>
