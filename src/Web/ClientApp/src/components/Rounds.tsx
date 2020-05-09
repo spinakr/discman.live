@@ -19,11 +19,10 @@ type Props = PropsFromRedux & {};
 
 const renderRound = (r: Round) => {
   let style = "list-item";
-  var startTime = new Date(r.startTime);
-  var startedAgo = new Date(
-    new Date().valueOf() - startTime.valueOf()
-  ).getMinutes();
-  if (startedAgo < 5) style += " has-text-primary has-text-weight-bold";
+  const startTime = new Date(r.startTime);
+  const startedAgo = Date.now().valueOf() - startTime.valueOf();
+  const startedAgoMins = startedAgo / 1000 / 60;
+  if (startedAgoMins < 30) style += " has-text-primary has-text-weight-bold";
   return (
     <a className={style} key={r.id} href={`/rounds/${r.id}`}>
       {r.courseName} - <i>{new Date(r.startTime).toLocaleDateString()} </i>
