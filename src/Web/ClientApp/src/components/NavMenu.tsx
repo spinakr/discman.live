@@ -4,6 +4,8 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import NewRound from "./NewRound";
+import { routerActions } from "connected-react-router";
+import { ScoreMode } from "../store/Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -45,7 +47,28 @@ const NavMenu = (props: Props) => {
                   </a>
 
                   <div className="navbar-dropdown is-right">
-                    <a className="navbar-item">Change scoring mode</a>
+                    {props.round.scoreMode === ScoreMode.DetailedLive && (
+                      <a
+                        className="navbar-item"
+                        onClick={() => {
+                          setOpen(false);
+                          props.setScoringMode(ScoreMode.StrokesLive);
+                        }}
+                      >
+                        Simple scoring
+                      </a>
+                    )}
+                    {props.round.scoreMode === ScoreMode.StrokesLive && (
+                      <a
+                        className="navbar-item"
+                        onClick={() => {
+                          setOpen(false);
+                          props.setScoringMode(ScoreMode.DetailedLive);
+                        }}
+                      >
+                        Detailed scoring
+                      </a>
+                    )}
                     <hr className="navbar-divider" />
 
                     <a

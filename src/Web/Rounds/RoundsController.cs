@@ -137,6 +137,18 @@ namespace Web.Matches
             await PersistUpdatedRound(round);
             return Ok();
         }
+        
+        [HttpPut("{roundId}/scoremode")]
+        public async Task<IActionResult> SetScoreMode(Guid roundId, [FromBody]ChangeScoreModeRequest req)
+        {
+            var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == roundId);
+
+            var (isAuthorized, result) = IsUserAuthorized(round);
+            if (!isAuthorized) return result;
+            round.ScoreMode = req.ScoreMode;
+            await PersistUpdatedRound(round);
+            return Ok();
+        }
 
         private async Task PersistUpdatedRound(Round round)
         {
@@ -154,6 +166,11 @@ namespace Web.Matches
             if (round.PlayerScores.Any(p => p.PlayerName == authenticatedUsername) && requestedUsername == authenticatedUsername) return (true, Ok());
             return (false, Unauthorized("Cannot update other players rounds"));
         }
+    }
+
+    public class ChangeScoreModeRequest
+    {
+        public ScoreMode ScoreMode { get; set; }
     }
 
     public class NewRoundsRequest

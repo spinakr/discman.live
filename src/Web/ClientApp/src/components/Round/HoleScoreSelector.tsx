@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as RoundsStore from "../../store/Rounds";
-import { StrokeOutcome } from "../../store/Rounds";
+import { StrokeOutcome, ScoreMode } from "../../store/Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -190,9 +190,11 @@ const HoleScoreSelector = (props: Props) => {
 
   return round ? (
     <>
-      {renderDetailedSelector(setScore, strokes, setStrokes)}
+      {round.scoreMode === ScoreMode.DetailedLive &&
+        renderDetailedSelector(setScore, strokes, setStrokes)}
+      {round.scoreMode === ScoreMode.StrokesLive &&
+        renderSimpleSelector(setScore)}
       <hr />
-      {renderSimpleSelector(setScore)}
     </>
   ) : null;
 };

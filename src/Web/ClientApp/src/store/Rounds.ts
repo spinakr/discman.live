@@ -17,6 +17,12 @@ export type StrokeOutcome =
   | "Circle1"
   | "Basket";
 
+export enum ScoreMode {
+  DetailedLive,
+  StrokesLive,
+  OneForAll,
+}
+
 export interface PlayerScore {
   playerName: string;
   scores: HoleScore[];
@@ -35,6 +41,7 @@ export interface Round {
   createdBy: string;
   startTime: string;
   isCompleted: boolean;
+  scoreMode: ScoreMode;
   playerScores: PlayerScore[];
 }
 
@@ -261,6 +268,24 @@ export const actionCreators = {
           round: data,
         });
       });
+  },
+  setScoringMode: (mode: ScoreMode): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    const loggedInUser = appState?.login?.user;
+    const roundId = appState.rounds?.round?.id;
+    if (!loggedInUser || !roundId) return;
+
+    fetch(`api/rounds/${roundId}/scoremode`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${loggedInUser.token}`,
+      },
+      body: JSON.stringify({ scoreMode: mode }),
+    }).then((response) => {});
   },
   completeRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();

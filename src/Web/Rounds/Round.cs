@@ -21,6 +21,8 @@ namespace Web.Rounds
         }
 
         public Guid Id { get; set; }
+
+        public ScoreMode ScoreMode { get; set; }
         public string CourseName { get; set; }
         public DateTime StartTime { get; set; }
 
@@ -40,6 +42,13 @@ namespace Web.Rounds
                     Scores = courseHoles.Select(h => new HoleScore {Hole = new Hole(h.Number, h.Par)}).ToList()
                 }).ToList();
         }
+    }
+
+    public enum ScoreMode
+    {
+        DetailedLive = 0,
+        StrokesLive = 1,
+        OneForAll = 2
     }
 
     public class PlayerScore
