@@ -4,8 +4,6 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import NewRound from "./NewRound";
-import Round from "./Round/Round";
-import { useParams } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {

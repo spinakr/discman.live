@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
 import { push, CallHistoryMethodAction } from "connected-react-router";
