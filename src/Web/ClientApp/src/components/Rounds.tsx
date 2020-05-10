@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import { Round } from "../store/Rounds";
+import Login from "./Login";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -17,15 +18,25 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-const renderRound = (r: Round) => {
+const renderRound = (r: Round, u: string) => {
+  const userTotal = r.playerScores
+    .find((s) => s.playerName === u)
+    ?.scores.reduce((total, score) => {
+      return total + score.relativeToPar;
+    }, 0);
+
   let style = "list-item";
   const startTime = new Date(r.startTime);
   const startedAgo = Date.now().valueOf() - startTime.valueOf();
   const startedAgoMins = startedAgo / 1000 / 60;
-  if (startedAgoMins < 30) style += " has-text-primary has-text-weight-bold";
+  if (startedAgoMins < 10) style += " has-text-primary has-text-weight-bold";
   return (
     <a className={style} key={r.id} href={`/rounds/${r.id}`}>
-      {r.courseName} - <i>{new Date(r.startTime).toLocaleDateString()} </i>
+      {r.courseName} -{" "}
+      <i>
+        {new Date(r.startTime).toLocaleDateString()}
+        {r.isCompleted ? ` | Score: ${userTotal}` : ""}{" "}
+      </i>
     </a>
   );
 };
@@ -39,7 +50,10 @@ const Rounds = (props: Props) => {
   return (
     <section className="section">
       <div className="list">
-        {props.rounds && props.rounds.map(renderRound)}
+        {props.rounds &&
+          props.rounds.map((r) =>
+            renderRound(r, props.login?.user?.username || "")
+          )}
       </div>
     </section>
   );
