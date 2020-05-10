@@ -49,9 +49,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6I
 
 
 ###
-POST https://discman.live/api/courses
+POST http://test.discman.live/api/courses
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImtvZm9lZCIsIm5iZiI6MTU4ODgzNjMzOSwiZXhwIjoxNTg5NDQxMTM5LCJpYXQiOjE1ODg4MzYzMzl9.P9eRh7_rI5N-GTKtnNfbOcSg59-891gtKMGqEChy5pg
+Authorization: Bearer adf
 
 {
     "courseName": "Ekeberg",

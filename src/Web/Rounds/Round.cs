@@ -10,6 +10,15 @@ namespace Web.Rounds
         public Round()
         {
         }
+        
+        public Round(Course course, List<string> players, string createdBy)
+        {
+            Id = Guid.NewGuid();
+            CourseName = course.Name;
+            StartTime = DateTime.Now;
+            PlayerScores = GenerateEmptyScoreCard(course.Holes, players);
+            CreatedBy = createdBy;
+        }
 
         public Guid Id { get; set; }
         public string CourseName { get; set; }
@@ -17,15 +26,10 @@ namespace Web.Rounds
 
         public bool IsCompleted { get; set; }
 
+        public string CreatedBy { get; set; }
+
         public List<PlayerScore> PlayerScores { get; set; }
 
-        public Round(Course course, List<string> players)
-        {
-            Id = Guid.NewGuid();
-            CourseName = course.Name;
-            StartTime = DateTime.Now;
-            PlayerScores = GenerateEmptyScoreCard(course.Holes, players);
-        }
 
         private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
         {

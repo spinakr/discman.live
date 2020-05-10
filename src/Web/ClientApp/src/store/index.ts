@@ -7,6 +7,7 @@ export interface ApplicationState {
   login: Login.LoginState | undefined;
   rounds: Rounds.RoundsState | undefined;
   courses: Courses.CoursesState | undefined;
+  router: any;
 }
 
 export const reducers = {

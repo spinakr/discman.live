@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Marten;
+using Marten.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -48,7 +49,7 @@ namespace Web.Matches
             {
                 return Unauthorized("You are not part of the round");
             }
-            
+
             return Ok(round);
         }
 
@@ -79,13 +80,28 @@ namespace Web.Matches
                 .Query<Round>()
                 .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
                 .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10));
-            if(justStartedRound is object) return Conflict(justStartedRound);
+            if (justStartedRound is object) return Conflict(justStartedRound);
 
-            var round = new Round(course, request.Players);
+            var round = new Round(course, request.Players, username);
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 
             return Ok(round);
+        }
+
+        [HttpDelete("{roundId}")]
+        public async Task<IActionResult> DeleteRound(Guid roundId)
+        {
+            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+
+            var round = await _documentSession
+                .Query<Round>().SingleAsync(x => x.Id == roundId);
+
+            if (round.CreatedBy != username) return Forbid("Only rounds created by yourself can be deleted");
+
+            _documentSession.Delete(round);
+            await _documentSession.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpPut("{roundId}/scores")]

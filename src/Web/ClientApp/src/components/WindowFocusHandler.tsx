@@ -12,9 +12,7 @@ const onFocus = (refreshRound: () => void) => () => {
   refreshRound();
 };
 
-const onBlur = (dissconnectHub: () => void) => () => {
-  console.log("unload");
-};
+const onBlur = (dissconnectHub: () => void) => () => {};
 
 const WindowFocusHandler = (props: Props) => {
   useEffect(() => {

@@ -31,6 +31,7 @@ export interface HoleScore {
 export interface Round {
   id: string;
   courseName: string;
+  createdBy: string;
   startTime: string;
   isCompleted: boolean;
   playerScores: PlayerScore[];
@@ -197,6 +198,24 @@ export const actionCreators = {
         });
         dispatch(push(`/rounds/${data.id}`));
       });
+  },
+  deleteRound: (roundId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+      return;
+
+    fetch(`api/rounds/${roundId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.login.user.token}`,
+      },
+    }).then((response) => {
+      dispatch(push("/"));
+    });
   },
   setScore: (
     score: number,
