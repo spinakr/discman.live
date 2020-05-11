@@ -3,6 +3,8 @@ import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
 import { push, CallHistoryMethodAction } from "connected-react-router";
 import { Course } from "./Courses";
+import { hub } from "./configureStore";
+import * as signalR from "@microsoft/signalr";
 
 export interface Hole {
   number: number;
@@ -28,6 +30,13 @@ export interface PlayerScore {
   scores: HoleScore[];
 }
 
+export interface PlayerCourseStats {
+  playerName: string;
+  courseAverage: number;
+  thisRoundVsAverage: number;
+  numberOfRounds: number;
+}
+
 export interface HoleScore {
   hole: Hole;
   strokes: number;
@@ -49,6 +58,7 @@ export interface RoundsState {
   rounds: Round[];
   round: Round | null;
   activeHole: number;
+  playerCourseStats: PlayerCourseStats[] | null;
 }
 
 //Actions
@@ -93,6 +103,10 @@ export interface ConnectToHubAction {
 export interface DisconnectToHubAction {
   type: "DISCONNECT_TO_HUB";
 }
+export interface PlayerCourseStatsFethSuceed {
+  type: "FETCH_COURSE_STATS_SUCCEED";
+  stats: PlayerCourseStats[];
+}
 
 export type KnownAction =
   | FetchRoundsSuccessAction
@@ -104,7 +118,8 @@ export type KnownAction =
   | DisconnectToHubAction
   | RoundWasUpdatedAction
   | SetActiveHoleAction
-  | RoundWasCompletedAction;
+  | RoundWasCompletedAction
+  | PlayerCourseStatsFethSuceed;
 
 const fetchRound = (
   roundId: string,
@@ -128,7 +143,12 @@ const fetchRound = (
     });
 };
 
-const initialState: RoundsState = { rounds: [], round: null, activeHole: 1 };
+const initialState: RoundsState = {
+  rounds: [],
+  round: null,
+  activeHole: 1,
+  playerCourseStats: null,
+};
 
 export const actionCreators = {
   roundWasUpdated: (round: Round) => {
@@ -154,6 +174,32 @@ export const actionCreators = {
         });
       });
   },
+  fetchStatsOnCourse: (): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (
+      !appState.login?.loggedIn ||
+      !appState.login.user ||
+      !appState.rounds?.round
+    )
+      return;
+    fetch(`api/rounds/${appState.rounds.round.id}/stats`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.login.user.token}`,
+      },
+    })
+      .then((response) => response.json() as Promise<PlayerCourseStats[]>)
+      .then((data) => {
+        dispatch({
+          type: "FETCH_COURSE_STATS_SUCCEED",
+          stats: data,
+        });
+      });
+  },
   fetchRound: (roundId: string): AppThunkAction<KnownAction> => (
     dispatch,
     getState
@@ -168,7 +214,10 @@ export const actionCreators = {
     const activeRound = appState.rounds?.round?.id;
     if (!appState.login || !appState.login.loggedIn || !appState.login.user)
       return;
-    activeRound && fetchRound(activeRound, appState.login.user.token, dispatch);
+
+    activeRound &&
+      hub.state !== signalR.HubConnectionState.Connected &&
+      fetchRound(activeRound, appState.login.user.token, dispatch);
   },
   dissconnectHub: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: "DISCONNECT_TO_HUB" });
@@ -372,6 +421,11 @@ export const reducer: Reducer<RoundsState> = (
       return {
         ...state,
         activeHole: action.hole,
+      };
+    case "FETCH_COURSE_STATS_SUCCEED":
+      return {
+        ...state,
+        playerCourseStats: action.stats,
       };
     default:
       return state;

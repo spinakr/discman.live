@@ -1,12 +1,18 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { useSwipeable } from "react-swipeable";
-import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
+import {
+  Round,
+  HoleScore,
+  PlayerScore,
+  PlayerCourseStats,
+} from "../../store/Rounds";
 import RoundChart from "./RoundChart";
 import RoundPrices from "./RoundPrices";
 
 export interface RoundSummaryProps {
   round: Round;
+  playersCourseStats: PlayerCourseStats[];
 }
 
 const playerTotal = (playerScore: PlayerScore) => {
@@ -15,7 +21,7 @@ const playerTotal = (playerScore: PlayerScore) => {
   }, 0);
 };
 
-export default ({ round }: RoundSummaryProps) => {
+export default ({ round, playersCourseStats }: RoundSummaryProps) => {
   round.playerScores.sort((a, b) => {
     const atotal = playerTotal(a);
     const btotal = playerTotal(b);
@@ -116,6 +122,54 @@ export default ({ round }: RoundSummaryProps) => {
                     {p.scores.map((s) => renderPlayerHoleScore(s))}
                   </tr>
                 ))}
+              </tbody>
+            </table>
+            <hr />
+            <h2 className="subtitle">Self-development </h2>
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th
+                    className="has-tooltip-info"
+                    data-tooltip={`Player average score on ${round.courseName} \n over the last 5 rounds`}
+                  >
+                    Avg.
+                  </th>
+                  <th
+                    className="has-tooltip-info"
+                    data-tooltip={`Improvement versus personal average \n on ${round.courseName}`}
+                  >
+                    Impr.
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {playersCourseStats.map((s) => {
+                  const improv = Math.round(s.thisRoundVsAverage);
+                  const courseAvg = Math.round(s.courseAverage);
+                  return (
+                    <tr key={s.playerName}>
+                      <td>{s.playerName}</td>
+                      <td>
+                        {courseAvg > 0 ? "+" : courseAvg < 0 ? " - " : ""}
+                        {Math.abs(courseAvg)}
+                      </td>
+                      <td
+                        className={
+                          improv > 0
+                            ? "has-text-danger"
+                            : improv < 0
+                            ? "has-text-primary"
+                            : ""
+                        }
+                      >
+                        {improv > 0 ? "+" : improv < 0 ? " - " : ""}
+                        {Math.abs(improv)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

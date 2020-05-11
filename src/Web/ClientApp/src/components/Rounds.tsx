@@ -19,11 +19,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const renderRound = (r: Round, u: string) => {
-  const userTotal = r.playerScores
-    .find((s) => s.playerName === u)
-    ?.scores.reduce((total, score) => {
-      return total + score.relativeToPar;
-    }, 0);
+  const userTotal =
+    r.playerScores
+      .find((s) => s.playerName === u)
+      ?.scores.reduce((total, score) => {
+        return total + score.relativeToPar;
+      }, 0) || 0;
 
   let style = "list-item";
   const startTime = new Date(r.startTime);
@@ -35,7 +36,7 @@ const renderRound = (r: Round, u: string) => {
       {r.courseName} -{" "}
       <i>
         {new Date(r.startTime).toLocaleDateString()}
-        {r.isCompleted ? ` | Score: ${userTotal}` : ""}{" "}
+        {r.isCompleted ? ` | ${userTotal > 0 ? "+" : ""}${userTotal}` : ""}{" "}
       </i>
     </a>
   );

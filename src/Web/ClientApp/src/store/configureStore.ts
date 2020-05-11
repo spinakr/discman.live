@@ -30,7 +30,7 @@ const createHub = () => {
     .build();
 };
 
-let hub = createHub();
+export let hub = createHub();
 
 const socketsMiddleware: Middleware = ({
   dispatch,

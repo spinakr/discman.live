@@ -15,6 +15,7 @@ const mapState = (state: ApplicationState) => {
     login: state.login,
     round: state.rounds?.round,
     activeHole: state.rounds?.activeHole,
+    playersCourseStats: state.rounds?.playerCourseStats || [],
   };
 };
 
@@ -25,15 +26,23 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const RoundComponent = (props: Props) => {
-  const { round, activeHole, fetchRound } = props;
+  const { round, activeHole, fetchRound, fetchStatsOnCourse } = props;
   let { roundId } = useParams();
   useEffect(() => {
     fetchRound(roundId as string);
   }, [fetchRound, roundId]);
+  useEffect(() => {
+    if (round?.isCompleted) fetchStatsOnCourse();
+  }, [fetchStatsOnCourse, round]);
 
   const renderRound = (round: Round, activeHole: number) => {
     if (round.isCompleted) {
-      return <RoundSummary round={round} />;
+      return (
+        <RoundSummary
+          round={round}
+          playersCourseStats={props.playersCourseStats}
+        />
+      );
     }
     return (
       <>

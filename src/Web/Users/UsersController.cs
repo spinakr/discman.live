@@ -13,7 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Web.Matches;
+using Web.Rounds;
 
 namespace Web.Users
 {
@@ -95,5 +97,6 @@ namespace Web.Users
             var users = _documentSession.Query<User>().ToList().Select(u => u.Username);
             return Ok(users);
         }
+
     }
 }

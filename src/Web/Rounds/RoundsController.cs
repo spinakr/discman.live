@@ -19,7 +19,7 @@ namespace Web.Matches
     [Authorize]
     [ApiController]
     [Route("api/rounds")]
-    public class RoundsController : ControllerBase
+    public partial class RoundsController : ControllerBase
     {
         private readonly ILogger<RoundsController> _logger;
         private readonly IHubContext<RoundsHub> _roundsHub;
@@ -137,9 +137,60 @@ namespace Web.Matches
             await PersistUpdatedRound(round);
             return Ok();
         }
-        
+
+        [HttpGet("{roundId}/stats")]
+        public async Task<IActionResult> GetStatsOnCourse(Guid roundId)
+        {
+            var activeRound = await _documentSession
+                .Query<Round>()
+                .SingleAsync(r => r.Id == roundId);
+            var courseName = activeRound.CourseName;
+            var players = activeRound.PlayerScores.Select(p => p.PlayerName);
+
+            var playersStats = new List<PlayerCourseStats>();
+            foreach (var player in players)
+            {
+                var allRoundsOnCourse = _documentSession
+                    .Query<Round>()
+                    .Where(r => r.CourseName == courseName)
+                    .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
+                    .ToList();
+                
+                var fivePreviousRounds = allRoundsOnCourse
+                    .Where(r => r.StartTime < activeRound.StartTime)
+                    .OrderByDescending(r => r.StartTime)
+                    .Take(5)
+                    .ToList();
+                
+                if (fivePreviousRounds.Count == 0) continue;
+
+                var courseScores = fivePreviousRounds
+                    .Select(r => r.PlayerScores
+                        .Where(s => s.PlayerName == player)
+                        .SelectMany(s => s.Scores)
+                        .Sum(q => q.RelativeToPar));
+                var currentCourseAverage = courseScores.Average();
+                var thisRound = activeRound
+                    .PlayerScores
+                    .Single(s => s.PlayerName == player)
+                    .Scores.Sum(s => s.RelativeToPar);
+
+                playersStats.Add(new PlayerCourseStats
+                {
+                    PlayerName = player,
+                    CourseName = courseName,
+                    CourseAverage = currentCourseAverage,
+                    NumberOfRounds = allRoundsOnCourse.Count,
+                    ThisRoundVsAverage = thisRound - currentCourseAverage
+                });
+            }
+
+
+            return Ok(playersStats.OrderBy(s => s.ThisRoundVsAverage));
+        }
+
         [HttpPut("{roundId}/scoremode")]
-        public async Task<IActionResult> SetScoreMode(Guid roundId, [FromBody]ChangeScoreModeRequest req)
+        public async Task<IActionResult> SetScoreMode(Guid roundId, [FromBody] ChangeScoreModeRequest req)
         {
             var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == roundId);
 

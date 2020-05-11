@@ -14,7 +14,11 @@ const mostBetterThan = (round: Round, f: (h: HoleScore) => boolean) => {
       return ofBetterThan(b) - ofBetterThan(a);
     });
 
-  return byBetterThan.length > 0 ? byBetterThan[0].playerName : null;
+  return byBetterThan.length > 0 ? (
+    <span className="has-text-weight-bold is-size-4">
+      {byBetterThan[0].playerName} ({byBetterThan[0].scores.filter(f).length})
+    </span>
+  ) : null;
 };
 
 export default ({ round, swipeHandlers }: RoundPricesProps) => {
@@ -24,39 +28,23 @@ export default ({ round, swipeHandlers }: RoundPricesProps) => {
   return (
     <div className="columns section" {...swipeHandlers}>
       {mostBirdies && (
-        <div className="column">
-          <div className="card has-background-success">
-            <div className="card-content has-text-centered">
-              Most birdies:
-              <br />
-              <span className="has-text-weight-bold is-size-3">
-                {mostBirdies}
-              </span>
-            </div>
-          </div>
+        <div className="box has-background-success has-text-centered">
+          Most birdies:
+          <br />
+          {mostBirdies}
         </div>
       )}
       {mostPars && (
-        <div className="column">
-          <div className="card">
-            <div className="card-content has-text-centered">
-              Most pars: <br />
-              <span className="has-text-weight-bold is-size-3">{mostPars}</span>
-            </div>
-          </div>
+        <div className="box has-text-centered">
+          Most pars: <br />
+          {mostPars}
         </div>
       )}
       {mostBogies && (
-        <div className="column">
-          <div className="card has-background-warning">
-            <div className="card-content has-text-centered">
-              Most bogies or worse:
-              <br />
-              <span className="has-text-weight-bold is-size-3">
-                {mostBogies}
-              </span>
-            </div>
-          </div>
+        <div className="box has-background-danger has-text-centered">
+          Most bogies or worse:
+          <br />
+          {mostBogies}
         </div>
       )}
     </div>
