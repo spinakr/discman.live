@@ -5,7 +5,7 @@ import Banner from "./Banner";
 export default (props: { children?: React.ReactNode }) => (
   <React.Fragment>
     <Banner />
-    <NavMenu />
     <div className="container">{props.children}</div>
+    <NavMenu />
   </React.Fragment>
 );

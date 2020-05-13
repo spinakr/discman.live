@@ -25,37 +25,27 @@ const HoleScoreComponent = ({
       <h2 className="subtitle has-text-centered">
         Hole {holeScore?.hole.number}
       </h2>
-      <div className="columns is-centered is-mobile">
-        <span className="column has-text-centered">
-          <h6 className="title is-6">Par</h6>
-          {holeScore?.hole.par}
-        </span>
-        <span className="column has-text-centered">
-          <h6 className="title is-6" data-tooltip="Distance/length of hole">
-            Distance
-          </h6>
-          {holeScore?.hole.distance}m
-        </span>
-      </div>
-      <div className="columns is-centered is-mobile">
-        <span className="column has-text-centered ">
-          <h6
-            className="title is-6 has-tooltip-multiline has-tooltip-right"
-            data-tooltip="Average score among all playerson this hole"
-          >
-            Average
-          </h6>
-          {holeScore?.hole.average}
-        </span>
-        <span className="column has-text-centered">
-          <h6
-            className="title is-6  has-tooltip-multiline"
-            data-tooltip="Difficulty rating - 1 is the hardest played hole "
-          >
-            Rating
-          </h6>
-          {holeScore?.hole.rating}
-        </span>
+      <div>
+        <div className="columns is-centered is-mobile">
+          <span className="column has-text-centered">
+            <h6 className="title is-6">Par</h6>
+            {holeScore?.hole.par}
+          </span>
+          <span className="column has-text-centered">
+            <h6 className="title is-6">Distance</h6>
+            {holeScore?.hole.distance}m
+          </span>
+        </div>
+        <div className="columns is-centered is-mobile">
+          <span className="column has-text-centered ">
+            <h6 className="title is-6">Average</h6>
+            {holeScore?.hole.average.toFixed(1)}
+          </span>
+          <span className="column has-text-centered">
+            <h6 className="title is-6 ">Rating</h6>
+            {holeScore?.hole.rating}
+          </span>
+        </div>
       </div>
       <table className="table is-fullwidth is-bordered">
         <thead>

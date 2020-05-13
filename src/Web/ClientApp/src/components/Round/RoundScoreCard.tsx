@@ -28,20 +28,26 @@ const RoundScoreCard = ({
   return (
     <div className="columns is-marginless is-paddingless is-mobile">
       <div className="column is-narrow is-marginless is-paddingless">
-        <table className="table is-marginless is-paddingless is-narrow is-bordered">
+        <table className="table is-marginless is-paddingless is-bordered">
           <thead>
             <tr>
-              <th>
-                Hole <br />
-                Par <br />
-                Distance <br />
-              </th>
+              <th>Hole</th>
+            </tr>
+            <tr className="lower-row">
+              <td>
+                <i className="is-size-7">Par</i>
+              </td>
+            </tr>
+            <tr className="lower-row">
+              <td>
+                <i className="is-size-7">Distance</i>
+              </td>
             </tr>
           </thead>
           <tbody>
             {round.playerScores.map((s) => (
               <tr key={s.playerName}>
-                <td>
+                <td key={s.playerName}>
                   {s.playerName}&nbsp;(
                   {s.scores.reduce((total, score) => {
                     return total + score.relativeToPar;
@@ -57,7 +63,7 @@ const RoundScoreCard = ({
         className="column table-container tour-scorecard is-marginless is-paddingless"
         ref={tableRef}
       >
-        <table className="table is-bordered is-narrow">
+        <table className="table is-bordered">
           <thead>
             <tr>
               {round.playerScores[0].scores.map((s) => (
@@ -69,10 +75,36 @@ const RoundScoreCard = ({
                   }}
                   className={s.hole.number === activeHole ? "is-selected" : ""}
                 >
-                  {s.hole.number} <br />
-                  {s.hole.par} <br />
-                  {s.hole.distance} <br />
+                  {s.hole.number}
                 </th>
+              ))}
+            </tr>
+            <tr className="lower-row">
+              {round.playerScores[0].scores.map((s) => (
+                <td
+                  key={s.hole.number}
+                  onClick={() => {
+                    setActiveHole(s.hole.number);
+                    closeDialog();
+                  }}
+                  className={s.hole.number === activeHole ? "is-selected" : ""}
+                >
+                  <i className="is-size-7">{s.hole.par}</i>
+                </td>
+              ))}
+            </tr>
+            <tr className="lower-row">
+              {round.playerScores[0].scores.map((s) => (
+                <td
+                  key={s.hole.number}
+                  onClick={() => {
+                    setActiveHole(s.hole.number);
+                    closeDialog();
+                  }}
+                  className={s.hole.number === activeHole ? "is-selected" : ""}
+                >
+                  <i className="is-size-7">{s.hole.distance}</i>
+                </td>
               ))}
             </tr>
           </thead>

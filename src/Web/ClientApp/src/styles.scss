@@ -3,3 +3,7 @@ $navbar-breakpoint: 0;
 @import "../node_modules/bulma/bulma.sass";
 
 .columns { max-width: 100%; }
+
+.lower-row{
+    line-height: 0.5
+}
