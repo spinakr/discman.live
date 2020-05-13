@@ -176,7 +176,7 @@ const HoleScoreSelector = (props: Props) => {
 
   if (activeHole === 100 && !round?.isCompleted) {
     return (
-      <div>
+      <div className="has-text-centered">
         <button
           className="button is-success"
           onClick={() => {

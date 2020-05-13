@@ -25,23 +25,25 @@ namespace Web.Courses
 
         public void UpdateHoles(List<int> holePars, List<int> holeDistances)
         {
-            Holes = Holes.Select(h => new Hole(h.Number, holePars[h.Number - 1], holeDistances[h.Number - 1], h.Rating)).ToList();
+            Holes = Holes.Select(h => new Hole(h.Number, holePars[h.Number - 1], holeDistances[h.Number - 1], h.Rating, h.Average)).ToList();
         }
     }
 
     public class Hole
     {
-        public Hole(int number, int par, int distance, int rating = 0)
+        public Hole(int number, int par, int distance, int rating = 0, double average = 0.0)
         {
             Number = number;
             Par = par;
             Distance = distance;
             Rating = rating;
+            Average = average;
         }
 
         public int Number { get; set; }
         public int Par { get; set; }
         public int Distance { get; set; }
+        public double Average { get; set; }
         public int Rating { get; set; }
     }
 }

@@ -2,7 +2,6 @@ import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
 import { CallHistoryMethodAction } from "connected-react-router";
 import { Hole } from "./Rounds";
-import Courses from "../components/Courses/Courses";
 
 export interface Course {
   id: string;

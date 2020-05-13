@@ -22,14 +22,16 @@ type Props = PropsFromRedux & {};
 
 const renderCoursesList = (courses: Course[]) => {
   return (
-    <div className="list">
-      {courses &&
-        courses.map((c) => (
-          <Link key={c.id} to={`/courses/${c.id}`} className="list-item">
-            {c.name}
-          </Link>
-        ))}
-    </div>
+    <section className="section">
+      <div className="list">
+        {courses &&
+          courses.map((c) => (
+            <Link key={c.id} to={`/courses/${c.id}`} className="list-item">
+              {c.name}
+            </Link>
+          ))}
+      </div>
+    </section>
   );
 };
 
@@ -43,12 +45,14 @@ const CoursesComponent = (props: Props) => {
   const course = props.courses.find((c) => c.id === courseId);
 
   return (
-    <section className="section">
+    <>
       {course && (
-        <CourseDetails course={course} updateCourse={props.updateCourse} />
+        <section className="container">
+          <CourseDetails course={course} updateCourse={props.updateCourse} />
+        </section>
       )}
       {!courseId && renderCoursesList(props.courses)}
-    </section>
+    </>
   );
 };
 

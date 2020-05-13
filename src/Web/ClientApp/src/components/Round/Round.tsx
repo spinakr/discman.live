@@ -9,11 +9,14 @@ import WindowFocusHandler from "../WindowFocusHandler";
 import Tour from "../Tour";
 import RoundSummary from "./RoundSummary";
 import { Round } from "../../store/Rounds";
+import HoleScore from "./HoleScore";
+import RoundScoreCardModal from "./RoundScoreCardModal";
 
 const mapState = (state: ApplicationState) => {
   return {
     login: state.login,
     round: state.rounds?.round,
+    scoreCardOpen: state.rounds?.scoreCardOpen,
     activeHole: state.rounds?.activeHole,
     playersCourseStats: state.rounds?.playerCourseStats || [],
   };
@@ -46,12 +49,31 @@ const RoundComponent = (props: Props) => {
     }
     return (
       <>
-        <RoundScoreCard
-          username={props.login?.user?.username || ""}
-          round={round}
-          activeHole={activeHole}
-          setActiveHole={props.setActiveHole}
-        />
+        {props.activeHole === 100 ? (
+          <RoundScoreCard
+            username={props.login?.user?.username || ""}
+            round={round}
+            activeHole={activeHole}
+            setActiveHole={props.setActiveHole}
+            closeDialog={() => props.setScorecardOpen(false)}
+          />
+        ) : (
+          <HoleScore
+            username={props.login?.user?.username || ""}
+            round={round}
+            activeHole={activeHole}
+            setActiveHole={props.setActiveHole}
+          />
+        )}
+        {props.scoreCardOpen && (
+          <RoundScoreCardModal
+            username={props.login?.user?.username || ""}
+            round={round}
+            activeHole={activeHole}
+            setActiveHole={props.setActiveHole}
+            closeDialog={() => props.setScorecardOpen(false)}
+          />
+        )}
         <hr />
         <HoleScoreSelector />
         <WindowFocusHandler />
@@ -61,7 +83,7 @@ const RoundComponent = (props: Props) => {
 
   return (
     <>
-      <Tour start={round} />
+      {/* <Tour start={round} /> */}
       <h1 className="title has-text-centered">
         {props.round && props.round.courseName}
       </h1>

@@ -43,6 +43,16 @@ const NavMenu = (props: Props) => {
               </div>
             </>
           )}
+          {props.round && props.location.pathname.startsWith("/rounds") && (
+            <div className="navbar-item">
+              <button
+                className="button is-warning"
+                onClick={() => props.setScorecardOpen(true)}
+              >
+                <strong>Scorecard</strong>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="navbar-menu tour-score-mode">

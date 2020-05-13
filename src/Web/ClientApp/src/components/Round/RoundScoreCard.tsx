@@ -6,6 +6,7 @@ export interface ScoreCardProps {
   round: Round;
   activeHole: number;
   setActiveHole: (hole: number) => void;
+  closeDialog: () => void;
 }
 
 const RoundScoreCard = ({
@@ -13,6 +14,7 @@ const RoundScoreCard = ({
   round,
   activeHole,
   setActiveHole,
+  closeDialog,
 }: ScoreCardProps) => {
   const tableRef = React.createRef<HTMLDivElement>();
   useEffect(() => {
@@ -22,57 +24,83 @@ const RoundScoreCard = ({
       if (activeHole > 15) tableRef.current.scrollLeft = 600;
     }
   });
+
   return (
-    <div className="table-container tour-scorecard" ref={tableRef}>
-      <table className="table">
-        <thead>
-          <tr>
-            <th className="tour-score-edit">
-              Hole
-              <br />
-              Par
-            </th>
-            {round.playerScores[0].scores.map((s) => (
-              <th
-                key={s.hole.number}
-                onClick={() => setActiveHole(s.hole.number)}
-                className={s.hole.number === activeHole ? "is-selected" : ""}
-              >
-                {s.hole.number} <br />
-                <i>{s.hole.par}</i>
+    <div className="columns is-marginless is-paddingless is-mobile">
+      <div className="column is-narrow is-marginless is-paddingless">
+        <table className="table is-marginless is-paddingless is-narrow is-bordered">
+          <thead>
+            <tr>
+              <th>
+                Hole <br />
+                Par <br />
+                Distance <br />
               </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {round.playerScores.map((playerScore) => (
-            <tr
-              key={playerScore.playerName}
-              className={
-                playerScore.playerName === username
-                  ? "has-background-grey-lighter"
-                  : ""
-              }
-            >
-              <td>
-                {playerScore.playerName}&nbsp;(
-                {playerScore.scores.reduce((total, score) => {
-                  return total + score.relativeToPar;
-                }, 0)}
-                )
-              </td>
-              {playerScore.scores.map((s) => (
-                <td
-                  className={s.hole.number === activeHole ? "is-selected" : ""}
-                  key={s.hole.number}
-                >
-                  {s.strokes}
+            </tr>
+          </thead>
+          <tbody>
+            {round.playerScores.map((s) => (
+              <tr key={s.playerName}>
+                <td>
+                  {s.playerName}&nbsp;(
+                  {s.scores.reduce((total, score) => {
+                    return total + score.relativeToPar;
+                  }, 0)}
+                  )
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div
+        className="column table-container tour-scorecard is-marginless is-paddingless"
+        ref={tableRef}
+      >
+        <table className="table is-bordered is-narrow">
+          <thead>
+            <tr>
+              {round.playerScores[0].scores.map((s) => (
+                <th
+                  key={s.hole.number}
+                  onClick={() => {
+                    setActiveHole(s.hole.number);
+                    closeDialog();
+                  }}
+                  className={s.hole.number === activeHole ? "is-selected" : ""}
+                >
+                  {s.hole.number} <br />
+                  {s.hole.par} <br />
+                  {s.hole.distance} <br />
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {round.playerScores.map((playerScore) => (
+              <tr
+                key={playerScore.playerName}
+                className={
+                  playerScore.playerName === username
+                    ? "has-background-grey-lighter"
+                    : ""
+                }
+              >
+                {playerScore.scores.map((s) => (
+                  <td
+                    className={
+                      s.hole.number === activeHole ? "is-selected" : ""
+                    }
+                    key={s.hole.number}
+                  >
+                    {s.strokes}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

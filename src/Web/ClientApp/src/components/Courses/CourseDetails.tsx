@@ -51,7 +51,12 @@ const tableComps = (
       <i>{hole.rating}</i>
     </td>
   );
-  return { hole: hole, header, par, distance, rating };
+  const average = (
+    <td key={hole.number} className="">
+      <i>{hole.average.toFixed(1)}</i>
+    </td>
+  );
+  return { hole: hole, header, par, distance, rating, average };
 };
 
 const chunkArray = (
@@ -100,11 +105,28 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
                     {c.map((t) => t.par)}
                   </tr>
                   <tr>
-                    <th data-tooltip="Distance/length of hole">Dist.</th>
+                    <th
+                      className="has-tooltip-right"
+                      data-tooltip="Distance/length of hole"
+                    >
+                      Dist.
+                    </th>
                     {c.map((t) => t.distance)}
                   </tr>
                   <tr>
-                    <th data-tooltip="Hole rating, from 1 is most dificult">
+                    <th
+                      className="has-tooltip-right"
+                      data-tooltip="Hole average total"
+                    >
+                      Avg.
+                    </th>
+                    {c.map((t) => t.average)}
+                  </tr>
+                  <tr>
+                    <th
+                      className="has-tooltip-right"
+                      data-tooltip="Hole rating, 1 is most dificult"
+                    >
                       Rat.
                     </th>
                     {c.map((t) => t.rating)}

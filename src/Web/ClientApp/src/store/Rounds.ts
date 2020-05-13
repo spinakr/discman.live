@@ -11,6 +11,7 @@ export interface Hole {
   par: number;
   distance: number;
   rating: number;
+  average: number;
 }
 
 export type StrokeOutcome =
@@ -61,6 +62,7 @@ export interface RoundsState {
   round: Round | null;
   activeHole: number;
   playerCourseStats: PlayerCourseStats[] | null;
+  scoreCardOpen: boolean;
 }
 
 //Actions
@@ -110,6 +112,11 @@ export interface PlayerCourseStatsFethSuceed {
   stats: PlayerCourseStats[];
 }
 
+export interface ToggleScoreCardAction {
+  type: "TOGGLE_SCORECARD";
+  open: boolean;
+}
+
 export type KnownAction =
   | FetchRoundsSuccessAction
   | FetchRoundSuccessAction
@@ -121,7 +128,8 @@ export type KnownAction =
   | RoundWasUpdatedAction
   | SetActiveHoleAction
   | RoundWasCompletedAction
-  | PlayerCourseStatsFethSuceed;
+  | PlayerCourseStatsFethSuceed
+  | ToggleScoreCardAction;
 
 const fetchRound = (
   roundId: string,
@@ -150,9 +158,16 @@ const initialState: RoundsState = {
   round: null,
   activeHole: 1,
   playerCourseStats: null,
+  scoreCardOpen: false,
 };
 
 export const actionCreators = {
+  setScorecardOpen: (open: boolean): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "TOGGLE_SCORECARD", open });
+  },
   roundWasUpdated: (round: Round) => {
     return { type: "ROUND_WAS_UPDATED", round: round };
   },
@@ -388,6 +403,8 @@ export const reducer: Reducer<RoundsState> = (
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
+    case "TOGGLE_SCORECARD":
+      return { ...state, scoreCardOpen: action.open };
     case "FETCH_ROUNDS_SUCCEED":
       return { ...state, rounds: action.rounds };
     case "FETCH_ROUND_SUCCEED":
