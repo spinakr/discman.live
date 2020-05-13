@@ -39,7 +39,7 @@ namespace Web.Rounds
                 .Select(p => new PlayerScore
                 {
                     PlayerName = p,
-                    Scores = courseHoles.Select(h => new HoleScore {Hole = new Hole(h.Number, h.Par)}).ToList()
+                    Scores = courseHoles.Select(h => new HoleScore {Hole = new Hole(h.Number, h.Par, h.Distance, h.Rating)}).ToList()
                 }).ToList();
         }
     }

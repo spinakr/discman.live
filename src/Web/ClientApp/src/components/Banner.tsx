@@ -2,6 +2,7 @@ import * as React from "react";
 import { ApplicationState } from "../store";
 import { actionCreators } from "../store/Login";
 import { connect, ConnectedProps } from "react-redux";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => state.login;
 const connector = connect(mapState, actionCreators);
@@ -11,9 +12,9 @@ type Props = PropsFromRedux;
 const Banner = (props: Props) => (
   <nav className="navbar is-light">
     <div className="navbar-brand">
-      <a className="navbar-item" href="/">
-        Disclive
-      </a>
+      <div className="navbar-item">
+        <Link to="/">discman.live</Link>
+      </div>
     </div>
     <div className="navbar-menu is-active">
       <div className="navbar-end">

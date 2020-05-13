@@ -6,7 +6,7 @@ const TOUR_STEPS = [
   {
     target: ".tour-scorecard",
     content:
-      "Score card will update when other players enter their scores, and go to the next hole when all players have entered their score",
+      "Score card will update when other players enter their scores, and go to the next hole when all players have entered",
   },
   {
     target: ".tour-scores",
@@ -45,12 +45,17 @@ const TOUR_STEPS = [
     content:
       "You can change you score by clicking the hole number and re-doing your score",
   },
+  {
+    target: ".tour-score-mode",
+    content:
+      "The player who created the round can change the scoring mode in the options menu. Use detailed scoring to track each stroke, or change to simple to only register hole scores",
+  },
 ];
 
-let tourCompleted = localStorage.getItem("completedTour") === "3";
+let tourCompleted = localStorage.getItem("completedTour") === "4";
 const tourCallback = ({ status }: any) => {
   if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
-    localStorage.setItem("completedTour", "3");
+    localStorage.setItem("completedTour", "4");
     tourCompleted = true;
   }
 };
@@ -64,6 +69,7 @@ const Tour = ({ start }: any) => {
       continuous={true}
       callback={tourCallback}
       run={start}
+      showSkipButton={true}
     />
   );
 };

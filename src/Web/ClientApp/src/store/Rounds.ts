@@ -9,6 +9,8 @@ import * as signalR from "@microsoft/signalr";
 export interface Hole {
   number: number;
   par: number;
+  distance: number;
+  rating: number;
 }
 
 export type StrokeOutcome =

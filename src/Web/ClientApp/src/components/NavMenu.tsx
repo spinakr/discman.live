@@ -4,8 +4,8 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import NewRound from "./NewRound";
-import { routerActions } from "connected-react-router";
 import { ScoreMode } from "../store/Rounds";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -28,14 +28,27 @@ const NavMenu = (props: Props) => {
     <>
       <nav className="navbar is-fixed-bottom is-light">
         <div className="navbar-brand">
-          <div className="navbar-item">
-            {props.location.pathname === "/" && <NewRound />}
-          </div>
+          {!props.location.pathname.startsWith("/rounds") && (
+            <>
+              <div className="navbar-item">
+                <NewRound />
+              </div>
+              <div className="navbar-item">
+                <Link
+                  to="/courses"
+                  className="button is-primary is-light is-link is-outlined"
+                >
+                  Courses
+                </Link>
+              </div>
+            </>
+          )}
         </div>
 
-        <div className="navbar-menu">
+        <div className="navbar-menu tour-score-mode">
           <div className="navbar-end">
             {props.round &&
+              props.location.pathname.startsWith("/rounds") &&
               props.login?.user?.username === props.round?.createdBy && (
                 <div
                   className={`navbar-item has-dropdown has-dropdown-up ${

@@ -10,41 +10,38 @@ namespace Web.Courses
     {
         public Course()
         {
-            
-        }
-        
-        public Course(string courseName)
-        {
-            Id= Guid.NewGuid();
-            Name = courseName;
-            var holes = new List<Hole>();
-            for (int i = 1; i < 19; i++)
-            {
-                holes.Add(new Hole(i, 3));
-            }
-            Holes = holes;
         }
 
-        public Course(string courseName, List<int> holePars)
+        public Course(string courseName, List<int> holePars, List<int> holeDistances)
         {
-            Id= Guid.NewGuid();
+            Id = Guid.NewGuid();
             Name = courseName;
-            Holes = holePars.Select((h, i) => new Hole(i+1, h)).ToList();
+            Holes = holePars.Select((h, i) => new Hole(i + 1, h, holeDistances[i])).ToList();
         }
 
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Hole> Holes { get; set; }
+
+        public void UpdateHoles(List<int> holePars, List<int> holeDistances)
+        {
+            Holes = Holes.Select(h => new Hole(h.Number, holePars[h.Number - 1], holeDistances[h.Number - 1], h.Rating)).ToList();
+        }
     }
 
     public class Hole
     {
-        public Hole(int number, int par)
+        public Hole(int number, int par, int distance, int rating = 0)
         {
             Number = number;
             Par = par;
+            Distance = distance;
+            Rating = rating;
         }
+
         public int Number { get; set; }
         public int Par { get; set; }
+        public int Distance { get; set; }
+        public int Rating { get; set; }
     }
 }

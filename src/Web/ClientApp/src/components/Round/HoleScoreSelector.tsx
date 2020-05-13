@@ -138,7 +138,9 @@ const renderDetailedSelector = (
             }}
           >
             <span className="icon is-large has-text-primary">
-              <i className="fas fa-lg fa-shopping-basket"></i>
+              <i className="fas fa-shopping-basket">
+                &nbsp;{countScore(strokes) + 1}&nbsp;
+              </i>
             </span>
           </button>
         </div>

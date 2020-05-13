@@ -2,6 +2,7 @@ import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
 import { CallHistoryMethodAction } from "connected-react-router";
 import { Hole } from "./Rounds";
+import Courses from "../components/Courses/Courses";
 
 export interface Course {
   id: string;
@@ -19,7 +20,15 @@ export interface FetchCoursesSuccessAction {
   courses: Course[];
 }
 
-export type KnownAction = FetchCoursesSuccessAction | CallHistoryMethodAction;
+export interface UpdateCourseSuccessAction {
+  type: "COURSE_UPDATED_SUCCEED";
+  course: Course;
+}
+
+export type KnownAction =
+  | FetchCoursesSuccessAction
+  | CallHistoryMethodAction
+  | UpdateCourseSuccessAction;
 
 const initialState: CoursesState = { courses: [] };
 
@@ -43,6 +52,32 @@ export const actionCreators = {
         });
       });
   },
+  updateCourse: (course: Course): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+      return;
+    fetch(`api/courses/${course.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.login.user.token}`,
+      },
+      body: JSON.stringify({
+        holePars: course.holes.map((h) => h.par),
+        holeDistances: course.holes.map((h) => h.distance),
+      }),
+    })
+      .then((response) => response.json() as Promise<Course>)
+      .then((data) => {
+        dispatch({
+          type: "COURSE_UPDATED_SUCCEED",
+          course: data,
+        });
+      });
+  },
 };
 
 // ----------------
@@ -60,6 +95,14 @@ export const reducer: Reducer<CoursesState> = (
   switch (action.type) {
     case "FETCH_COURSES_SUCCEED":
       return { ...state, courses: action.courses };
+    case "COURSE_UPDATED_SUCCEED":
+      return {
+        ...state,
+        courses: [
+          ...state.courses.filter((c) => c.id !== action.course.id),
+          action.course,
+        ],
+      };
     default:
       return state;
   }
