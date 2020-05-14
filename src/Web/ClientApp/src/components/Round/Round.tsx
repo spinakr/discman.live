@@ -14,7 +14,7 @@ import RoundScoreCardModal from "./RoundScoreCardModal";
 
 const mapState = (state: ApplicationState) => {
   return {
-    login: state.login,
+    user: state.user,
     round: state.rounds?.round,
     scoreCardOpen: state.rounds?.scoreCardOpen,
     activeHole: state.rounds?.activeHole,
@@ -51,7 +51,7 @@ const RoundComponent = (props: Props) => {
       <>
         {props.activeHole === 100 ? (
           <RoundScoreCard
-            username={props.login?.user?.username || ""}
+            username={props.user?.user?.username || ""}
             round={round}
             activeHole={activeHole}
             setActiveHole={props.setActiveHole}
@@ -59,7 +59,7 @@ const RoundComponent = (props: Props) => {
           />
         ) : (
           <HoleScore
-            username={props.login?.user?.username || ""}
+            username={props.user?.user?.username || ""}
             round={round}
             activeHole={activeHole}
             setActiveHole={props.setActiveHole}
@@ -67,7 +67,7 @@ const RoundComponent = (props: Props) => {
         )}
         {props.scoreCardOpen && (
           <RoundScoreCardModal
-            username={props.login?.user?.username || ""}
+            username={props.user?.user?.username || ""}
             round={round}
             activeHole={activeHole}
             setActiveHole={props.setActiveHole}

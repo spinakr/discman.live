@@ -9,7 +9,6 @@ import CourseDetails from "./CourseDetails";
 
 const mapState = (state: ApplicationState) => {
   return {
-    login: state.login,
     courses: state.courses?.courses || [],
   };
 };

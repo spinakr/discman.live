@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
-import * as LoginStore from "../store/Login";
+import * as LoginStore from "../store/User";
 import "./Login.css";
 
-const mapState = (state: ApplicationState) => state.login;
+const mapState = (state: ApplicationState) => state.user;
 
 const connector = connect(mapState, LoginStore.actionCreators);
 

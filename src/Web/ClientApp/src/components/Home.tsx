@@ -7,7 +7,7 @@ import Rounds from "./Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
-    login: state.login,
+    user: state.user,
   };
 };
 
@@ -18,12 +18,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & RouteComponentProps & {};
 
 const Home = (props: Props) => {
-  const { login } = props;
+  const { user } = props;
 
   return (
     <div>
-      {!login?.loggedIn && <Login />}
-      {login?.loggedIn && <Rounds />}
+      {!user?.loggedIn && <Login />}
+      {user?.loggedIn && <Rounds />}
     </div>
   );
 };

@@ -14,7 +14,7 @@ import { History } from "history";
 import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as roundsActions, Round } from "./Rounds";
-import { User } from "./Login";
+import { User } from "./User";
 
 const createHub = () => {
   return new signalR.HubConnectionBuilder()

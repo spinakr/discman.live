@@ -1,17 +1,17 @@
-import * as Login from "./Login";
+import * as User from "./User";
 import * as Rounds from "./Rounds";
 import * as Courses from "./Courses";
 
 // The top-level state object
 export interface ApplicationState {
-  login: Login.LoginState | undefined;
+  user: User.UserState | undefined;
   rounds: Rounds.RoundsState | undefined;
   courses: Courses.CoursesState | undefined;
   router: any;
 }
 
 export const reducers = {
-  login: Login.reducer,
+  user: User.reducer,
   rounds: Rounds.reducer,
   courses: Courses.reducer,
 };

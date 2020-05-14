@@ -1,20 +1,19 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { ApplicationState } from "../store";
+import { ApplicationState } from "../../store";
 import {
   actionCreators as coursesActionCreator,
   Course,
-} from "../store/Courses";
-import { actionCreators as loginActionCreator } from "../store/Login";
-import { actionCreators as roundsActionCreator } from "../store/Rounds";
-import "./Login.css";
+} from "../../store/Courses";
+import { actionCreators as loginActionCreator } from "../../store/User";
+import { actionCreators as roundsActionCreator } from "../../store/Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
     courses: state.courses?.courses,
-    friends: state.login?.friendUsers,
-    username: state.login?.user?.username || "",
+    friends: state.user?.friendUsers,
+    username: state.user?.user?.username || "",
   };
 };
 

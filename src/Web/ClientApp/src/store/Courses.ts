@@ -39,13 +39,13 @@ const initialState: CoursesState = { courses: [] };
 export const actionCreators = {
   fetchCourses: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
     fetch(`api/courses`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
     })
       .then((response) => response.json() as Promise<Course[]>)
@@ -61,13 +61,13 @@ export const actionCreators = {
     numberOfHoles: number
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
     fetch(`api/courses`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
       body: JSON.stringify({
         courseName,
@@ -87,13 +87,13 @@ export const actionCreators = {
     getState
   ) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
     fetch(`api/courses/${course.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
       body: JSON.stringify({
         holePars: course.holes.map((h) => h.par),

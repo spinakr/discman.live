@@ -3,11 +3,10 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import { Round } from "../store/Rounds";
-import Login from "./Login";
 
 const mapState = (state: ApplicationState) => {
   return {
-    login: state.login,
+    user: state.user,
     rounds: state.rounds && state.rounds.rounds,
   };
 };
@@ -53,7 +52,7 @@ const Rounds = (props: Props) => {
       <div className="list">
         {props.rounds &&
           props.rounds.map((r) =>
-            renderRound(r, props.login?.user?.username || "")
+            renderRound(r, props.user?.user?.username || "")
           )}
       </div>
     </section>

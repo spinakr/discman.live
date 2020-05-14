@@ -1,10 +1,10 @@
 import * as React from "react";
 import { ApplicationState } from "../store";
-import { actionCreators } from "../store/Login";
+import { actionCreators } from "../store/User";
 import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
 
-const mapState = (state: ApplicationState) => state.login;
+const mapState = (state: ApplicationState) => state.user;
 const connector = connect(mapState, actionCreators);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

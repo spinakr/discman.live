@@ -173,14 +173,14 @@ export const actionCreators = {
   },
   fetchLast5Rounds: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    const username = appState.login.user.username;
+    const username = appState.user.user.username;
     fetch(`api/rounds?username=${username}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
     })
       .then((response) => response.json() as Promise<Round[]>)
@@ -197,8 +197,8 @@ export const actionCreators = {
   ) => {
     const appState = getState();
     if (
-      !appState.login?.loggedIn ||
-      !appState.login.user ||
+      !appState.user?.loggedIn ||
+      !appState.user.user ||
       !appState.rounds?.round
     )
       return;
@@ -206,7 +206,7 @@ export const actionCreators = {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
     })
       .then((response) => response.json() as Promise<PlayerCourseStats[]>)
@@ -222,19 +222,19 @@ export const actionCreators = {
     getState
   ) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetchRound(roundId, appState.login.user.token, dispatch);
+    fetchRound(roundId, appState.user.user.token, dispatch);
   },
   refreshRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     const activeRound = appState.rounds?.round?.id;
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
 
     activeRound &&
       hub.state !== signalR.HubConnectionState.Connected &&
-      fetchRound(activeRound, appState.login.user.token, dispatch);
+      fetchRound(activeRound, appState.user.user.token, dispatch);
   },
   dissconnectHub: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: "DISCONNECT_TO_HUB" });
@@ -244,13 +244,13 @@ export const actionCreators = {
     players: string[]
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
     fetch(`api/rounds`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
       body: JSON.stringify({
         courseId: course.id,
@@ -278,14 +278,14 @@ export const actionCreators = {
     getState
   ) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
 
     fetch(`api/rounds/${roundId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
     }).then((response) => {
       dispatch(push("/"));
@@ -296,7 +296,7 @@ export const actionCreators = {
     strokes: StrokeOutcome[]
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
-    const loggedInUser = appState?.login?.user;
+    const loggedInUser = appState?.user?.user;
 
     const round = appState.rounds?.round;
     const hole = appState.rounds?.activeHole;
@@ -340,7 +340,7 @@ export const actionCreators = {
     getState
   ) => {
     const appState = getState();
-    const loggedInUser = appState?.login?.user;
+    const loggedInUser = appState?.user?.user;
     const roundId = appState.rounds?.round?.id;
     if (!loggedInUser || !roundId) return;
 
@@ -355,7 +355,7 @@ export const actionCreators = {
   },
   completeRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
-    const loggedInUser = appState?.login?.user;
+    const loggedInUser = appState?.user?.user;
 
     const roundId = appState.rounds?.round?.id;
     const hole = appState.rounds?.activeHole;

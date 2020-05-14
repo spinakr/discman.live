@@ -1,5 +1,5 @@
 import { Action, Reducer } from "redux";
-import { AppThunkAction } from "./";
+import { AppThunkAction } from ".";
 import { CallHistoryMethodAction } from "connected-react-router";
 
 export interface User {
@@ -7,7 +7,7 @@ export interface User {
   token: string;
 }
 
-export interface LoginState {
+export interface UserState {
   loggedIn: boolean;
   user: User | null;
   failedLoginMessage: string | null;
@@ -44,7 +44,7 @@ const userString = localStorage.getItem("user");
 if (userString) {
   user = JSON.parse(userString);
 }
-const initialState: LoginState = user
+const initialState: UserState = user
   ? { loggedIn: true, user, failedLoginMessage: null, friendUsers: [] }
   : { loggedIn: false, user: null, failedLoginMessage: null, friendUsers: [] };
 
@@ -117,13 +117,13 @@ export const actionCreators = {
   },
   fetchUsers: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
-    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/users?friendsOf=${appState.login.user.username}`, {
+    fetch(`api/users?friendsOf=${appState.user.user.username}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.login.user.token}`,
+        Authorization: `Bearer ${appState.user.user.token}`,
       },
     })
       .then((response) => {
@@ -144,10 +144,10 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-export const reducer: Reducer<LoginState> = (
-  state: LoginState | undefined,
+export const reducer: Reducer<UserState> = (
+  state: UserState | undefined,
   incomingAction: Action
-): LoginState => {
+): UserState => {
   if (state === undefined) {
     return initialState;
   }

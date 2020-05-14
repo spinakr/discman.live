@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
-import NewRound from "./NewRound";
+import NewRound from "./Round/NewRound";
 import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
 import NewCourse from "./Courses/NewCourse";
 
 const mapState = (state: ApplicationState) => {
   return {
-    login: state.login,
+    user: state.user,
     round: state.rounds?.round,
     location: state.router.location,
   };
@@ -66,7 +66,7 @@ const NavMenu = (props: Props) => {
           <div className="navbar-end">
             {props.round &&
               props.location.pathname.startsWith("/rounds") &&
-              props.login?.user?.username === props.round?.createdBy && (
+              props.user?.user?.username === props.round?.createdBy && (
                 <div
                   className={`navbar-item has-dropdown has-dropdown-up ${
                     open ? "is-active" : ""
