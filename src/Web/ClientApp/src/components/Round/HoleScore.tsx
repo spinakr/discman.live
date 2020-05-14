@@ -25,7 +25,7 @@ const HoleScoreComponent = ({
       <h2 className="subtitle has-text-centered">
         Hole {holeScore?.hole.number}
       </h2>
-      <div>
+      <div className="tour-stats">
         <div className="columns is-centered is-mobile">
           <span className="column has-text-centered">
             <h6 className="title is-6">Par</h6>
@@ -48,7 +48,7 @@ const HoleScoreComponent = ({
         </div>
       </div>
       <br />
-      <table className="table is-fullwidth is-bordered">
+      <table className="table is-fullwidth is-bordered tour-holeScores">
         <thead>
           <tr>
             {round.playerScores.map((p) => (

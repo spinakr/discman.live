@@ -86,7 +86,7 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
       <div>
         <h1 className="title">{currentCourse.name}</h1>
 
-        <div className="table-container tour-scorecard">
+        <div className="table-container">
           {chunks.map((c, i) => {
             return (
               <table

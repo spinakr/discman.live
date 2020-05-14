@@ -95,7 +95,7 @@ export default ({ round, playersCourseStats }: RoundSummaryProps) => {
 
       {active === 1 && (
         <div>
-          <div className="table-container tour-scorecard section">
+          <div className="table-container section">
             <table className="table">
               <thead>
                 <tr>

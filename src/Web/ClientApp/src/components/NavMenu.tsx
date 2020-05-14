@@ -53,7 +53,7 @@ const NavMenu = (props: Props) => {
           {props.round && props.location.pathname.startsWith("/rounds") && (
             <div className="navbar-item">
               <button
-                className="button is-warning"
+                className="button is-warning tour-scorecard"
                 onClick={() => props.setScorecardOpen(true)}
               >
                 <strong>Scorecard</strong>
@@ -72,7 +72,10 @@ const NavMenu = (props: Props) => {
                     open ? "is-active" : ""
                   }`}
                 >
-                  <a className="navbar-link" onClick={() => setOpen(!open)}>
+                  <a
+                    className="navbar-link tour-change-mode"
+                    onClick={() => setOpen(!open)}
+                  >
                     Options
                   </a>
 

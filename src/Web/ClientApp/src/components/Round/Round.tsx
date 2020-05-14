@@ -35,8 +35,8 @@ const RoundComponent = (props: Props) => {
     fetchRound(roundId as string);
   }, [fetchRound, roundId]);
   useEffect(() => {
-    if (round?.isCompleted) fetchStatsOnCourse();
-  }, [fetchStatsOnCourse, round]);
+    if (props.playersCourseStats.length === 0) fetchStatsOnCourse();
+  }, [fetchStatsOnCourse, props.playersCourseStats, round]);
 
   const renderRound = (round: Round, activeHole: number) => {
     if (round.isCompleted) {
@@ -83,7 +83,7 @@ const RoundComponent = (props: Props) => {
 
   return (
     <>
-      {/* <Tour start={round} /> */}
+      <Tour start={round} />
       <h1 className="title has-text-centered">
         {props.round && props.round.courseName}
       </h1>

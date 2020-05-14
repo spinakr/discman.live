@@ -60,7 +60,7 @@ const RoundScoreCard = ({
         </table>
       </div>
       <div
-        className="column table-container tour-scorecard is-marginless is-paddingless"
+        className="column table-container is-marginless is-paddingless"
         ref={tableRef}
       >
         <table className="table is-bordered">

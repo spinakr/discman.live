@@ -4,9 +4,14 @@ import JoyRide, { STATUS } from "react-joyride";
 // Tour steps
 const TOUR_STEPS = [
   {
-    target: ".tour-scorecard",
+    target: ".tour-holeScores",
     content:
-      "Score card will update when other players enter their scores, and go to the next hole when all players have entered",
+      "Scores will update when players enter their score, and go to the next hole when all players have submitted",
+  },
+  {
+    target: ".tour-stats",
+    content:
+      "Average score is based on all rounds played on the course. Holes are rated with 1 being the most difficult hole (highest average score)",
   },
   {
     target: ".tour-scores",
@@ -41,9 +46,9 @@ const TOUR_STEPS = [
     content: "Use this symbole if your landed out of bounds",
   },
   {
-    target: ".tour-score-edit",
+    target: ".tour-scorecard",
     content:
-      "You can change you score by clicking the hole number and re-doing your score",
+      "To see scores for previous holes, open the score card. Select a previous hole to update your score",
   },
   {
     target: ".tour-score-mode",
@@ -52,10 +57,10 @@ const TOUR_STEPS = [
   },
 ];
 
-let tourCompleted = localStorage.getItem("completedTour") === "4";
+let tourCompleted = localStorage.getItem("completedTour") === "7";
 const tourCallback = ({ status }: any) => {
   if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
-    localStorage.setItem("completedTour", "4");
+    localStorage.setItem("completedTour", "7");
     tourCompleted = true;
   }
 };
