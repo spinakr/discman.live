@@ -191,18 +191,14 @@ export const actionCreators = {
         });
       });
   },
-  fetchStatsOnCourse: (): AppThunkAction<KnownAction> => (
+  fetchStatsOnCourse: (roundId: string): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
     const appState = getState();
-    if (
-      !appState.user?.loggedIn ||
-      !appState.user.user ||
-      !appState.rounds?.round
-    )
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/rounds/${appState.rounds.round.id}/stats`, {
+    fetch(`api/rounds/${roundId}/stats`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

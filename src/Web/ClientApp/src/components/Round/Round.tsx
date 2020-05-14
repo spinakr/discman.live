@@ -18,7 +18,7 @@ const mapState = (state: ApplicationState) => {
     round: state.rounds?.round,
     scoreCardOpen: state.rounds?.scoreCardOpen,
     activeHole: state.rounds?.activeHole,
-    playersCourseStats: state.rounds?.playerCourseStats || [],
+    playersCourseStats: state.rounds?.playerCourseStats,
   };
 };
 
@@ -35,15 +35,15 @@ const RoundComponent = (props: Props) => {
     fetchRound(roundId as string);
   }, [fetchRound, roundId]);
   useEffect(() => {
-    if (props.playersCourseStats.length === 0) fetchStatsOnCourse();
-  }, [fetchStatsOnCourse, props.playersCourseStats, round]);
+    if (!props.playersCourseStats && roundId) fetchStatsOnCourse(roundId);
+  }, [fetchStatsOnCourse, props.playersCourseStats, roundId]);
 
   const renderRound = (round: Round, activeHole: number) => {
     if (round.isCompleted) {
       return (
         <RoundSummary
           round={round}
-          playersCourseStats={props.playersCourseStats}
+          playersCourseStats={props.playersCourseStats || []}
         />
       );
     }
