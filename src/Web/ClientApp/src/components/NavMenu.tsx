@@ -6,6 +6,7 @@ import * as RoundsStore from "../store/Rounds";
 import NewRound from "./NewRound";
 import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
+import NewCourse from "./Courses/NewCourse";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -28,20 +29,26 @@ const NavMenu = (props: Props) => {
     <>
       <nav className="navbar is-fixed-bottom is-light">
         <div className="navbar-brand">
-          {!props.location.pathname.startsWith("/rounds") && (
-            <>
-              <div className="navbar-item">
-                <NewRound />
-              </div>
-              <div className="navbar-item">
-                <Link
-                  to="/courses"
-                  className="button is-primary is-light is-link is-outlined"
-                >
-                  Courses
-                </Link>
-              </div>
-            </>
+          {!props.location.pathname.startsWith("/rounds") &&
+            !props.location.pathname.startsWith("/courses") && (
+              <>
+                <div className="navbar-item">
+                  <NewRound />
+                </div>
+                <div className="navbar-item">
+                  <Link
+                    to="/courses"
+                    className="button is-primary is-light is-link is-outlined"
+                  >
+                    Courses
+                  </Link>
+                </div>
+              </>
+            )}
+          {props.location.pathname.startsWith("/courses") && (
+            <div className="navbar-item">
+              <NewCourse />
+            </div>
           )}
           {props.round && props.location.pathname.startsWith("/rounds") && (
             <div className="navbar-item">

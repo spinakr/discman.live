@@ -23,10 +23,15 @@ export interface UpdateCourseSuccessAction {
   type: "COURSE_UPDATED_SUCCEED";
   course: Course;
 }
+export interface CourseCreatedSuccessAction {
+  type: "COURSE_CREATED_SUCCEED";
+  course: Course;
+}
 
 export type KnownAction =
   | FetchCoursesSuccessAction
   | CallHistoryMethodAction
+  | CourseCreatedSuccessAction
   | UpdateCourseSuccessAction;
 
 const initialState: CoursesState = { courses: [] };
@@ -48,6 +53,32 @@ export const actionCreators = {
         dispatch({
           type: "FETCH_COURSES_SUCCEED",
           courses: data,
+        });
+      });
+  },
+  createCourse: (
+    courseName: string,
+    numberOfHoles: number
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.login || !appState.login.loggedIn || !appState.login.user)
+      return;
+    fetch(`api/courses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.login.user.token}`,
+      },
+      body: JSON.stringify({
+        courseName,
+        numberOfHoles,
+      }),
+    })
+      .then((response) => response.json() as Promise<Course>)
+      .then((data) => {
+        dispatch({
+          type: "COURSE_CREATED_SUCCEED",
+          course: data,
         });
       });
   },
@@ -101,6 +132,11 @@ export const reducer: Reducer<CoursesState> = (
           ...state.courses.filter((c) => c.id !== action.course.id),
           action.course,
         ],
+      };
+    case "COURSE_CREATED_SUCCEED":
+      return {
+        ...state,
+        courses: [...state.courses, action.course],
       };
     default:
       return state;

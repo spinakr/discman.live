@@ -144,7 +144,7 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
         </div>
         <div className="modal-card">
           <header className="modal-card-head">
-            <p className="modal-card-title">Edit hole</p>
+            <p className="modal-card-title">Edit hole {editHole?.number}</p>
           </header>
           <section className="modal-card-body">
             <div className="field">
@@ -188,6 +188,9 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
             <button
               className="button is-success"
               onClick={() => {
+                const nextHole = currentCourse.holes.find(
+                  (h) => h.number === (editHole?.number || 0) + 1
+                );
                 editHole &&
                   updateCourse({
                     ...course,
@@ -198,13 +201,14 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
                       editHole,
                     ].sort((a, b) => a.number - b.number),
                   });
-                setEditHole(null);
+
+                nextHole && setEditHole(nextHole);
               }}
             >
-              Start
+              Save and next
             </button>
             <button className="button" onClick={() => setEditHole(null)}>
-              Cancel
+              Close
             </button>
           </footer>
         </div>

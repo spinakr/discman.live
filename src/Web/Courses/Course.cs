@@ -12,16 +12,18 @@ namespace Web.Courses
         {
         }
 
-        public Course(string courseName, List<int> holePars, List<int> holeDistances)
+        public Course(string courseName, string admin, List<int> holePars, List<int> holeDistances)
         {
             Id = Guid.NewGuid();
             Name = courseName;
             Holes = holePars.Select((h, i) => new Hole(i + 1, h, holeDistances[i])).ToList();
+            Admins = new List<string>{admin, "kofoed"};
         }
 
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Hole> Holes { get; set; }
+        public List<string> Admins { get; set; }
 
         public void UpdateHoles(List<int> holePars, List<int> holeDistances)
         {

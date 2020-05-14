@@ -47,6 +47,7 @@ const HoleScoreComponent = ({
           </span>
         </div>
       </div>
+      <br />
       <table className="table is-fullwidth is-bordered">
         <thead>
           <tr>
