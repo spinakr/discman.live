@@ -48,12 +48,18 @@ export interface FetchUserStatsSuccessAction {
   stats: UserStats;
 }
 
+export interface FriendAddedSuccessAction {
+  type: "FRIEND_ADDED";
+  friend: string;
+}
+
 export type KnownAction =
   | CallHistoryMethodAction
   | LoginSuccessAction
   | LoginFailedAction
   | FetchFriendUsersSuccessAction
   | LogUserOutAction
+  | FriendAddedSuccessAction
   | FetchUserStatsSuccessAction;
 
 let user: User | null = null;
@@ -148,7 +154,7 @@ export const actionCreators = {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/users?friendsOf=${appState.user.user.username}`, {
+    fetch(`api/users/friends`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -156,17 +162,39 @@ export const actionCreators = {
       },
     })
       .then((response) => {
-        if (response.ok) {
+        if (response.ok && response.status !== 204) {
           return response.json() as Promise<string[]>;
         }
-        throw new Error("No joy!");
       })
       .then((data) => {
+        if (!data) return;
         dispatch({
           type: "FETCH_FRIEND_USERS_SUCCEED",
           friends: data,
         });
       });
+  },
+  addFriend: (username: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/friends`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({ username }),
+    }).then((response) => {
+      if (!response.ok) throw new Error("no joy");
+      dispatch({
+        type: "FRIEND_ADDED",
+        friend: username,
+      });
+    });
   },
   fetchUserStats: (sinceMonths: number): AppThunkAction<KnownAction> => (
     dispatch,
@@ -233,6 +261,11 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         friendUsers: action.friends,
+      };
+    case "FRIEND_ADDED":
+      return {
+        ...state,
+        friendUsers: [...state.friendUsers, action.friend],
       };
     case "FETCH_USERSTATS_SUCCESS":
       return {

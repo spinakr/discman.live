@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
-import NewRound from "./Round/NewRound";
 import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
 import NewCourse from "./Courses/NewCourse";
+import NewRound from "./Round/NewRound";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -64,55 +64,59 @@ const NavMenu = (props: Props) => {
 
         <div className="navbar-menu tour-score-mode">
           <div className="navbar-end">
-            {props.round &&
-              props.location.pathname.startsWith("/rounds") &&
-              props.user?.user?.username === props.round?.createdBy && (
-                <div
-                  className={`navbar-item has-dropdown has-dropdown-up ${
-                    open ? "is-active" : ""
-                  }`}
+            {
+              <div
+                className={`navbar-item has-dropdown has-dropdown-up ${
+                  open ? "is-active" : ""
+                }`}
+              >
+                <a
+                  className="navbar-link tour-change-mode"
+                  onClick={() => setOpen(!open)}
                 >
-                  <a
-                    className="navbar-link tour-change-mode"
-                    onClick={() => setOpen(!open)}
-                  >
-                    Options
-                  </a>
+                  Options
+                </a>
 
-                  <div className="navbar-dropdown is-right">
-                    {props.round.scoreMode === ScoreMode.DetailedLive && (
-                      <a
-                        className="navbar-item"
-                        onClick={() => {
-                          setOpen(false);
-                          props.setScoringMode(ScoreMode.StrokesLive);
-                        }}
-                      >
-                        Simple scoring
-                      </a>
-                    )}
-                    {props.round.scoreMode === ScoreMode.StrokesLive && (
-                      <a
-                        className="navbar-item"
-                        onClick={() => {
-                          setOpen(false);
-                          props.setScoringMode(ScoreMode.DetailedLive);
-                        }}
-                      >
-                        Detailed scoring
-                      </a>
-                    )}
-                    <hr className="navbar-divider" />
+                <div className="navbar-dropdown is-right">
+                  {props.round &&
+                    props.location.pathname.startsWith("/rounds") &&
+                    props.user?.user?.username === props.round?.createdBy && (
+                      <>
+                        {props.round.scoreMode === ScoreMode.DetailedLive && (
+                          <a
+                            className="navbar-item"
+                            onClick={() => {
+                              setOpen(false);
+                              props.setScoringMode(ScoreMode.StrokesLive);
+                            }}
+                          >
+                            Simple scoring
+                          </a>
+                        )}
+                        {props.round.scoreMode === ScoreMode.StrokesLive && (
+                          <a
+                            className="navbar-item"
+                            onClick={() => {
+                              setOpen(false);
+                              props.setScoringMode(ScoreMode.DetailedLive);
+                            }}
+                          >
+                            Detailed scoring
+                          </a>
+                        )}
+                        <hr className="navbar-divider" />
 
-                    <a
-                      className="navbar-item has-text-danger"
-                      onClick={() => setConfirmDelete(true)}
-                    >
-                      <strong>Delete round</strong>
-                    </a>
-                  </div>
+                        <a
+                          className="navbar-item has-text-danger"
+                          onClick={() => setConfirmDelete(true)}
+                        >
+                          <strong>Delete round</strong>
+                        </a>
+                      </>
+                    )}
                 </div>
-              )}
+              </div>
+            }
           </div>
         </div>
       </nav>

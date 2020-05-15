@@ -114,7 +114,7 @@ namespace Web.Users
 
 
             var totalAverageAllPlayers = playerRounds.Sum(r => r.RoundAverageScore()) / playerRounds.Count;
-            var playerRoundAverage = totalScore / (double)playerRounds.Count;
+            var playerRoundAverage = totalScore / (double) playerRounds.Count;
             var strokesGained = playerRoundAverage - totalAverageAllPlayers;
 
             var putsPerHole = holesWithDetails.PutsPerHole();
@@ -136,11 +136,33 @@ namespace Web.Users
             });
         }
 
-        [HttpGet]
-        public IActionResult GetFriendsOf([FromQuery] string friendsOf)
+        [HttpPost("friends")]
+        public async Task<IActionResult> AddFriend([FromBody] AddFriendsRequest req)
         {
-            var users = _documentSession.Query<User>().ToList().Select(u => u.Username);
-            return Ok(users);
+            var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername);
+            var friend = await _documentSession.Query<User>().SingleAsync(u => u.Username == req.Username);
+
+            user.AddFriend(friend.Username);
+            friend.AddFriend(user.Username);
+
+            _documentSession.Update(user);
+            _documentSession.Update(friend);
+            await _documentSession.SaveChangesAsync();
+            return Ok();
         }
+
+        [HttpGet("friends")]
+        public async Task<IActionResult> GetFriendsOf()
+        {
+            var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername);
+            return Ok(user.Friends);
+        }
+    }
+
+    public class AddFriendsRequest
+    {
+        public string Username { get; set; }
     }
 }

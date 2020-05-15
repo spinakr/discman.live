@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -10,7 +12,6 @@ namespace Web.Users
     {
         public User()
         {
-            
         }
         
         public User(string requestUsername, SaltSeasonedHashedPassword hashedPw)
@@ -24,8 +25,8 @@ namespace Web.Users
         public Guid Id { get; set; }
         public string Username { get; set; }
         public byte[] Password { get; set; }
-        
         public byte[] Salt { get; set; }
+        public List<string> Friends { get; set; }
 
         public AuthenticatedUser Authenticated(string secret)
         {
@@ -43,6 +44,13 @@ namespace Web.Users
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return new AuthenticatedUser(Username, tokenHandler.WriteToken(token));
+        }
+
+        public void AddFriend(string username)
+        {
+            if(Friends is null) Friends = new List<string>();
+            if (Friends.Any(f => f == username)) return;
+            Friends.Add(username);
         }
     }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
@@ -8,6 +7,7 @@ import {
 } from "../../store/Courses";
 import { actionCreators as loginActionCreator } from "../../store/User";
 import { actionCreators as roundsActionCreator } from "../../store/Rounds";
+import AddFriends from "../AddFriends";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -30,7 +30,9 @@ type Props = PropsFromRedux & {};
 const NewRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course>();
-  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([
+    props.username,
+  ]);
   const { fetchCourses, fetchUsers } = props;
 
   const courseSelected = (courseId: string) => {
@@ -49,17 +51,14 @@ const NewRound = (props: Props) => {
   useEffect(() => {
     showDialog && fetchCourses();
     showDialog && fetchUsers();
-    if (!selectedPlayers.some((p) => p === props.username))
-      setSelectedPlayers([props.username]);
-  }, [fetchCourses, fetchUsers, props.username, selectedPlayers, showDialog]);
+  }, [fetchCourses, fetchUsers, showDialog]);
 
   return (
     <>
       <div className={showDialog ? "modal is-active" : "modal"}>
-        <a href="" onClick={() => setShowDialog(false)}>
-          {" "}
-          <div className="modal-background"></div>{" "}
-        </a>
+        <div onClick={() => setShowDialog(false)}>
+          <div className="modal-background"></div>
+        </div>
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Start new round</p>
@@ -80,8 +79,8 @@ const NewRound = (props: Props) => {
                 </div>
               </div>
             </div>
-            <div className="field">
-              <label className="label">Players</label>
+            <label className="label">Players</label>
+            <div className="field is-grouped">
               <div className="control">
                 <div className="select is-primary">
                   <select onChange={(e) => playerAdded(e.target.value)}>
@@ -91,17 +90,19 @@ const NewRound = (props: Props) => {
                     ))}
                   </select>
                 </div>
-                {selectedPlayers.map((p) => (
-                  <span
-                    onClick={() => removePlayer(p)}
-                    key={p}
-                    className="tag is-black"
-                  >
-                    {p}
-                  </span>
-                ))}
               </div>
+              <AddFriends />
             </div>
+            <br />
+            {selectedPlayers.map((p) => (
+              <span
+                onClick={() => removePlayer(p)}
+                key={p}
+                className="tag is-black"
+              >
+                {p}
+              </span>
+            ))}
           </section>
           <footer className="modal-card-foot">
             <button
