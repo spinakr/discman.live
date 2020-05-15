@@ -30,17 +30,13 @@ type Props = PropsFromRedux & {};
 const NewRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course>();
-  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([
-    props.username,
-  ]);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const { fetchCourses, fetchUsers } = props;
-
   const courseSelected = (courseId: string) => {
     props.courses &&
       setSelectedCourse(props.courses.find((c) => c.id === courseId));
   };
   const playerAdded = (playerName: string) => {
-    if (playerName === "") return;
     if (selectedPlayers.some((p) => p === playerName)) return;
     setSelectedPlayers([...selectedPlayers, playerName]);
   };

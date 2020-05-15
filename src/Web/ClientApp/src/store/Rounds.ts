@@ -242,6 +242,10 @@ export const actionCreators = {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
+    const username = appState.user.user.username;
+    if (!players.some((p) => p === username)) {
+      players = [...players, username];
+    }
     fetch(`api/rounds`, {
       method: "POST",
       headers: {
