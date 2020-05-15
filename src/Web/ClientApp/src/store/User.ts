@@ -6,12 +6,23 @@ export interface User {
   username: string;
   token: string;
 }
+export interface UserStats {
+  roundsPlayed: number;
+  holesPlayed: number;
+  putsPerHole: number;
+  fairwayHitRate: number;
+  scrambleRate: number;
+  onePutRate: number;
+  totalScore: number;
+  strokesGained: number;
+}
 
 export interface UserState {
   loggedIn: boolean;
   user: User | null;
   failedLoginMessage: string | null;
   friendUsers: string[];
+  userStats: UserStats | null;
 }
 
 export interface FetchFriendUsersSuccessAction {
@@ -32,12 +43,18 @@ export interface LogUserOutAction {
   type: "LOG_USER_OUT";
 }
 
+export interface FetchUserStatsSuccessAction {
+  type: "FETCH_USERSTATS_SUCCESS";
+  stats: UserStats;
+}
+
 export type KnownAction =
   | CallHistoryMethodAction
   | LoginSuccessAction
   | LoginFailedAction
   | FetchFriendUsersSuccessAction
-  | LogUserOutAction;
+  | LogUserOutAction
+  | FetchUserStatsSuccessAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -45,8 +62,20 @@ if (userString) {
   user = JSON.parse(userString);
 }
 const initialState: UserState = user
-  ? { loggedIn: true, user, failedLoginMessage: null, friendUsers: [] }
-  : { loggedIn: false, user: null, failedLoginMessage: null, friendUsers: [] };
+  ? {
+      loggedIn: true,
+      user,
+      failedLoginMessage: null,
+      friendUsers: [],
+      userStats: null,
+    }
+  : {
+      loggedIn: false,
+      user: null,
+      failedLoginMessage: null,
+      friendUsers: [],
+      userStats: null,
+    };
 
 export const actionCreators = {
   createUser: (
@@ -139,6 +168,33 @@ export const actionCreators = {
         });
       });
   },
+  fetchUserStats: (sinceMonths: number): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/stats?includeMonths=${sinceMonths}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<UserStats>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        dispatch({
+          type: "FETCH_USERSTATS_SUCCESS",
+          stats: data,
+        });
+      });
+  },
 };
 
 // ----------------
@@ -177,6 +233,11 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         friendUsers: action.friends,
+      };
+    case "FETCH_USERSTATS_SUCCESS":
+      return {
+        ...state,
+        userStats: action.stats,
       };
     default:
       return state;

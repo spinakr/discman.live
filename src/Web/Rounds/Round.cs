@@ -10,7 +10,7 @@ namespace Web.Rounds
         public Round()
         {
         }
-        
+
         public Round(Course course, List<string> players, string createdBy)
         {
             Id = Guid.NewGuid();
@@ -32,7 +32,6 @@ namespace Web.Rounds
 
         public List<PlayerScore> PlayerScores { get; set; }
 
-
         private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
         {
             return players
@@ -41,6 +40,19 @@ namespace Web.Rounds
                     PlayerName = p,
                     Scores = courseHoles.Select(h => new HoleScore {Hole = new Hole(h.Number, h.Par, h.Distance, h.Rating, h.Average)}).ToList()
                 }).ToList();
+        }
+
+        public int PlayerScore(string player)
+        {
+            return PlayerScores
+                .Where(s => s.PlayerName == player)
+                .SelectMany(s => s.Scores)
+                .Sum(q => q.RelativeToPar);
+        }
+
+        public double RoundAverageScore()
+        {
+            return PlayerScores.Sum(ps => ps.Scores.Sum(s => s.RelativeToPar)) / (double) PlayerScores.Count;
         }
     }
 

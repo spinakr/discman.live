@@ -21,7 +21,6 @@ namespace Web.Users
 {
     [Authorize]
     [ApiController]
-    [Consumes("application/json")]
     [Route("api/users")]
     public class UsersController : ControllerBase
     {
@@ -42,6 +41,7 @@ namespace Web.Users
 
         [AllowAnonymous]
         [HttpPost]
+        [Consumes("application/json")]
         public async Task<IActionResult> CreateNewUser(NewUserRequest request)
         {
             var userExists = await _documentSession.Query<User>().SingleOrDefaultAsync(u => u.Username == request.Username);
@@ -62,6 +62,7 @@ namespace Web.Users
         }
 
         [AllowAnonymous]
+        [Consumes("application/json")]
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AuthenticationRequest request)
         {
@@ -91,12 +92,55 @@ namespace Web.Users
             return Ok(authenticatedUser);
         }
 
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetUserStats([FromQuery] DateTime since, [FromQuery] int includeMonths)
+        {
+            var player = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+
+            var rounds = await _documentSession
+                .Query<Round>()
+                .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
+                .Where(r => r.StartTime > since)
+                .Where(r => includeMonths == default || r.StartTime > DateTime.Today.AddMonths(-includeMonths))
+                .ToListAsync();
+
+            var holesWithDetails = rounds.PlayerHolesWithDetails(player);
+
+            var roundsPlayed = rounds.Count;
+            var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
+
+            var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == player)).ToList();
+            var totalScore = playerRounds.Sum(r => r.PlayerScore(player));
+
+
+            var totalAverageAllPlayers = playerRounds.Sum(r => r.RoundAverageScore()) / playerRounds.Count;
+            var playerRoundAverage = totalScore / (double)playerRounds.Count;
+            var strokesGained = playerRoundAverage - totalAverageAllPlayers;
+
+            var putsPerHole = holesWithDetails.PutsPerHole();
+            var scrambleRate = holesWithDetails.ScrambleRate();
+            var fairwayHitRate = holesWithDetails.FairwayRate();
+            var onePutRate = holesWithDetails.OnePutRate();
+
+
+            return Ok(new
+            {
+                roundsPlayed = roundsPlayed,
+                holesPlayed = holesPlayed,
+                putsPerHole = putsPerHole,
+                fairwayHitRate = fairwayHitRate,
+                scrambleRate = scrambleRate,
+                onePutRate = onePutRate,
+                totalScore = totalScore,
+                strokesGained = strokesGained
+            });
+        }
+
         [HttpGet]
         public IActionResult GetFriendsOf([FromQuery] string friendsOf)
         {
             var users = _documentSession.Query<User>().ToList().Select(u => u.Username);
             return Ok(users);
         }
-
     }
 }

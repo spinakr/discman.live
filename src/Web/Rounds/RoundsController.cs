@@ -155,20 +155,16 @@ namespace Web.Matches
                     .Where(r => r.CourseName == courseName)
                     .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
                     .ToList();
-                
+
                 var fivePreviousRounds = allRoundsOnCourse
                     .Where(r => r.StartTime < activeRound.StartTime)
                     .OrderByDescending(r => r.StartTime)
                     .Take(5)
                     .ToList();
-                
+
                 if (fivePreviousRounds.Count == 0) continue;
 
-                var courseScores = fivePreviousRounds
-                    .Select(r => r.PlayerScores
-                        .Where(s => s.PlayerName == player)
-                        .SelectMany(s => s.Scores)
-                        .Sum(q => q.RelativeToPar));
+                var courseScores = fivePreviousRounds.Select(r => r.PlayerScore(player));
                 var currentCourseAverage = courseScores.Average();
                 var thisRound = activeRound
                     .PlayerScores
