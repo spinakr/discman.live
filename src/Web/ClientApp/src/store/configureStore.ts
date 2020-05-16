@@ -14,6 +14,7 @@ import { History } from "history";
 import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as roundsActions, Round } from "./Rounds";
+import logger from "../logger";
 import { User } from "./User";
 
 const createHub = () => {
@@ -50,11 +51,34 @@ const socketsMiddleware: Middleware = ({
   return next(action);
 };
 
+const crashReporter: Middleware = ({ dispatch, getState }: MiddlewareAPI) => (
+  next: Dispatch
+) => <A extends Action>(action: A) => {
+  try {
+    return next(action);
+  } catch (err) {
+    console.error("Caught an exception!", err);
+    logger.push({
+      tag: "redux",
+      application: "discman-client",
+      reduxState: getState(),
+      action: action,
+      exception: err,
+    });
+    throw err;
+  }
+};
+
 export default function configureStore(
   history: History,
   initialState?: ApplicationState
 ) {
-  const middleware = [thunk, routerMiddleware(history), socketsMiddleware];
+  const middleware = [
+    thunk,
+    routerMiddleware(history),
+    socketsMiddleware,
+    crashReporter,
+  ];
 
   const rootReducer = combineReducers({
     ...reducers,
