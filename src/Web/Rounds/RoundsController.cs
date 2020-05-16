@@ -63,7 +63,6 @@ namespace Web.Matches
                 .OrderByDescending(x => x.StartTime)
                 .Skip(start)
                 .Take(5);
-            throw new Exception();
             return Ok(rounds);
         }
 
