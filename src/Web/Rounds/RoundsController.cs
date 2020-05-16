@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Serilog;
 using Web.Courses;
 using Web.Rounds;
 
@@ -62,6 +63,7 @@ namespace Web.Matches
                 .OrderByDescending(x => x.StartTime)
                 .Skip(start)
                 .Take(5);
+            throw new Exception();
             return Ok(rounds);
         }
 

@@ -1,0 +1,1 @@
+docker build -t sp1nakr/disclive:0.50 . ; docker push sp1nakr/disclive:0.50
