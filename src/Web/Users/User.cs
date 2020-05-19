@@ -49,6 +49,7 @@ namespace Web.Users
         public void AddFriend(string username)
         {
             if(Friends is null) Friends = new List<string>();
+            Friends = Friends.Distinct().ToList();
             if (Friends.Any(f => f == username)) return;
             Friends.Add(username);
         }

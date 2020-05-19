@@ -71,7 +71,7 @@ namespace Web.Matches
         public async Task<IActionResult> StartNewRound([FromBody] NewRoundsRequest request)
         {
             var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var players = request.Players;
+            var players = request.Players.Select(p => p.ToLower()).ToList();
             if (!players.Any()) players.Add(username);
 
             var course = _documentSession
@@ -84,7 +84,7 @@ namespace Web.Matches
                 .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10));
             if (justStartedRound is object) return Conflict(justStartedRound);
 
-            var round = new Round(course, request.Players, username);
+            var round = new Round(course, players, username);
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 

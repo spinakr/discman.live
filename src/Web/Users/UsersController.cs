@@ -141,7 +141,7 @@ namespace Web.Users
         {
             var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername);
-            var friend = await _documentSession.Query<User>().SingleAsync(u => u.Username == req.Username);
+            var friend = await _documentSession.Query<User>().SingleAsync(u => u.Username == req.Username.ToLower());
 
             user.AddFriend(friend.Username);
             friend.AddFriend(user.Username);
