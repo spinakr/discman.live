@@ -1,0 +1,7 @@
+.toast{
+        max-width: 340px; 
+        position: fixed; 
+        z-index: 1; 
+        right: 5%; 
+        top: 100px; 
+}

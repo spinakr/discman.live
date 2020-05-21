@@ -108,6 +108,10 @@ namespace Web.Users
 
             var roundsPlayed = rounds.Count;
             var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
+            if (roundsPlayed == 0 || holesWithDetails.Count == 0)
+            {
+                return Ok();
+            }
 
             var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == player)).ToList();
             var totalScore = playerRounds.Sum(r => r.PlayerScore(player));

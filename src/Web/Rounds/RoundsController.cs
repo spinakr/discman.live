@@ -46,11 +46,6 @@ namespace Web.Matches
                 return NotFound();
             }
 
-            if (round.PlayerScores.All(p => p.PlayerName != username))
-            {
-                return Unauthorized("You are not part of the round");
-            }
-
             return Ok(round);
         }
 

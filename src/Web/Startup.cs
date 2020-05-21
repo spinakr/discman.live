@@ -152,7 +152,7 @@ namespace Web
                     .ForContext("Exception", exception, destructureObjects: true)
                     .Error(exception, exception.Message + ". {@errorId}", errorId);
 
-                var result = JsonConvert.SerializeObject(new {error = "Sorry, an unexpected error has occurred", errorId = errorId});
+                var result = JsonConvert.SerializeObject(new {error = "Sorry, an unexpected error has occurred", errorId = errorId.ToString()});
                 httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = 500;
                 await httpContext.Response.WriteAsync(result);

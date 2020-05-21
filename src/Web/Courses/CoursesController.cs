@@ -63,7 +63,7 @@ namespace Web.Courses
         {
             var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var course = await _documentSession.Query<Course>().SingleAsync(c => c.Id == courseId);
-            if (course.Admins.All(a => a != authenticatedUsername)) return Forbid();
+            if (course.Admins is null || course.Admins.All(a => a != authenticatedUsername)) return Forbid();
             course.UpdateHoles(request.HolePars, request.HoleDistances);
 
             _documentSession.Update(course);

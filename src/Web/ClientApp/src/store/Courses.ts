@@ -2,6 +2,8 @@ import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
 import { CallHistoryMethodAction } from "connected-react-router";
 import { Hole } from "./Rounds";
+import { actionCreators as notificationActions } from "./Notifications";
+import { actionCreators as UserActions } from "./User";
 
 export interface Course {
   id: string;
@@ -48,12 +50,26 @@ export const actionCreators = {
         Authorization: `Bearer ${appState.user.user.token}`,
       },
     })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
       .then((response) => response.json() as Promise<Course[]>)
       .then((data) => {
         dispatch({
           type: "FETCH_COURSES_SUCCEED",
           courses: data,
         });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch courses failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   createCourse: (
@@ -74,12 +90,26 @@ export const actionCreators = {
         numberOfHoles,
       }),
     })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
       .then((response) => response.json() as Promise<Course>)
       .then((data) => {
         dispatch({
           type: "COURSE_CREATED_SUCCEED",
           course: data,
         });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Create courses failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   updateCourse: (course: Course): AppThunkAction<KnownAction> => (
@@ -100,12 +130,26 @@ export const actionCreators = {
         holeDistances: course.holes.map((h) => h.distance),
       }),
     })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
       .then((response) => response.json() as Promise<Course>)
       .then((data) => {
         dispatch({
           type: "COURSE_UPDATED_SUCCEED",
           course: data,
         });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Update courses failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
 };

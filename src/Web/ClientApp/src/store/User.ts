@@ -1,6 +1,7 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from ".";
 import { CallHistoryMethodAction } from "connected-react-router";
+import { actionCreators as notificationActions } from "./Notifications";
 
 export interface User {
   username: string;
@@ -146,7 +147,7 @@ export const actionCreators = {
         }, 2000);
       });
   },
-  logout: () => (dispatch: (action: KnownAction) => void) => {
+  logout: () => (dispatch: (action: any) => void) => {
     localStorage.removeItem("user");
     dispatch({ type: "LOG_USER_OUT" });
   },
@@ -188,13 +189,24 @@ export const actionCreators = {
         Authorization: `Bearer ${appState.user.user.token}`,
       },
       body: JSON.stringify({ username }),
-    }).then((response) => {
-      if (!response.ok) throw new Error("no joy");
-      dispatch({
-        type: "FRIEND_ADDED",
-        friend: username,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => {
+        dispatch({
+          type: "FRIEND_ADDED",
+          friend: username,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Add friend failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
-    });
   },
   fetchUserStats: (sinceMonths: number): AppThunkAction<KnownAction> => (
     dispatch,
@@ -221,6 +233,13 @@ export const actionCreators = {
           type: "FETCH_USERSTATS_SUCCESS",
           stats: data,
         });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch user stats failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
 };

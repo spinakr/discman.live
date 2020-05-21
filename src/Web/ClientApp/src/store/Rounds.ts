@@ -5,6 +5,8 @@ import { push, CallHistoryMethodAction } from "connected-react-router";
 import { Course } from "./Courses";
 import { hub } from "./configureStore";
 import * as signalR from "@microsoft/signalr";
+import { actionCreators as notificationActions } from "./Notifications";
+import { actionCreators as UserActions } from "./User";
 
 export interface Hole {
   number: number;
@@ -143,6 +145,13 @@ const fetchRound = (
       Authorization: `Bearer ${token}`,
     },
   })
+    .then((res) => {
+      if (res.status === 401) {
+        UserActions.logout();
+      }
+      if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+      return res;
+    })
     .then((response) => response.json() as Promise<Round>)
     .then((data) => {
       dispatch({
@@ -150,6 +159,13 @@ const fetchRound = (
         round: data,
       });
       dispatch({ type: "CONNECT_TO_HUB" });
+    })
+    .catch((err: Error) => {
+      notificationActions.showNotification(
+        `Fetch rounds failed: ${err.message}`,
+        "error",
+        dispatch
+      );
     });
 };
 
@@ -183,12 +199,26 @@ export const actionCreators = {
         Authorization: `Bearer ${appState.user.user.token}`,
       },
     })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
       .then((response) => response.json() as Promise<Round[]>)
       .then((data) => {
         dispatch({
           type: "FETCH_ROUNDS_SUCCEED",
           rounds: data,
         });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch rounds failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   fetchStatsOnCourse: (roundId: string): AppThunkAction<KnownAction> => (
@@ -205,12 +235,26 @@ export const actionCreators = {
         Authorization: `Bearer ${appState.user.user.token}`,
       },
     })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
       .then((response) => response.json() as Promise<PlayerCourseStats[]>)
       .then((data) => {
         dispatch({
           type: "FETCH_COURSE_STATS_SUCCEED",
           stats: data,
         });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch course stats failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   fetchRound: (roundId: string): AppThunkAction<KnownAction> => (
@@ -258,11 +302,16 @@ export const actionCreators = {
       }),
     })
       .then((response) => {
+        if (response.status === 401) {
+          UserActions.logout()(dispatch);
+        }
         if (response.status === 409) {
           window.alert(
             "A round with you in it was just started, redirecting to that round"
           );
         }
+        if (!response.ok)
+          throw new Error(`${response.status} - ${response.statusText}`);
         return response.json() as Promise<Round>;
       })
       .then((data) => {
@@ -271,6 +320,13 @@ export const actionCreators = {
           round: data,
         });
         dispatch(push(`/rounds/${data.id}`));
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Create round failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   deleteRound: (roundId: string): AppThunkAction<KnownAction> => (
@@ -287,9 +343,24 @@ export const actionCreators = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${appState.user.user.token}`,
       },
-    }).then((response) => {
-      dispatch(push("/"));
-    });
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => {
+        dispatch(push("/"));
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Delete round failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
   },
   setScore: (
     score: number,
@@ -327,12 +398,26 @@ export const actionCreators = {
         username: loggedInUser.username,
       }),
     })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
       .then((response) => response.json() as Promise<Round>)
       .then((data) => {
         dispatch({
           type: "SCORE_UPDATED_SUCCESS",
           round: data,
         });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Set score failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   setScoringMode: (mode: ScoreMode): AppThunkAction<KnownAction> => (
@@ -351,7 +436,22 @@ export const actionCreators = {
         Authorization: `Bearer ${loggedInUser.token}`,
       },
       body: JSON.stringify({ scoreMode: mode }),
-    }).then((response) => {});
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => {})
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Set scoring mode failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
   },
   completeRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
@@ -367,9 +467,24 @@ export const actionCreators = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${loggedInUser.token}`,
       },
-    }).then((response) => {
-      if (response.ok) dispatch({ type: "ROUND_WAS_COMPLETED" });
-    });
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          UserActions.logout()(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => {
+        if (response.ok) dispatch({ type: "ROUND_WAS_COMPLETED" });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Complete round failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
   },
   setActiveHole: (hole: number): AppThunkAction<KnownAction> => (
     dispatch,
