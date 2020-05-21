@@ -5,8 +5,6 @@ import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
-import NewCourse from "./Courses/NewCourse";
-import NewRound from "./Round/NewRound";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -32,21 +30,9 @@ const NavMenu = (props: Props) => {
           {!props.location.pathname.startsWith("/rounds") &&
             !props.location.pathname.startsWith("/courses") && (
               <>
-                <div className="navbar-item">
-                  <Link
-                    to="/courses"
-                    className="button is-primary is-light is-link is-outlined"
-                  >
-                    Courses
-                  </Link>
-                </div>
+                <div className="navbar-item"></div>
               </>
             )}
-          {props.location.pathname.startsWith("/courses") && (
-            <div className="navbar-item">
-              <NewCourse />
-            </div>
-          )}
           {props.round && props.location.pathname.startsWith("/rounds") && (
             <div className="navbar-item">
               <button
@@ -59,7 +45,7 @@ const NavMenu = (props: Props) => {
           )}
         </div>
 
-        <div className="navbar-menu tour-score-mode">
+        <div className="navbar-menu tour-score-mode" id="navbarBasicExample">
           <div className="navbar-end">
             {
               <div
@@ -71,7 +57,7 @@ const NavMenu = (props: Props) => {
                   className="navbar-link tour-change-mode"
                   onClick={() => setOpen(!open)}
                 >
-                  Options
+                  Menu
                 </a>
 
                 <div className="navbar-dropdown is-right">
@@ -101,7 +87,6 @@ const NavMenu = (props: Props) => {
                             Detailed scoring
                           </a>
                         )}
-                        <hr className="navbar-divider" />
 
                         <a
                           className="navbar-item has-text-danger"
@@ -111,6 +96,21 @@ const NavMenu = (props: Props) => {
                         </a>
                       </>
                     )}
+                  <hr className="navbar-divider" />
+                  <Link
+                    to="/courses"
+                    className="navbar-item"
+                    onClick={() => setOpen(false)}
+                  >
+                    Courses
+                  </Link>
+                  <Link
+                    to="/user"
+                    className="navbar-item"
+                    onClick={() => setOpen(false)}
+                  >
+                    Profile
+                  </Link>
                 </div>
               </div>
             }

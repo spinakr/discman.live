@@ -24,10 +24,10 @@ const NewCourse = (props: Props) => {
   return (
     <>
       <div className={showDialog ? "modal is-active" : "modal"}>
-        <a href="" onClick={() => setShowDialog(false)}>
+        <div onClick={() => setShowDialog(false)}>
           {" "}
           <div className="modal-background"></div>{" "}
-        </a>
+        </div>
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Start new round</p>

@@ -6,6 +6,7 @@ import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { Course } from "../../store/Courses";
 import CourseDetails from "./CourseDetails";
+import NewCourse from "./NewCourse";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -22,6 +23,8 @@ type Props = PropsFromRedux & {};
 const renderCoursesList = (courses: Course[]) => {
   return (
     <section className="section">
+      <NewCourse />
+      <hr />
       <div className="list">
         {courses &&
           courses.map((c) => (
