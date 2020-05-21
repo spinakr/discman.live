@@ -108,7 +108,7 @@ const NewRound = (props: Props) => {
                   props.newRound(selectedCourse, selectedPlayers);
                 setShowDialog(false);
               }}
-              disabled={!selectedCourse || selectedPlayers.length === 0}
+              disabled={!selectedCourse}
             >
               Start
             </button>

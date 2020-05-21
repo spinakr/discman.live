@@ -2,6 +2,7 @@ import { Action, Reducer } from "redux";
 import { AppThunkAction } from ".";
 import { CallHistoryMethodAction } from "connected-react-router";
 import { actionCreators as notificationActions } from "./Notifications";
+import { Round } from "./Rounds";
 
 export interface User {
   username: string;
@@ -24,11 +25,17 @@ export interface UserState {
   failedLoginMessage: string | null;
   friendUsers: string[];
   userStats: UserStats | null;
+  userRounds: Round[];
 }
 
 export interface FetchFriendUsersSuccessAction {
   type: "FETCH_FRIEND_USERS_SUCCEED";
   friends: string[];
+}
+
+export interface FetchUserRoundsSuccessAction {
+  type: "FETCH_USER_ROUNDS_SUCCEED";
+  rounds: Round[];
 }
 
 export interface LoginSuccessAction {
@@ -61,7 +68,8 @@ export type KnownAction =
   | FetchFriendUsersSuccessAction
   | LogUserOutAction
   | FriendAddedSuccessAction
-  | FetchUserStatsSuccessAction;
+  | FetchUserStatsSuccessAction
+  | FetchUserRoundsSuccessAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -75,6 +83,7 @@ const initialState: UserState = user
       failedLoginMessage: null,
       friendUsers: [],
       userStats: null,
+      userRounds: [],
     }
   : {
       loggedIn: false,
@@ -82,7 +91,13 @@ const initialState: UserState = user
       failedLoginMessage: null,
       friendUsers: [],
       userStats: null,
+      userRounds: [],
     };
+
+const logout = (dispatch: (action: KnownAction) => void) => {
+  localStorage.removeItem("user");
+  dispatch({ type: "LOG_USER_OUT" });
+};
 
 export const actionCreators = {
   createUser: (
@@ -148,8 +163,7 @@ export const actionCreators = {
       });
   },
   logout: () => (dispatch: (action: any) => void) => {
-    localStorage.removeItem("user");
-    dispatch({ type: "LOG_USER_OUT" });
+    logout(dispatch);
   },
   fetchUsers: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
@@ -173,6 +187,43 @@ export const actionCreators = {
           type: "FETCH_FRIEND_USERS_SUCCEED",
           friends: data,
         });
+      });
+  },
+  fetchUserRounds: (
+    start?: number,
+    count?: number
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    const username = appState.user.user.username;
+    fetch(`api/rounds?username=${username}&count=${count}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (res.status === 401) {
+          logout(dispatch);
+        }
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => response.json() as Promise<Round[]>)
+      .then((data) => {
+        dispatch({
+          type: "FETCH_USER_ROUNDS_SUCCEED",
+          rounds: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch rounds failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   addFriend: (username: string): AppThunkAction<KnownAction> => (
@@ -290,6 +341,11 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         userStats: action.stats,
+      };
+    case "FETCH_USER_ROUNDS_SUCCEED":
+      return {
+        ...state,
+        userRounds: action.rounds,
       };
     default:
       return state;

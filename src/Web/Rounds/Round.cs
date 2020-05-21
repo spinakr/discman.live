@@ -31,6 +31,8 @@ namespace Web.Rounds
         public string CreatedBy { get; set; }
 
         public List<PlayerScore> PlayerScores { get; set; }
+        
+        public bool Deleted { get; set; }
 
         private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
         {

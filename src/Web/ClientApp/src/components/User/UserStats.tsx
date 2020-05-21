@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import { ApplicationState } from "../store";
-import * as UserStore from "../store/User";
+import { ApplicationState } from "../../store";
+import * as UserStore from "../../store/User";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -15,18 +15,16 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-const UserComponent = (props: Props) => {
-  const { fetchUserStats, user } = props;
+const UserStatsComponent = (props: Props) => {
   const [statsSince, setStatsSince] = useState(0);
+  const { fetchUserStats, user } = props;
   useEffect(() => {
     fetchUserStats(statsSince);
   }, [fetchUserStats, statsSince]);
-
   const userStats = user?.userStats;
 
   return (
     <>
-      <h2 className="title is-2 has-text-centered">{user?.user?.username}</h2>
       <div className="columns is-mobile">
         <div className="column is-half"></div>
         <div className="column is-half">
@@ -104,4 +102,4 @@ const UserComponent = (props: Props) => {
   );
 };
 
-export default connector(UserComponent);
+export default connector(UserStatsComponent);

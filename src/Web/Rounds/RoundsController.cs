@@ -40,6 +40,7 @@ namespace Web.Matches
 
             var round = _documentSession
                 .Query<Round>()
+                .Where(r => !r.Deleted)
                 .SingleOrDefault(x => x.Id == roundId);
             if (round is null)
             {
@@ -50,14 +51,15 @@ namespace Web.Matches
         }
 
         [HttpGet]
-        public IActionResult GetUserRounds([FromQuery] string username, [FromQuery] int start = 0)
+        public IActionResult GetUserRounds([FromQuery] string username, [FromQuery] int start = 0, [FromQuery] int count = 5)
         {
             var rounds = _documentSession
                 .Query<Round>()
+                .Where(r => !r.Deleted)
                 .Where(r => r.PlayerScores.Any(p => p.PlayerName == username))
                 .OrderByDescending(x => x.StartTime)
                 .Skip(start)
-                .Take(5);
+                .Take(count);
 
             return Ok(rounds);
         }
@@ -75,6 +77,7 @@ namespace Web.Matches
 
             var justStartedRound = await _documentSession
                 .Query<Round>()
+                .Where(r => !r.Deleted)
                 .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
                 .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10));
             if (justStartedRound is object) return Conflict(justStartedRound);
@@ -149,6 +152,7 @@ namespace Web.Matches
             {
                 var allRoundsOnCourse = _documentSession
                     .Query<Round>()
+                    .Where(r => !r.Deleted)
                     .Where(r => r.CourseName == courseName)
                     .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
                     .ToList();

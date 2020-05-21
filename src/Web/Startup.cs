@@ -38,6 +38,7 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHostedService<UpdateCourseRatingsWorker>();
+            services.AddHostedService<UpdateInActiveRoundsWorker>();
             services.AddControllersWithViews();
 
 

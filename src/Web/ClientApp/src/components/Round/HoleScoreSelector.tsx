@@ -7,6 +7,7 @@ import { StrokeOutcome, ScoreMode } from "../../store/Rounds";
 const mapState = (state: ApplicationState) => {
   return {
     round: state.rounds && state.rounds.round,
+    username: state.user?.user?.username || "",
     activeHole: state.rounds && state.rounds.activeHole,
   };
 };
@@ -171,8 +172,12 @@ const renderDetailedSelector = (
 };
 
 const HoleScoreSelector = (props: Props) => {
-  const { round, activeHole, setScore } = props;
+  const { round, activeHole, setScore, username } = props;
   const [strokes, setStrokes] = useState<StrokeOutcome[]>([]);
+
+  const isPartOfRound = round?.playerScores.some(
+    (s) => s.playerName === username
+  );
 
   if (activeHole === 100 && !round?.isCompleted) {
     return (
@@ -190,7 +195,7 @@ const HoleScoreSelector = (props: Props) => {
     );
   }
 
-  return round ? (
+  return round && isPartOfRound ? (
     <>
       {round.scoreMode === ScoreMode.DetailedLive &&
         renderDetailedSelector(setScore, strokes, setStrokes)}

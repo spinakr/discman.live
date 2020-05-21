@@ -16,7 +16,7 @@ const HoleScoreComponent = ({
 }: ScoreCardProps) => {
   const playerScores =
     round.playerScores.find((p) => p.playerName === username)?.scores ||
-    ([] as HoleScore[]);
+    round.playerScores[0].scores;
 
   const holeScore = playerScores.find((s) => s.hole.number === activeHole);
 

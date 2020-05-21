@@ -3,7 +3,8 @@ import { connect, ConnectedProps } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { ApplicationState } from "../store";
 import Login from "./Login";
-import Rounds from "./Rounds";
+import NewRound from "./Round/NewRound";
+import UserRounds from "./User/UserRounds";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -21,9 +22,20 @@ const Home = (props: Props) => {
   const { user } = props;
 
   return (
-    <div>
+    <div className="section">
       {!user?.loggedIn && <Login />}
-      {user?.loggedIn && <Rounds />}
+      {user?.loggedIn && (
+        <>
+          <h3 className="title is-3 has-text-centered">Active rounds</h3>
+          <UserRounds onlyActive={true} />
+          <hr />
+          <div className="columns is-centered is-mobile">
+            <div className="column is-one-third">
+              <NewRound />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

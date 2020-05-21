@@ -99,6 +99,7 @@ namespace Web.Users
 
             var rounds = await _documentSession
                 .Query<Round>()
+                .Where(r => !r.Deleted)
                 .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
                 .Where(r => r.StartTime > since)
                 .Where(r => includeMonths == default || r.StartTime > DateTime.Today.AddMonths(-includeMonths))

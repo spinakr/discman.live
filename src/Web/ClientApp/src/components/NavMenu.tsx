@@ -33,9 +33,6 @@ const NavMenu = (props: Props) => {
             !props.location.pathname.startsWith("/courses") && (
               <>
                 <div className="navbar-item">
-                  <NewRound />
-                </div>
-                <div className="navbar-item">
                   <Link
                     to="/courses"
                     className="button is-primary is-light is-link is-outlined"

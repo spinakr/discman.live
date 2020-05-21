@@ -187,12 +187,15 @@ export const actionCreators = {
   roundWasUpdated: (round: Round) => {
     return { type: "ROUND_WAS_UPDATED", round: round };
   },
-  fetchLast5Rounds: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  fetchLastRounds: (numberOfRounds?: number): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
     const username = appState.user.user.username;
-    fetch(`api/rounds?username=${username}`, {
+    fetch(`api/rounds?username=${username}&count=${numberOfRounds || 5}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -310,7 +313,7 @@ export const actionCreators = {
             "A round with you in it was just started, redirecting to that round"
           );
         }
-        if (!response.ok)
+        if (!response.ok && response.status !== 409)
           throw new Error(`${response.status} - ${response.statusText}`);
         return response.json() as Promise<Round>;
       })
