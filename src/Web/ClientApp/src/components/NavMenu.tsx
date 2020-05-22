@@ -111,6 +111,13 @@ const NavMenu = (props: Props) => {
                   >
                     Profile
                   </Link>
+                  <Link
+                    to="/friends"
+                    className="navbar-item"
+                    onClick={() => setOpen(false)}
+                  >
+                    Friends
+                  </Link>
                 </div>
               </div>
             }

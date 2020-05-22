@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
+import { useParams } from "react-router";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -16,12 +17,13 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserStatsComponent = (props: Props) => {
+  const { username } = useParams();
   const [statsSince, setStatsSince] = useState(0);
   const { fetchUserStats, user } = props;
   useEffect(() => {
-    fetchUserStats(statsSince);
-  }, [fetchUserStats, statsSince]);
-  const userStats = user?.userStats;
+    fetchUserStats(statsSince, username);
+  }, [fetchUserStats, statsSince, username]);
+  const stats = user?.userStats;
 
   return (
     <>
@@ -51,48 +53,48 @@ const UserStatsComponent = (props: Props) => {
       </div>
 
       <div className="section">
-        {userStats && (
+        {stats && (
           <div className="">
             <div className="columns is-centered is-mobile">
               <div className="column has-text-centered">
                 <h6 className="title is-6">Rounds played</h6>
-                {userStats.roundsPlayed}
+                {stats.roundsPlayed}
               </div>
               <div className="column has-text-centered">
                 <h6 className="title is-6">Holes played</h6>
-                {userStats.holesPlayed}
+                {stats.holesPlayed}
               </div>
             </div>
             <div className="columns is-centered is-mobile">
               <div className="column has-text-centered">
                 <h6 className="title is-6">Fairway hit rate</h6>
-                {(userStats.fairwayHitRate * 100).toFixed(0)} %
+                {(stats.fairwayHitRate * 100).toFixed(0)} %
               </div>
               <div className="column has-text-centered">
                 <h6 className="title is-6">Scramble rate</h6>
-                {(userStats.scrambleRate * 100).toFixed(0)} %
+                {(stats.scrambleRate * 100).toFixed(0)} %
               </div>
             </div>
             <div className="columns is-centered is-mobile">
               <div className="column has-text-centered">
                 <h6 className="title is-6">Puts/hole</h6>
-                {userStats.putsPerHole.toFixed(1)}
+                {stats.putsPerHole.toFixed(1)}
               </div>
               <div className="column has-text-centered">
                 <h6 className="title is-6">One-put rate</h6>
-                {(userStats.onePutRate * 100).toFixed(0)} %
+                {(stats.onePutRate * 100).toFixed(0)} %
               </div>
             </div>
             <div className="columns is-centered is-mobile">
               <div className="column has-text-centered">
                 <h6 className="title is-6">Total score</h6>
-                {`${userStats.totalScore < 0 ? "-" : "+"}${Math.abs(
-                  userStats.totalScore
+                {`${stats.totalScore < 0 ? "-" : "+"}${Math.abs(
+                  stats.totalScore
                 )}`}
               </div>
               <div className="column has-text-centered">
                 <h6 className="title is-6">Strokes gained</h6>
-                {userStats.strokesGained.toFixed(1)}
+                {stats.strokesGained.toFixed(1)}
               </div>
             </div>
           </div>

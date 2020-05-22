@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
-import UserStats from "./UserStats";
-import UserRounds from "./UserRounds";
-import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -19,12 +17,15 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserComponent = (props: Props) => {
-  const { username } = useParams();
+  const { fetchUsers } = props;
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
   const [active, setActive] = useState(1);
   return (
     <div>
       <h2 className="title is-2 has-text-centered">
-        {username || props.user?.user?.username}
+        {props.user?.user?.username}
       </h2>
 
       <div className="tabs is-centered">
@@ -33,22 +34,30 @@ const UserComponent = (props: Props) => {
             className={active === 1 ? "is-active" : ""}
             onClick={() => setActive(1)}
           >
-            <a>Rounds</a>
+            <a>Friends</a>
           </li>
           <li
             className={active === 2 ? "is-active" : ""}
             onClick={() => setActive(2)}
           >
-            <a>Stats</a>
+            <a>Leaderboard</a>
           </li>
         </ul>
       </div>
       {active === 1 && (
         <div className="section">
-          <UserRounds />
+          <div className="list has-text-centered">
+            {props.user?.friendUsers.map((f) => {
+              return (
+                <Link to={`users/${f}`} key={f} className="list-item">
+                  {f}
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
-      {active === 2 && <UserStats />}
+      {active === 2 && <div></div>}
     </div>
   );
 };

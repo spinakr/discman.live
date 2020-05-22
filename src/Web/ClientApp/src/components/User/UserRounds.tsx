@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
 import RoundListItem from "../Round/RoundListItem";
+import { useParams } from "react-router";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -17,10 +18,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & { onlyActive?: boolean };
 
 const UserRounds = (props: Props) => {
+  const { username } = useParams();
   const { fetchUserRounds, onlyActive } = props;
   React.useEffect(() => {
-    fetchUserRounds(0, 10);
-  }, [fetchUserRounds]);
+    fetchUserRounds(10, username);
+  }, [fetchUserRounds, username]);
   const rounds = props.user?.userRounds.filter((r) => {
     return !onlyActive || !r.isCompleted;
   });
@@ -35,7 +37,7 @@ const UserRounds = (props: Props) => {
           <RoundListItem
             key={r.id}
             round={r}
-            username={props.user?.user?.username || ""}
+            username={username || props.user?.user?.username || ""}
           />
         ))}
       </div>

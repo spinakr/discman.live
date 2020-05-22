@@ -60,6 +60,10 @@ export interface FriendAddedSuccessAction {
   type: "FRIEND_ADDED";
   friend: string;
 }
+export interface FetchOtherUserSuccessAction {
+  type: "FETCH_OTHER_USER";
+  username: string;
+}
 
 export type KnownAction =
   | CallHistoryMethodAction
@@ -69,7 +73,8 @@ export type KnownAction =
   | LogUserOutAction
   | FriendAddedSuccessAction
   | FetchUserStatsSuccessAction
-  | FetchUserRoundsSuccessAction;
+  | FetchUserRoundsSuccessAction
+  | FetchOtherUserSuccessAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -190,13 +195,14 @@ export const actionCreators = {
       });
   },
   fetchUserRounds: (
-    start?: number,
-    count?: number
+    count: number,
+    usernameToFetch?: string,
+    start?: number
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    const username = appState.user.user.username;
+    const username = usernameToFetch || appState.user.user.username;
     fetch(`api/rounds?username=${username}&count=${count}`, {
       method: "GET",
       headers: {
@@ -205,9 +211,6 @@ export const actionCreators = {
       },
     })
       .then((res) => {
-        if (res.status === 401) {
-          logout(dispatch);
-        }
         if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
         return res;
       })
@@ -259,14 +262,15 @@ export const actionCreators = {
         );
       });
   },
-  fetchUserStats: (sinceMonths: number): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
+  fetchUserStats: (
+    sinceMonths: number,
+    username?: string
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/users/stats?includeMonths=${sinceMonths}`, {
+    const user = username || appState.user.user.username;
+    fetch(`api/users/${user}/stats?includeMonths=${sinceMonths}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

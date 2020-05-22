@@ -92,20 +92,18 @@ namespace Web.Users
             return Ok(authenticatedUser);
         }
 
-        [HttpGet("stats")]
-        public async Task<IActionResult> GetUserStats([FromQuery] DateTime since, [FromQuery] int includeMonths)
+        [HttpGet("{username}/stats")]
+        public async Task<IActionResult> GetUserStats(string username, [FromQuery] DateTime since, [FromQuery] int includeMonths)
         {
-            var player = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-
             var rounds = await _documentSession
                 .Query<Round>()
                 .Where(r => !r.Deleted)
-                .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
+                .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
                 .Where(r => r.StartTime > since)
                 .Where(r => includeMonths == default || r.StartTime > DateTime.Today.AddMonths(-includeMonths))
                 .ToListAsync();
 
-            var holesWithDetails = rounds.PlayerHolesWithDetails(player);
+            var holesWithDetails = rounds.PlayerHolesWithDetails(username);
 
             var roundsPlayed = rounds.Count;
             var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
@@ -114,8 +112,8 @@ namespace Web.Users
                 return Ok();
             }
 
-            var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == player)).ToList();
-            var totalScore = playerRounds.Sum(r => r.PlayerScore(player));
+            var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == username)).ToList();
+            var totalScore = playerRounds.Sum(r => r.PlayerScore(username));
 
 
             var totalAverageAllPlayers = playerRounds.Sum(r => r.RoundAverageScore()) / playerRounds.Count;
