@@ -43,6 +43,48 @@ export default ({ round, playersCourseStats }: RoundSummaryProps) => {
     }
   };
 
+  const renderScores = (
+    playerScores: PlayerScore[],
+    from: number,
+    to: number,
+    withTotals: boolean
+  ) => {
+    return (
+      <table className="table is-narrow">
+        <thead>
+          <tr>
+            {withTotals && (
+              <th>
+                Hole
+                <br />
+                Par
+              </th>
+            )}
+            {playerScores[0].scores.slice(from, to).map((s) => (
+              <th key={s.hole.number}>
+                {s.hole.number} <br />
+                <i>{s.hole.par}</i>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {playerScores.map((p) => (
+            <tr key={p.playerName}>
+              {withTotals && (
+                <td>
+                  {p.playerName}&nbsp;(
+                  {playerTotal(p)})
+                </td>
+              )}
+              {p.scores.slice(from, to).map((s) => renderPlayerHoleScore(s))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  };
+
   const renderPlayerHoleScore = (s: HoleScore) => {
     return (
       <td className={scoreColorStyle(s.relativeToPar)} key={s.hole.number}>
@@ -95,38 +137,15 @@ export default ({ round, playersCourseStats }: RoundSummaryProps) => {
 
       {active === 1 && (
         <div>
-          <div className="table-container section">
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>
-                    Hole
-                    <br />
-                    Par
-                  </th>
-                  {round.playerScores[0].scores.map((s) => (
-                    <th key={s.hole.number}>
-                      {s.hole.number} <br />
-                      <i>{s.hole.par}</i>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {round.playerScores.map((p) => (
-                  <tr key={p.playerName}>
-                    <td>
-                      {p.playerName}&nbsp;(
-                      {playerTotal(p)})
-                    </td>
-                    {p.scores.map((s) => renderPlayerHoleScore(s))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div
+            className="table-container"
+            style={{ paddingTop: "0px", marginTop: "0px", paddingLeft: "15px" }}
+          >
+            {renderScores(round.playerScores, 0, 8, true)}
+            {renderScores(round.playerScores, 8, 18, false)}
+            {renderScores(round.playerScores, 19, 30, false)}
             <hr />
-            <h2 className="subtitle">Self-development </h2>
-            <table className="table">
+            <table className="table is-narrow is-striped">
               <thead>
                 <tr>
                   <th>Player</th>
