@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -20,6 +21,7 @@ using Newtonsoft.Json;
 using Serilog;
 using Serilog.Context;
 using Web.Courses;
+using Web.Matches;
 
 namespace Web
 {
@@ -46,6 +48,8 @@ namespace Web
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
 
             services.ConfigureMarten(Configuration, _env);
+            services.AddSingleton<LeaderboardCache>();
+            services.AddSingleton<UserStatsCache>();
 
             var secret = Configuration.GetValue<string>("TOKEN_SECRET");
             services.AddAuthentication(x =>

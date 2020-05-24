@@ -22,19 +22,22 @@ namespace Web.Users
     [Authorize]
     [ApiController]
     [Route("api/users")]
-    public class UsersController : ControllerBase
+    public partial class UsersController : ControllerBase
     {
         private readonly ILogger<UsersController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IDocumentSession _documentSession;
+        private readonly UserStatsCache _userStatsCache;
         private static readonly List<DateTime> FailedLoginRequests = new List<DateTime>();
         private readonly string _tokenSecret;
 
-        public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession)
+        public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession,
+            UserStatsCache userStatsCache)
         {
             _logger = logger;
             _configuration = configuration;
             _documentSession = documentSession;
+            _userStatsCache = userStatsCache;
             _tokenSecret = _configuration.GetValue<string>("TOKEN_SECRET");
         }
 
@@ -95,6 +98,14 @@ namespace Web.Users
         [HttpGet("{username}/stats")]
         public async Task<IActionResult> GetUserStats(string username, [FromQuery] DateTime since, [FromQuery] int includeMonths)
         {
+            var userStats = await _userStatsCache.GetOrCreate($"{username}{since}{includeMonths}",
+                async () => await CalculateUserStats(username, since, includeMonths));
+
+            return Ok(userStats);
+        }
+
+        private async Task<UserStats> CalculateUserStats(string username, DateTime since, int includeMonths)
+        {
             var rounds = await _documentSession
                 .Query<Round>()
                 .Where(r => !r.Deleted)
@@ -109,7 +120,7 @@ namespace Web.Users
             var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
             if (roundsPlayed == 0 || holesWithDetails.Count == 0)
             {
-                return Ok();
+                return null;
             }
 
             var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == username)).ToList();
@@ -125,18 +136,8 @@ namespace Web.Users
             var fairwayHitRate = holesWithDetails.FairwayRate();
             var onePutRate = holesWithDetails.OnePutRate();
 
-
-            return Ok(new
-            {
-                roundsPlayed = roundsPlayed,
-                holesPlayed = holesPlayed,
-                putsPerHole = putsPerHole,
-                fairwayHitRate = fairwayHitRate,
-                scrambleRate = scrambleRate,
-                onePutRate = onePutRate,
-                totalScore = totalScore,
-                strokesGained = strokesGained
-            });
+            return new UserStats(roundsPlayed, holesPlayed, putsPerHole, fairwayHitRate, scrambleRate, onePutRate, totalScore,
+                strokesGained);
         }
 
         [HttpPost("friends")]
