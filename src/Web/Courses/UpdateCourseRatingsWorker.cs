@@ -58,7 +58,9 @@ namespace Web.Courses
                     foreach (var courseHole in course.Holes)
                     {
                         courseHole.Rating = Array.IndexOf(orderedHoles, courseHole.Number) + 1;
+                        courseHole.Average += courseHole.Par;
                     }
+                    
 
                     documentSession.Update(course);
                 }
