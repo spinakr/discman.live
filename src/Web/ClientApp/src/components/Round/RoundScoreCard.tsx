@@ -127,7 +127,7 @@ const RoundScoreCard = ({
                   }}
                   className={s.hole.number === activeHole ? "is-selected" : ""}
                 >
-                  <i className="is-size-7">{s.hole.average}</i>
+                  <i className="is-size-7">{s.hole.average.toFixed(1)}</i>
                 </td>
               ))}
             </tr>

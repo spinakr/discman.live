@@ -41,6 +41,7 @@ namespace Web
         {
             services.AddHostedService<UpdateCourseRatingsWorker>();
             services.AddHostedService<UpdateInActiveRoundsWorker>();
+            services.AddHostedService<LeaderboardWorker>();
             services.AddControllersWithViews();
 
 

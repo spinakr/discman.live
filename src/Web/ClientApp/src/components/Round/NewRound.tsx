@@ -97,6 +97,7 @@ const NewRound = (props: Props) => {
                 className="tag is-black"
               >
                 {p}
+                <button className="delete is-small"></button>
               </span>
             ))}
           </section>

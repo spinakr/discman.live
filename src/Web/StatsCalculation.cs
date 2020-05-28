@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Web.Matches;
 using Web.Rounds;
 
 namespace Web
@@ -62,6 +63,24 @@ namespace Web
                     .Count(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Circle1 ||
                                    spec.Outcome == StrokeSpec.StrokeOutcome.Circle2) < 2);
             return holesPlayed != 0 ? onePuts / (double) holesPlayed : 0;
+        }
+
+        public static IEnumerable<PlayerStats> CalculatePlayerStats(this IReadOnlyList<Round> rounds)
+        {
+            return rounds
+                .Where(r => r.PlayerScores.Count > 1)
+                .SelectMany(r => r.PlayerScores)
+                .GroupBy(s => s.PlayerName)
+                .Where(x => x.Count() > 3)
+                .Select(g =>
+                {
+                    var avg = g.Average(s => s.Scores.Sum(x => x.RelativeToPar));
+                    var roundCount = g.Count();
+                    var birdies = g.Sum(s => s.Scores.Count(x => x.RelativeToPar < 0));
+                    var bogies = g.Sum(s => s.Scores.Count(x => x.RelativeToPar > 0));
+                    return new PlayerStats
+                        {Username = g.Key, AverageHoleScore = avg, RoundCount = roundCount, BirdieCount = birdies, BogeyCount = bogies};
+                });
         }
     }
 }

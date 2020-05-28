@@ -7,6 +7,7 @@ import NewRound from "./Round/NewRound";
 import UserRounds from "./User/UserRounds";
 import { useState } from "react";
 import GlobalLeaderBoard from "./GlobalLeaderBoard";
+import HallOfFame from "./HallOfFame";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -43,6 +44,12 @@ const Home = (props: Props) => {
               >
                 <a>Leaderboard</a>
               </li>
+              <li
+                className={active === 3 ? "is-active" : ""}
+                onClick={() => setActive(3)}
+              >
+                <a>Hall of Fame</a>
+              </li>
             </ul>
           </div>
           {active === 1 && (
@@ -58,6 +65,7 @@ const Home = (props: Props) => {
             </>
           )}
           {active === 2 && <GlobalLeaderBoard />}
+          {active === 3 && <HallOfFame />}
         </>
       )}
     </div>
