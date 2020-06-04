@@ -42,66 +42,65 @@ const HallOfFame = (props: Props) => {
       </div>
 
       <table className="table is-fullwidth is-narrow is-striped">
-        <tr>
-          <th>Price</th>
-          <th>Player</th>
-          <th>Score</th>
-          <th
-            data-tooltip="Number of days in Hall Of Fame"
-            className="has-tooltip has-tooltip-left has-multiline-tooltip"
-          >
-            Days
-          </th>
-        </tr>
-        <tr>
-          <td>
-            Birdies{" "}
-            {hallOfFame?.mostBirdies.newThisMonth && (
-              <span className="tag is-info is-light">New</span>
-            )}
-          </td>
-          <td>{hallOfFame?.mostBirdies.username}</td>
-          <td>
-            {hallOfFame?.mostBirdies.count}({hallOfFame?.mostBirdies.perRound}
-            /r)
-          </td>
-          <td>{hallOfFame?.mostBirdies.daysInHallOfFame}</td>
-        </tr>
-        <tr>
-          <td>
-            Bogies
-            {hallOfFame?.mostBogies.newThisMonth && (
-              <span className="tag is-info is-light">New</span>
-            )}
-          </td>
-          <td>{hallOfFame?.mostBogies.username}</td>
-          <td>
-            {hallOfFame?.mostBogies.count} ({hallOfFame?.mostBogies.perRound}/r)
-          </td>
-          <td>{hallOfFame?.mostBogies.daysInHallOfFame}</td>
-        </tr>
-        <tr>
-          <td>
-            Rounds
-            {hallOfFame?.mostRounds.newThisMonth && (
-              <span className="tag is-info is-light">New</span>
-            )}
-          </td>
-          <td>{hallOfFame?.mostRounds.username}</td>
-          <td>{hallOfFame?.mostRounds.count}</td>
-          <td>{hallOfFame?.mostRounds.daysInHallOfFame}</td>
-        </tr>
-        <tr>
-          <td>
-            Avg. score
-            {hallOfFame?.bestRoundAverage.newThisMonth && (
-              <span className="tag is-info is-light">New</span>
-            )}
-          </td>
-          <td>{hallOfFame?.bestRoundAverage.username}</td>
-          <td>{hallOfFame?.bestRoundAverage.roundAverage}</td>
-          <td>{hallOfFame?.bestRoundAverage.daysInHallOfFame}</td>
-        </tr>
+        <thead>
+          <tr>
+            <th>Price</th>
+            <th>Player</th>
+            <th>Score</th>
+            <th
+              data-tooltip="Number of days in Hall Of Fame"
+              className="has-tooltip has-tooltip-left has-multiline-tooltip"
+            >
+              Days
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              Birdies{" "}
+              {hallOfFame?.mostBirdies.newThisMonth && (
+                <span className="tag is-info is-light">New</span>
+              )}
+            </td>
+            <td>{hallOfFame?.mostBirdies.username}</td>
+            <td>{hallOfFame?.mostBirdies.count}</td>
+            <td>{hallOfFame?.mostBirdies.daysInHallOfFame}</td>
+          </tr>
+          <tr>
+            <td>
+              Bogies
+              {hallOfFame?.mostBogies.newThisMonth && (
+                <span className="tag is-info is-light">New</span>
+              )}
+            </td>
+            <td>{hallOfFame?.mostBogies.username}</td>
+            <td>{hallOfFame?.mostBogies.count}</td>
+            <td>{hallOfFame?.mostBogies.daysInHallOfFame}</td>
+          </tr>
+          <tr>
+            <td>
+              Rounds
+              {hallOfFame?.mostRounds.newThisMonth && (
+                <span className="tag is-info is-light">New</span>
+              )}
+            </td>
+            <td>{hallOfFame?.mostRounds.username}</td>
+            <td>{hallOfFame?.mostRounds.count}</td>
+            <td>{hallOfFame?.mostRounds.daysInHallOfFame}</td>
+          </tr>
+          <tr>
+            <td>
+              Avg. score
+              {hallOfFame?.bestRoundAverage.newThisMonth && (
+                <span className="tag is-info is-light">New</span>
+              )}
+            </td>
+            <td>{hallOfFame?.bestRoundAverage.username}</td>
+            <td>{hallOfFame?.bestRoundAverage.roundAverage}</td>
+            <td>{hallOfFame?.bestRoundAverage.daysInHallOfFame}</td>
+          </tr>
+        </tbody>
       </table>
       <hr />
     </div>

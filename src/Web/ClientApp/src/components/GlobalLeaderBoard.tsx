@@ -34,20 +34,36 @@ const months = [
   "December",
 ];
 
-const getYearMonthString = (date: Date) =>
-  `${months[date.getMonth()]} ${date.getFullYear()}`;
+const getYearMonthString = (month: number) =>
+  `${months[month - 1]} ${new Date().getFullYear()}`;
 
 const GlobalLeaderBoard = (props: Props) => {
+  const [activeMonth, setActiveMonth] = useState(new Date().getMonth() + 1);
   const { fetchLeaderboard } = props;
   useEffect(() => {
-    fetchLeaderboard();
-  }, [fetchLeaderboard]);
-  const [activeYearMonth, setActiveYearMonth] = useState(
-    getYearMonthString(new Date())
-  );
+    fetchLeaderboard(activeMonth);
+  }, [activeMonth, fetchLeaderboard]);
   return (
     <div className="section">
-      <h5 className="title is-5 has-text-centered">{activeYearMonth} </h5>
+      <div className="field">
+        <div className="control has-icons-left">
+          <div className="select is-medium">
+            <select
+              value={activeMonth}
+              onChange={(e) => setActiveMonth(+e.target.value)}
+            >
+              {months.map((m, i) => (
+                <option key={m} value={i + 1}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="icon is-small is-left">
+            <i className="fas fa-calendar-alt"></i>
+          </div>
+        </div>
+      </div>
       <table className="table is-fullwidth ">
         <thead>
           <tr>
@@ -60,7 +76,7 @@ const GlobalLeaderBoard = (props: Props) => {
         <tbody>
           {props.leaderboard?.players.map((p, i) => {
             return (
-              <tr>
+              <tr key={i}>
                 <td>{i + 1}</td>
                 <td>
                   <Link to={`users/${p.username}`}>{p.username}</Link>

@@ -72,7 +72,7 @@ namespace Web.Courses
             var mostBirdies = playerStats.OrderByDescending(s => s.BirdieCount).First();
             var mostBogies = playerStats.OrderByDescending(s => s.BogeyCount).First();
             var mostRounds = playerStats.OrderByDescending(s => s.RoundCount).First();
-            var bestRoundAverage = playerStats.OrderByDescending(s => s.AverageHoleScore).First();
+            var bestRoundAverage = playerStats.OrderBy(s => s.AverageHoleScore).First();
 
             var monthHallOfFame = new MonthHallOfFame(mostBirdies, mostBogies, mostRounds, bestRoundAverage);
 

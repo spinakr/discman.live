@@ -76,6 +76,27 @@ const countScore = (strokes: StrokeOutcome[]) => {
   return obs === 0 ? strokes.length : strokes.length + obs;
 };
 
+const renderStrokes = (
+  strokes: RoundsStore.StrokeOutcome[],
+  setStrokes: React.Dispatch<React.SetStateAction<RoundsStore.StrokeOutcome[]>>
+) => {
+  return strokes.map((s, i) => {
+    return (
+      <span
+        key={i}
+        onClick={() =>
+          setStrokes([...strokes.filter((e, i) => i !== strokes.length - 1)])
+        }
+      >
+        <span className="icon is-large">{outcomeStyle(s)}</span>
+        <span className="icon is-small">
+          <i className="fas fa-arrow-right"></i>
+        </span>
+      </span>
+    );
+  });
+};
+
 const renderDetailedSelector = (
   setScore: (score: number, strokes: StrokeOutcome[]) => void,
   strokes: RoundsStore.StrokeOutcome[],
@@ -157,16 +178,7 @@ const renderDetailedSelector = (
           </button>
         </div>
       </div>
-      {strokes.map((s, i) => {
-        return (
-          <span key={i}>
-            <span className="icon is-large">{outcomeStyle(s)}</span>
-            <span className="icon is-small">
-              <i className="fas fa-arrow-right"></i>
-            </span>
-          </span>
-        );
-      })}
+      {renderStrokes(strokes, setStrokes)}
     </>
   );
 };
@@ -174,7 +186,6 @@ const renderDetailedSelector = (
 const HoleScoreSelector = (props: Props) => {
   const { round, activeHole, setScore, username } = props;
   const [strokes, setStrokes] = useState<StrokeOutcome[]>([]);
-
   const isPartOfRound = round?.playerScores.some(
     (s) => s.playerName === username
   );

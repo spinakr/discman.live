@@ -94,11 +94,14 @@ export const actionCreators = {
         );
       });
   },
-  fetchLeaderboard: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  fetchLeaderboard: (month: number = 0): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/leaderboard`, {
+    fetch(`api/leaderboard?month=${month}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -15,6 +15,9 @@ export interface Hole {
   rating: number;
   average: number;
 }
+export interface StrokeSpec {
+  strokeOutcome: StrokeOutcome;
+}
 
 export type StrokeOutcome =
   | "Fairway"
@@ -46,7 +49,7 @@ export interface HoleScore {
   hole: Hole;
   strokes: number;
   relativeToPar: number;
-  outcoke: StrokeOutcome;
+  strokeSpecs: StrokeSpec[];
 }
 
 export interface Round {
