@@ -73,19 +73,34 @@ namespace Web.Matches
 
             var course = _documentSession
                 .Query<Course>()
-                .Single(x => x.Id == request.CourseId);
+                .SingleOrDefault(x => x.Id == request.CourseId);
 
             var justStartedRound = await _documentSession
                 .Query<Round>()
                 .Where(r => !r.Deleted)
+                .Where(r => !r.IsCompleted)
                 .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
                 .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10));
             if (justStartedRound is object) return Conflict(justStartedRound);
 
-            var round = new Round(course, players, username);
+            var round = course != null ? new Round(course, players, username, request.RoundName) : new Round(players, username, request.RoundName);
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 
+            return Ok(round);
+        }
+
+        [HttpPost("{roundId}/holes")]
+        public async Task<IActionResult> AddHole(Guid roundId, [FromBody] AddHoleRequest request)
+        {
+            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var round = await _documentSession.Query<Round>().SingleAsync(r => r.Id == roundId);
+            var (isAuthorized, result) = IsUserAuthorized(round);
+            if (!isAuthorized) return result;
+
+            round.AddHole(request.HoleNumber, request.Par, request.Length);
+
+            await PersistUpdatedRound(round);
             return Ok(round);
         }
 
@@ -147,7 +162,9 @@ namespace Web.Matches
             var courseName = activeRound.CourseName;
             var players = activeRound.PlayerScores.Select(p => p.PlayerName);
 
+            
             var playersStats = new List<PlayerCourseStats>();
+            if (courseName is null) return Ok(playersStats);
             foreach (var player in players)
             {
                 var allRoundsOnCourse = _documentSession
@@ -224,7 +241,15 @@ namespace Web.Matches
     public class NewRoundsRequest
     {
         public Guid CourseId { get; set; }
+        public string RoundName { get; set; }
         public List<string> Players { get; set; }
+    }
+
+    public class AddHoleRequest
+    {
+        public int HoleNumber { get; set; }
+        public int Par { get; set; }
+        public int Length { get; set; }
     }
 
     public class UpdateScoreRequest

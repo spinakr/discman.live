@@ -55,6 +55,7 @@ export interface HoleScore {
 export interface Round {
   id: string;
   courseName: string;
+  roundName: string;
   createdBy: string;
   startTime: string;
   isCompleted: boolean;
@@ -286,8 +287,9 @@ export const actionCreators = {
     dispatch({ type: "DISCONNECT_TO_HUB" });
   },
   newRound: (
-    course: Course,
-    players: string[]
+    course: Course | undefined,
+    players: string[],
+    roundName: string
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
@@ -303,8 +305,9 @@ export const actionCreators = {
         Authorization: `Bearer ${appState.user.user.token}`,
       },
       body: JSON.stringify({
-        courseId: course.id,
+        courseId: course?.id,
         players: players,
+        roundName,
       }),
     })
       .then((response) => {
@@ -330,6 +333,38 @@ export const actionCreators = {
       .catch((err: Error) => {
         notificationActions.showNotification(
           `Create round failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
+  addHole: (
+    holeNumber: number,
+    par: number,
+    length: number
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    const username = appState.user.user.username;
+    const roundId = appState.rounds?.round?.id;
+    fetch(`api/rounds/${roundId}/holes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({ holeNumber, par, length }),
+    })
+      .then((response) => {
+        if (!response.ok)
+          throw new Error(`${response.status} - ${response.statusText}`);
+        return response.json() as Promise<Round>;
+      })
+      .then((data) => {})
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Add hole failed: ${err.message}`,
           "error",
           dispatch
         );

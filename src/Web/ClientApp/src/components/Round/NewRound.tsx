@@ -29,8 +29,12 @@ type Props = PropsFromRedux & {};
 
 const NewRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course>();
+  const [selectedCourse, setSelectedCourse] = useState<Course | undefined>(
+    undefined
+  );
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [manualReg, setManualReg] = useState<boolean>(false);
+  const [roundName, setRoundName] = useState<string>("");
   const { fetchCourses, fetchUsers } = props;
   const courseSelected = (courseId: string) => {
     props.courses &&
@@ -60,22 +64,47 @@ const NewRound = (props: Props) => {
             <p className="modal-card-title">Start new round</p>
           </header>
           <section className="modal-card-body">
-            <div className="field">
-              <label className="label">Course</label>
-              <div className="control">
-                <div className="select is-primary">
-                  <select onChange={(e) => courseSelected(e.target.value)}>
-                    <option></option>
-                    {props.courses?.map((c) => (
-                      <option key={c.name} value={c.id}>
-                        {c.name}
-                      </option>
-                    ))}
-                  </select>
+            <label className="label">
+              {manualReg ? "Round Name" : "Course"}
+            </label>
+            <div className="field is-grouped">
+              {manualReg === false ? (
+                <>
+                  <div className="control">
+                    <div className="select is-primary">
+                      <select onChange={(e) => courseSelected(e.target.value)}>
+                        <option></option>
+                        {props.courses?.map((c) => (
+                          <option key={c.name} value={c.id}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {!selectedCourse && <span></span>}
+                  </div>
+                </>
+              ) : (
+                <div className="control">
+                  <input
+                    className="input"
+                    type="text"
+                    value={roundName}
+                    onChange={(e) => setRoundName(e.target.value)}
+                  ></input>
                 </div>
+              )}
+              <div className="control">
+                <label className="checkbox">
+                  <input
+                    type="checkbox"
+                    onChange={() => setManualReg(!manualReg)}
+                  />
+                  Manual registration
+                </label>
               </div>
             </div>
-            <label className="label">Players</label>
+            <label className="label">Friends</label>
             <div className="field is-grouped">
               <div className="control">
                 <div className="select is-primary">
@@ -105,11 +134,9 @@ const NewRound = (props: Props) => {
             <button
               className="button is-success"
               onClick={() => {
-                selectedCourse &&
-                  props.newRound(selectedCourse, selectedPlayers);
+                props.newRound(selectedCourse, selectedPlayers, roundName);
                 setShowDialog(false);
               }}
-              disabled={!selectedCourse}
             >
               Start
             </button>

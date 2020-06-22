@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as RoundsStore from "../../store/Rounds";
 import { StrokeOutcome, ScoreMode } from "../../store/Rounds";
+import NewHole from "./NewHole";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -192,16 +193,21 @@ const HoleScoreSelector = (props: Props) => {
 
   if (activeHole === 100 && !round?.isCompleted) {
     return (
-      <div className="has-text-centered">
-        <button
-          className="button is-success"
-          onClick={() => {
-            props.completeRound();
-          }}
-        >
-          {" "}
-          Complete Round{" "}
-        </button>
+      <div className="columns has-text-centered">
+        <div className="column">{!round?.courseName && <NewHole />}</div>
+        <div className="column">
+          <button
+            className="button is-success"
+            onClick={() => {
+              if (window.confirm("Do you want to complete the round?")) {
+                props.completeRound();
+              }
+            }}
+          >
+            {" "}
+            Complete Round{" "}
+          </button>
+        </div>
       </div>
     );
   }

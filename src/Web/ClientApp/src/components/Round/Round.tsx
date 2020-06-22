@@ -85,7 +85,7 @@ const RoundComponent = (props: Props) => {
     <>
       <Tour start={round} />
       <h1 className="title has-text-centered">
-        {props.round && props.round.courseName}
+        {props.round && (props.round.courseName || props.round?.roundName)}
       </h1>
       <h2 className="subtitle has-text-centered">
         {props.round && new Date(props.round.startTime).toLocaleDateString()}

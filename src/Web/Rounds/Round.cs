@@ -11,27 +11,46 @@ namespace Web.Rounds
         {
         }
 
-        public Round(Course course, List<string> players, string createdBy)
+        public Round(Course course, List<string> players, string createdBy, string roundName)
         {
             Id = Guid.NewGuid();
             CourseName = course.Name;
             StartTime = DateTime.Now;
             PlayerScores = GenerateEmptyScoreCard(course.Holes, players);
             CreatedBy = createdBy;
+            RoundName = roundName;
+        }
+
+        public Round(List<string> players, string createdBy, string roundName)
+        {
+            Id = Guid.NewGuid();
+            StartTime = DateTime.Now;
+            PlayerScores = players
+                .Select(p => new PlayerScore
+                {
+                    PlayerName = p,
+                    Scores = new List<HoleScore>()
+                }).ToList();
+            RoundName = roundName;
+            CreatedBy = createdBy;
         }
 
         public Guid Id { get; set; }
 
         public ScoreMode ScoreMode { get; set; }
+        
+        /// <summary>
+        /// Optional property usually only used when no course is used 
+        /// </summary>
+        public string RoundName { get; set; }
         public string CourseName { get; set; }
         public DateTime StartTime { get; set; }
-
         public bool IsCompleted { get; set; }
 
         public string CreatedBy { get; set; }
 
         public List<PlayerScore> PlayerScores { get; set; }
-        
+
         public bool Deleted { get; set; }
 
         private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
@@ -42,6 +61,19 @@ namespace Web.Rounds
                     PlayerName = p,
                     Scores = courseHoles.Select(h => new HoleScore {Hole = new Hole(h.Number, h.Par, h.Distance, h.Rating, h.Average)}).ToList()
                 }).ToList();
+        }
+
+        public void AddHole(int holeNumber, int par, int length)
+        {
+            if (PlayerScores.First().Scores.Any(s => s.Hole.Number == holeNumber))
+            {
+                throw new ArgumentException($"Hole number {holeNumber} is already part of the round");
+            }
+
+            foreach (var playerScore in PlayerScores)
+            {
+                playerScore.Scores.Add(new HoleScore {Hole = new Hole(holeNumber, par, length)});
+            }
         }
 
         public int PlayerScore(string player)

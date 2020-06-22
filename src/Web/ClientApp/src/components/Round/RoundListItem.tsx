@@ -22,7 +22,7 @@ const RoundListItem = (props: UserRoundProps) => {
   if (startedAgoMins < 10) style += " has-text-primary has-text-weight-bold";
   return (
     <a className={style} key={round.id} href={`/rounds/${round.id}`}>
-      {round.courseName} -{" "}
+      {round.courseName || round.roundName} -{" "}
       <i>
         {new Date(round.startTime).toLocaleDateString()}
         {round.isCompleted
