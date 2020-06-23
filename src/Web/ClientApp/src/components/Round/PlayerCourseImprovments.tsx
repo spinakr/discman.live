@@ -25,7 +25,7 @@ const PlayerCourseImprovments = (props: Props) => {
       fetchStatsOnCourse(roundId);
   }, [courseName, fetchStatsOnCourse, playersCourseStats, round, roundId]);
 
-  if (!playersCourseStats) return null;
+  if (!playersCourseStats || playersCourseStats.length === 0) return null;
   return (
     <table className="table is-narrow is-striped">
       <thead>

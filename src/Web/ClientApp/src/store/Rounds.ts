@@ -58,6 +58,8 @@ export interface Round {
   roundName: string;
   createdBy: string;
   startTime: string;
+  completedAt: string;
+  roundDuration: number;
   isCompleted: boolean;
   scoreMode: ScoreMode;
   playerScores: PlayerScore[];

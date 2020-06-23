@@ -27,6 +27,21 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
+const calculateDurationString = (round: Round) => {
+  if (round.isCompleted && round.completedAt === "0001-01-01T00:00:00")
+    return "";
+  const durationMinutes = round.roundDuration;
+  const hours = durationMinutes / 60;
+  const rhours = Math.floor(hours);
+  const minutes = (hours - rhours) * 60;
+  const rminutes = Math.round(minutes);
+
+  const hourPart = rhours !== 0 ? `${rhours} h ` : "";
+  const minPart = `${rminutes} min`;
+
+  return `(${hourPart}${minPart})`;
+};
+
 const RoundComponent = (props: Props) => {
   const { round, activeHole, fetchRound } = props;
   let { roundId } = useParams();
@@ -79,8 +94,14 @@ const RoundComponent = (props: Props) => {
         {props.round && (props.round.courseName || props.round?.roundName)}
       </h1>
       <h2 className="subtitle has-text-centered">
-        {props.round && new Date(props.round.startTime).toLocaleDateString()}
+        {props.round && new Date(props.round.startTime).toLocaleDateString()}{" "}
+        <i>{props.round && calculateDurationString(props.round)}</i>
       </h2>
+
+      {/* <h6 className="subtitle is-6 has-text-centered">
+        {props.round}
+      </h6> */}
+
       {round && activeHole && renderRound(round, activeHole)}
     </>
   );

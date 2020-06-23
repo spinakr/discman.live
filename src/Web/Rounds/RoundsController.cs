@@ -148,7 +148,8 @@ namespace Web.Matches
 
             var (isAuthorized, result) = IsUserAuthorized(round);
             if (!isAuthorized) return result;
-            round.IsCompleted = true;
+            round.CompleteRound();
+            
             await PersistUpdatedRound(round);
             return Ok();
         }

@@ -46,12 +46,14 @@ namespace Web.Rounds
         public string CourseName { get; set; }
         public DateTime StartTime { get; set; }
         public bool IsCompleted { get; set; }
-
+        public DateTime CompletedAt { get; set; }
         public string CreatedBy { get; set; }
 
         public List<PlayerScore> PlayerScores { get; set; }
 
         public bool Deleted { get; set; }
+
+        public int RoundDuration => IsCompleted ? (CompletedAt - StartTime).Minutes : (DateTime.Now - StartTime).Minutes;
 
         private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
         {
@@ -87,6 +89,12 @@ namespace Web.Rounds
         public double RoundAverageScore()
         {
             return PlayerScores.Sum(ps => ps.Scores.Sum(s => s.RelativeToPar)) / (double) PlayerScores.Count;
+        }
+
+        public void CompleteRound()
+        {
+            IsCompleted = true;
+            CompletedAt = DateTime.Now;
         }
     }
 
