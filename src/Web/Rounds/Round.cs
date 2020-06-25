@@ -53,7 +53,7 @@ namespace Web.Rounds
 
         public bool Deleted { get; set; }
 
-        public int RoundDuration => IsCompleted ? (CompletedAt - StartTime).Minutes : (DateTime.Now - StartTime).Minutes;
+        public double RoundDuration => IsCompleted ? (CompletedAt - StartTime).TotalMinutes : (DateTime.Now - StartTime).TotalMinutes;
 
         private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
         {
@@ -67,10 +67,10 @@ namespace Web.Rounds
 
         public void AddHole(int holeNumber, int par, int length)
         {
-            if (PlayerScores.First().Scores.Any(s => s.Hole.Number == holeNumber))
-            {
-                throw new ArgumentException($"Hole number {holeNumber} is already part of the round");
-            }
+            // if (PlayerScores.First().Scores.Any(s => s.Hole.Number == holeNumber))
+            // {
+            //     throw new ArgumentException($"Hole number {holeNumber} is already part of the round");
+            // }
 
             foreach (var playerScore in PlayerScores)
             {

@@ -21,7 +21,9 @@ const NewHole = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState<number>(0);
   const [selectedPar, setSelectedPar] = useState<number>(3);
-  const [selectedDistance, setSelectedDistance] = useState<number>(0);
+  const [selectedDistance, setSelectedDistance] = useState<
+    number | undefined
+  >();
   const { addHole, round } = props;
 
   const onDialogOpen = () => {
@@ -47,22 +49,34 @@ const NewHole = (props: Props) => {
           <section className="modal-card-body">
             <div className="field">
               <label className="label">Hole number</label>
-              <input
-                value={selectedNumber}
-                className="input"
-                type="text"
-                onChange={(e) => setSelectedNumber(+e.target.value)}
-              ></input>
+              <div className="select">
+                <select
+                  value={selectedNumber}
+                  className="input"
+                  onChange={(e) => setSelectedNumber(+e.target.value)}
+                >
+                  {[...new Array(30)].map((x, i) => (
+                    <option key={i}>{i}</option>
+                  ))}
+                  <option>-1</option>
+                  <option>-2</option>
+                  <option>-3</option>
+                </select>
+              </div>
               <div className="control"></div>
             </div>
             <div className="field">
               <label className="label">Par</label>
-              <input
-                value={selectedPar}
-                className="input"
-                type="text"
-                onChange={(e) => setSelectedPar(+e.target.value)}
-              ></input>
+              <div className="select">
+                <select
+                  value={selectedPar}
+                  onChange={(e) => setSelectedPar(+e.target.value)}
+                >
+                  <option>3</option>
+                  <option>4</option>
+                  <option>5</option>
+                </select>
+              </div>
               <div className="control"></div>
             </div>
             <div className="field">
@@ -70,7 +84,7 @@ const NewHole = (props: Props) => {
               <input
                 value={selectedDistance}
                 className="input"
-                type="text"
+                type="number"
                 onChange={(e) => setSelectedDistance(+e.target.value)}
               ></input>
               <div className="control"></div>
@@ -81,7 +95,7 @@ const NewHole = (props: Props) => {
             <button
               className="button is-success"
               onClick={() => {
-                addHole(selectedNumber, selectedPar, selectedDistance);
+                addHole(selectedNumber, selectedPar, selectedDistance || 0);
                 setShowDialog(false);
               }}
             >
