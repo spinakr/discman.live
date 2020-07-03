@@ -68,6 +68,8 @@ namespace Web.Courses
                 .CalculatePlayerStats()
                 .OrderBy(x => x.AverageHoleScore)
                 .ToList();
+            if (!playerStats.Any()) return;
+            
 
             var mostBirdies = playerStats.OrderByDescending(s => s.BirdieCount).First();
             var mostBogies = playerStats.OrderByDescending(s => s.BogeyCount).First();

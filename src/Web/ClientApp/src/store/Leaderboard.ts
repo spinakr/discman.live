@@ -5,6 +5,7 @@ import { actionCreators as notificationActions } from "./Notifications";
 export interface LeaderboardUser {
   username: string;
   averageHoleScore: number;
+  courseAdjustedAverageScore: number;
   roundCount: number;
 }
 

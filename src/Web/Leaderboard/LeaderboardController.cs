@@ -60,7 +60,7 @@ namespace Web.Matches
 
             var playersStats = roundsThisMonth
                 .CalculatePlayerStats()
-                .OrderBy(x => x.AverageHoleScore);
+                .OrderBy(x => x.CourseAdjustedAverageScore);
             
             return playersStats.Take(10).ToList();
         }

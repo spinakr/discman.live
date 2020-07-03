@@ -35,7 +35,7 @@ namespace Web.Leaderboard
             if (monthHallOfFame.MostBirdies.Count > MostBirdies.Count) MostBirdies = monthHallOfFame.MostBirdies;
             if (monthHallOfFame.MostBogies.Count > MostBogies.Count) MostBogies = monthHallOfFame.MostBogies;
             if (monthHallOfFame.MostRounds.Count > MostRounds.Count) MostRounds = monthHallOfFame.MostRounds;
-            if (monthHallOfFame.BestRoundAverage.RoundAverage > BestRoundAverage.RoundAverage) BestRoundAverage = monthHallOfFame.BestRoundAverage;
+            if (monthHallOfFame.BestRoundAverage.RoundAverage < BestRoundAverage.RoundAverage) BestRoundAverage = monthHallOfFame.BestRoundAverage;
             UpdatedAt = DateTime.Now;
         }
     }

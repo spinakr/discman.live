@@ -67,20 +67,49 @@ namespace Web
 
         public static IEnumerable<PlayerStats> CalculatePlayerStats(this IReadOnlyList<Round> rounds)
         {
-            return rounds
-                .Where(r => r.PlayerScores.Count > 1)
-                .SelectMany(r => r.PlayerScores)
-                .GroupBy(s => s.PlayerName)
-                .Where(x => x.Count() > 3)
-                .Select(g =>
+            var courseAverages = rounds
+                .Where(r => r.IsCompleted)
+                .Where(r => !string.IsNullOrWhiteSpace(r.CourseName))
+                .GroupBy(x => x.CourseName)
+                .ToDictionary(x => x.Key, x => x.Average(c => c.RoundAverageScore()));
+
+
+            var players = rounds.SelectMany(x => x.PlayerScores.Select(y => y.PlayerName)).Distinct();
+            var playerStats = new List<PlayerStats>();
+
+            foreach (var player in players)
+            {
+                var roundScores = rounds
+                    .Where(r => r.PlayerScores.Count > 1) // only rounds with at least 2 players
+                    .Select(r => (r.CourseName, PlayerRoundScores: r.PlayerScores.SingleOrDefault(p => p.PlayerName == player)))
+                    .Where(x => x.PlayerRoundScores != null)
+                    .ToList();
+
+                if (roundScores.Count < 3) continue;
+
+                var adjustedAverage = roundScores.Average(s =>
                 {
-                    var avg = g.Average(s => s.Scores.Sum(x => x.RelativeToPar));
-                    var roundCount = g.Count();
-                    var birdies = g.Sum(s => s.Scores.Count(x => x.RelativeToPar < 0));
-                    var bogies = g.Sum(s => s.Scores.Count(x => x.RelativeToPar > 0));
-                    return new PlayerStats
-                        {Username = g.Key, AverageHoleScore = avg, RoundCount = roundCount, BirdieCount = birdies, BogeyCount = bogies};
+                    var playerRoundScore = s.PlayerRoundScores.Scores.Sum(x => x.RelativeToPar);
+                    return playerRoundScore - courseAverages[s.CourseName];
                 });
+
+                var playerScores = roundScores.Select(x => x.PlayerRoundScores).ToList();
+                var avg = playerScores.Average(s => s.Scores.Sum(x => x.RelativeToPar));
+                var roundCount = playerScores.Count();
+                var birdies = playerScores.Sum(s => s.Scores.Count(x => x.RelativeToPar < 0));
+                var bogies = playerScores.Sum(s => s.Scores.Count(x => x.RelativeToPar > 0));
+                playerStats.Add(new PlayerStats
+                {
+                    Username = player,
+                    AverageHoleScore = avg,
+                    RoundCount = roundCount,
+                    BirdieCount = birdies,
+                    BogeyCount = bogies,
+                    CourseAdjustedAverageScore = adjustedAverage
+                });
+            }
+
+            return playerStats;
         }
     }
 }

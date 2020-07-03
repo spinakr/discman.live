@@ -82,8 +82,8 @@ const GlobalLeaderBoard = (props: Props) => {
                   <Link to={`users/${p.username}`}>{p.username}</Link>
                 </td>
                 <td>
-                  {p.averageHoleScore < 0 ? "" : "+"}
-                  {p.averageHoleScore.toFixed(1)}
+                  {p.courseAdjustedAverageScore < 0 ? "" : "+"}
+                  {p.courseAdjustedAverageScore.toFixed(1)}
                 </td>
                 <td>{p.roundCount}</td>
               </tr>
