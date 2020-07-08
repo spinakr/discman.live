@@ -6,7 +6,7 @@ import { Course } from "./Courses";
 import { hub } from "./configureStore";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as notificationActions } from "./Notifications";
-import { actionCreators as UserActions } from "./User";
+import { actionCreators as UserActions, UserAchievement } from "./User";
 
 export interface Hole {
   number: number;
@@ -63,6 +63,7 @@ export interface Round {
   isCompleted: boolean;
   scoreMode: ScoreMode;
   playerScores: PlayerScore[];
+  achievements: UserAchievement[];
 }
 
 export interface RoundsState {

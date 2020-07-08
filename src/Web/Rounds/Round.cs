@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Web.Courses;
+using Web.Users;
 
 namespace Web.Rounds
 {
@@ -48,6 +49,7 @@ namespace Web.Rounds
         public bool IsCompleted { get; set; }
         public DateTime CompletedAt { get; set; }
         public string CreatedBy { get; set; }
+        public List<Achievement> Achievements { get; set; }
 
         public List<PlayerScore> PlayerScores { get; set; }
 

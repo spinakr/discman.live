@@ -27,6 +27,7 @@ namespace Web.Users
         public byte[] Password { get; set; }
         public byte[] Salt { get; set; }
         public List<string> Friends { get; set; }
+        public Achievements Achievements { get; set; }
 
         public AuthenticatedUser Authenticated(string secret)
         {

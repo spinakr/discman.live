@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Baseline;
 using Marten;
 using Marten.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using Serilog;
 using Web.Courses;
 using Web.Rounds;
+using Web.Users;
 
 namespace Web.Matches
 {
@@ -148,11 +150,17 @@ namespace Web.Matches
 
             var (isAuthorized, result) = IsUserAuthorized(round);
             if (!isAuthorized) return result;
-            round.CompleteRound();
             
+            round.CompleteRound();
+
+            var newUserAchievements = EvaluateAchievements(round);
+            if (round.Achievements is null) round.Achievements = new List<Achievement>();
+            round.Achievements.AddRange(newUserAchievements);
+
             await PersistUpdatedRound(round);
             return Ok();
         }
+
 
         [HttpGet("{roundId}/stats")]
         public async Task<IActionResult> GetStatsOnCourse(Guid roundId)
@@ -163,7 +171,7 @@ namespace Web.Matches
             var courseName = activeRound.CourseName;
             var players = activeRound.PlayerScores.Select(p => p.PlayerName);
 
-            
+
             var playersStats = new List<PlayerCourseStats>();
             if (courseName is null) return Ok(playersStats);
             foreach (var player in players)
@@ -231,6 +239,27 @@ namespace Web.Matches
             if (round is null) return (false, NotFound());
             if (round.PlayerScores.Any(p => p.PlayerName == authenticatedUsername) && requestedUsername == authenticatedUsername) return (true, Ok());
             return (false, Unauthorized("Cannot update other players rounds"));
+        }
+        
+        private IEnumerable<Achievement> EvaluateAchievements(Round round)
+        {
+            var userNames = round.PlayerScores.Select(s => s.PlayerName).ToArray();
+
+            var users = _documentSession
+                .Query<User>()
+                .Where(u => u.Username.IsOneOf(userNames));
+
+            var newUserAchievements = new  List<Achievement>();
+            foreach (var userInRound in users)
+            {
+                if (userInRound.Achievements is null) userInRound.Achievements = new Achievements();
+                var newAchievements = userInRound.Achievements.EvaluatePlayerRound(round.Id, userInRound.Username, round);
+                if (!newAchievements.Any()) continue;
+                _documentSession.Update(userInRound);
+                newUserAchievements.AddRange(newAchievements);
+            }
+            
+            return newUserAchievements;
         }
     }
 

@@ -190,6 +190,7 @@ const HoleScoreSelector = (props: Props) => {
   const isPartOfRound = round?.playerScores.some(
     (s) => s.playerName === username
   );
+  const [completeActive, setCompleteActive] = useState(true);
 
   if (activeHole === 100 && !round?.isCompleted) {
     return (
@@ -201,8 +202,10 @@ const HoleScoreSelector = (props: Props) => {
             onClick={() => {
               if (window.confirm("Do you want to complete the round?")) {
                 props.completeRound();
+                setCompleteActive(false);
               }
             }}
+            disabled={!completeActive}
           >
             {" "}
             Complete Round{" "}

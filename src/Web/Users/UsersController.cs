@@ -104,6 +104,24 @@ namespace Web.Users
             return Ok(userStats);
         }
 
+        [HttpGet("{username}/achievements")]
+        public async Task<IActionResult> GetUserAchievements(string username)
+        {
+            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == username);
+
+            var userAchievements = user
+                    .Achievements
+                    .GroupBy(x => x.AchievementName)
+                    .Select(x => new
+                    {
+                        Achievement = x.OrderByDescending(y=> y.AchievedAt).First(), 
+                        Count = x.Count()
+                    })
+                .ToList();
+
+            return Ok(userAchievements);
+        }
+
         private async Task<UserStats> CalculateUserStats(string username, DateTime since, int includeMonths)
         {
             var rounds = await _documentSession

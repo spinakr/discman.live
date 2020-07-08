@@ -5,6 +5,7 @@ import * as UserStore from "../../store/User";
 import UserStats from "./UserStats";
 import UserRounds from "./UserRounds";
 import { useParams } from "react-router";
+import UserAchievements from "./UserAchievements";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -41,6 +42,12 @@ const UserComponent = (props: Props) => {
           >
             <a>Stats</a>
           </li>
+          <li
+            className={active === 3 ? "is-active" : ""}
+            onClick={() => setActive(3)}
+          >
+            <a>Achievements</a>
+          </li>
         </ul>
       </div>
       {active === 1 && (
@@ -49,6 +56,7 @@ const UserComponent = (props: Props) => {
         </div>
       )}
       {active === 2 && <UserStats />}
+      {active === 3 && <UserAchievements />}
     </div>
   );
 };

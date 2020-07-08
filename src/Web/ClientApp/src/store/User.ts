@@ -19,6 +19,16 @@ export interface UserStats {
   strokesGained: number;
 }
 
+export interface UserAchievement {
+  achievementName: string;
+  username: string;
+  achievedAt: Date;
+  roundId: string;
+}
+export interface GroupedAchievement {
+  achievement: UserAchievement;
+  count: number;
+}
 export interface UserState {
   loggedIn: boolean;
   user: User | null;
@@ -26,6 +36,12 @@ export interface UserState {
   friendUsers: string[];
   userStats: UserStats | null;
   userRounds: Round[];
+  userAchievements: GroupedAchievement[];
+}
+
+export interface FetchUserAchievementsSuccessAction {
+  type: "FETCH_USER_ACHIEVEMENTS_SUCCESS";
+  achievements: GroupedAchievement[];
 }
 
 export interface FetchFriendUsersSuccessAction {
@@ -74,7 +90,8 @@ export type KnownAction =
   | FriendAddedSuccessAction
   | FetchUserStatsSuccessAction
   | FetchUserRoundsSuccessAction
-  | FetchOtherUserSuccessAction;
+  | FetchOtherUserSuccessAction
+  | FetchUserAchievementsSuccessAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -89,6 +106,7 @@ const initialState: UserState = user
       friendUsers: [],
       userStats: null,
       userRounds: [],
+      userAchievements: [],
     }
   : {
       loggedIn: false,
@@ -97,6 +115,7 @@ const initialState: UserState = user
       friendUsers: [],
       userStats: null,
       userRounds: [],
+      userAchievements: [],
     };
 
 const logout = (dispatch: (action: KnownAction) => void) => {
@@ -297,6 +316,41 @@ export const actionCreators = {
         );
       });
   },
+  fetchUserAchievements: (username?: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    const user = username || appState.user.user.username;
+    fetch(`api/users/${user}/achievements`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<GroupedAchievement[]>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        dispatch({
+          type: "FETCH_USER_ACHIEVEMENTS_SUCCESS",
+          achievements: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch user achievements failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
 };
 
 // ----------------
@@ -350,6 +404,11 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         userRounds: action.rounds,
+      };
+    case "FETCH_USER_ACHIEVEMENTS_SUCCESS":
+      return {
+        ...state,
+        userAchievements: action.achievements,
       };
     default:
       return state;

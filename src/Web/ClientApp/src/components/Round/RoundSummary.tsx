@@ -10,6 +10,7 @@ import {
 import RoundChart from "./RoundChart";
 import RoundPrices from "./RoundPrices";
 import PlayerCourseImprovments from "./PlayerCourseImprovments";
+import RoundAchievements from "./RoundAchievements";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -118,7 +119,7 @@ export default ({ round }: RoundSummaryProps) => {
             className={active === 1 ? "is-active" : ""}
             onClick={() => setActive(1)}
           >
-            <a>Scorecard</a>
+            <a>Scores</a>
           </li>
           <li
             className={active === 2 ? "is-active" : ""}
@@ -130,7 +131,14 @@ export default ({ round }: RoundSummaryProps) => {
             className={active === 3 ? "is-active" : ""}
             onClick={() => setActive(3)}
           >
-            <a>Roundchart</a>
+            <a>Chart</a>
+          </li>
+
+          <li
+            className={active === 4 ? "is-active" : ""}
+            onClick={() => setActive(4)}
+          >
+            <a>Achievements</a>
           </li>
         </ul>
       </div>
@@ -153,6 +161,10 @@ export default ({ round }: RoundSummaryProps) => {
       {active === 2 && <RoundPrices round={round} swipeHandlers={handlers} />}
 
       {active === 3 && <RoundChart round={round} swipeHandlers={handlers} />}
+
+      {active === 4 && (
+        <RoundAchievements round={round} swipeHandlers={handlers} />
+      )}
     </div>
   );
 };
