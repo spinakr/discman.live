@@ -19,11 +19,11 @@ type Props = PropsFromRedux & {};
 const PlayerCourseImprovments = (props: Props) => {
   const { playersCourseStats, round, fetchStatsOnCourse } = props;
   const roundId = round?.id;
-  const courseName = round?.courseName;
+  const roundCourseName = round?.courseName;
   useEffect(() => {
-    if (!playersCourseStats && roundId && courseName)
+    if (!playersCourseStats && roundId && roundCourseName)
       fetchStatsOnCourse(roundId);
-  }, [courseName, fetchStatsOnCourse, playersCourseStats, round, roundId]);
+  }, [roundCourseName, fetchStatsOnCourse, playersCourseStats, round, roundId]);
 
   if (!playersCourseStats || playersCourseStats.length === 0) return null;
   return (
@@ -33,13 +33,13 @@ const PlayerCourseImprovments = (props: Props) => {
           <th>Player</th>
           <th
             className="has-tooltip-info"
-            data-tooltip={`Player average score on ${courseName} \n over the last 5 rounds`}
+            data-tooltip={`Player average score on ${roundCourseName} \n over the last 5 rounds`}
           >
             Avg.
           </th>
           <th
             className="has-tooltip-info"
-            data-tooltip={`Improvement versus personal average \n on ${courseName}`}
+            data-tooltip={`Improvement versus personal average \n on ${roundCourseName}`}
           >
             Impr.
           </th>

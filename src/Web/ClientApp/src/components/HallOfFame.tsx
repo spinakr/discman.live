@@ -22,7 +22,7 @@ const HallOfFame = (props: Props) => {
   useEffect(() => {
     fetchHallOfFame();
   }, [fetchHallOfFame]);
-  const hallOfFame = props.leaderboard?.hallOfFame;
+  const currentHallOfFame = props.leaderboard?.hallOfFame;
   if (!props.leaderboard?.hallOfFame?.mostBirdies?.username) return null;
   return (
     <div className="">
@@ -59,46 +59,46 @@ const HallOfFame = (props: Props) => {
           <tr>
             <td>
               Birdies{" "}
-              {hallOfFame?.mostBirdies.newThisMonth && (
+              {currentHallOfFame?.mostBirdies.newThisMonth && (
                 <span className="tag is-info is-light">New</span>
               )}
             </td>
-            <td>{hallOfFame?.mostBirdies.username}</td>
-            <td>{hallOfFame?.mostBirdies.count}</td>
-            <td>{hallOfFame?.mostBirdies.daysInHallOfFame}</td>
+            <td>{currentHallOfFame?.mostBirdies.username}</td>
+            <td>{currentHallOfFame?.mostBirdies.count}</td>
+            <td>{currentHallOfFame?.mostBirdies.daysInHallOfFame}</td>
           </tr>
           <tr>
             <td>
               Bogies
-              {hallOfFame?.mostBogies.newThisMonth && (
+              {currentHallOfFame?.mostBogies.newThisMonth && (
                 <span className="tag is-info is-light">New</span>
               )}
             </td>
-            <td>{hallOfFame?.mostBogies.username}</td>
-            <td>{hallOfFame?.mostBogies.count}</td>
-            <td>{hallOfFame?.mostBogies.daysInHallOfFame}</td>
+            <td>{currentHallOfFame?.mostBogies.username}</td>
+            <td>{currentHallOfFame?.mostBogies.count}</td>
+            <td>{currentHallOfFame?.mostBogies.daysInHallOfFame}</td>
           </tr>
           <tr>
             <td>
               Rounds
-              {hallOfFame?.mostRounds.newThisMonth && (
+              {currentHallOfFame?.mostRounds.newThisMonth && (
                 <span className="tag is-info is-light">New</span>
               )}
             </td>
-            <td>{hallOfFame?.mostRounds.username}</td>
-            <td>{hallOfFame?.mostRounds.count}</td>
-            <td>{hallOfFame?.mostRounds.daysInHallOfFame}</td>
+            <td>{currentHallOfFame?.mostRounds.username}</td>
+            <td>{currentHallOfFame?.mostRounds.count}</td>
+            <td>{currentHallOfFame?.mostRounds.daysInHallOfFame}</td>
           </tr>
           <tr>
             <td>
               Avg. score
-              {hallOfFame?.bestRoundAverage.newThisMonth && (
+              {currentHallOfFame?.bestRoundAverage.newThisMonth && (
                 <span className="tag is-info is-light">New</span>
               )}
             </td>
-            <td>{hallOfFame?.bestRoundAverage.username}</td>
-            <td>{hallOfFame?.bestRoundAverage.roundAverage}</td>
-            <td>{hallOfFame?.bestRoundAverage.daysInHallOfFame}</td>
+            <td>{currentHallOfFame?.bestRoundAverage.username}</td>
+            <td>{currentHallOfFame?.bestRoundAverage.roundAverage}</td>
+            <td>{currentHallOfFame?.bestRoundAverage.daysInHallOfFame}</td>
           </tr>
         </tbody>
       </table>

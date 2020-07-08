@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
@@ -31,7 +31,11 @@ const UserAchievementsComponent = (props: Props) => {
         <div className="column is-one-third">
           {achievements &&
             achievements.map((a) => (
-              <Achievement achievement={a.achievement} count={a.count} />
+              <Achievement
+                key={`${a.achievement.achievementName}${a.achievement.username}`}
+                achievement={a.achievement}
+                count={a.count}
+              />
             ))}
         </div>
       </div>

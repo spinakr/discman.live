@@ -14,11 +14,8 @@ export default ({ round, swipeHandlers }: RoundAchievementsProps) => {
       <div className="column is-one-third">
         {round.achievements &&
           round.achievements.map((a: UserAchievement) => (
-            <div className="column">
-              <Achievement
-                key={`${a.achievementName}${a.username}`}
-                achievement={a}
-              />
+            <div key={`${a.achievementName}${a.username}`} className="column">
+              <Achievement achievement={a} />
             </div>
           ))}
       </div>

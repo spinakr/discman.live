@@ -209,4 +209,50 @@ namespace Web.Users
         {
         }
     }
+    
+    public class FiveBirdieRound : RoundAchievement
+    {
+        public override bool Evaluate(Round round, string username)
+        {
+            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
+            return playerScore.Scores.Count(s => s.RelativeToPar < 0) > 4;
+        }
+
+        public FiveBirdieRound(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+    }
+    
+    public class ACE : RoundAchievement
+    {
+        public override bool Evaluate(Round round, string username)
+        {
+            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
+            return playerScore.Scores.Any(s => s.Strokes == 1);
+        }
+
+        public ACE(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+    }
+    
+    public class Turkey : RoundAchievement
+    {
+        public override bool Evaluate(Round round, string username)
+        {
+            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
+            if (playerScore.Scores.Count < 3) return false;
+            for (var i = 0; i < playerScore.Scores.Count - 3; i++)
+            {
+                var sub = playerScore.Scores.GetRange(i, 3);
+                if (sub.All(s => s.RelativeToPar < 0)) return true;
+            }
+
+            return false;
+        }
+
+        public Turkey(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+    }
 }

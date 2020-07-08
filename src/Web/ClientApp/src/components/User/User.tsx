@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
