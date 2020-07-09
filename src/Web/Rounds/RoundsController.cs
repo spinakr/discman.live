@@ -150,7 +150,7 @@ namespace Web.Matches
 
             var (isAuthorized, result) = IsUserAuthorized(round);
             if (!isAuthorized) return result;
-            
+
             round.CompleteRound();
 
             var newUserAchievements = EvaluateAchievements(round);
@@ -240,7 +240,7 @@ namespace Web.Matches
             if (round.PlayerScores.Any(p => p.PlayerName == authenticatedUsername) && requestedUsername == authenticatedUsername) return (true, Ok());
             return (false, Unauthorized("Cannot update other players rounds"));
         }
-        
+
         private IEnumerable<Achievement> EvaluateAchievements(Round round)
         {
             var userNames = round.PlayerScores.Select(s => s.PlayerName).ToArray();
@@ -249,16 +249,33 @@ namespace Web.Matches
                 .Query<User>()
                 .Where(u => u.Username.IsOneOf(userNames));
 
-            var newUserAchievements = new  List<Achievement>();
+
+            var newUserAchievements = new List<Achievement>();
             foreach (var userInRound in users)
             {
                 if (userInRound.Achievements is null) userInRound.Achievements = new Achievements();
-                var newAchievements = userInRound.Achievements.EvaluatePlayerRound(round.Id, userInRound.Username, round);
+                var roundAchievements = userInRound.Achievements.EvaluatePlayerRound(round.Id, userInRound.Username, round);
+
+                var now = DateTime.Now;
+                var rounds = _documentSession
+                    .Query<Round>()
+                    .Where(r => !r.Deleted)
+                    .Where(r => r.PlayerScores.Any(p => p.PlayerName == userInRound.Username))
+                    .Where(r => r.IsCompleted)
+                    .Where(r => r.CompletedAt > new DateTime(now.Year,1,1))
+                    .ToList();
+
+                var userRounds = rounds.Concat(new List<Round> {round}).ToList();
+
+                var userAchievements = userInRound.Achievements.EvaluateUserRounds(userRounds, userInRound.Username);
+                
+                var newAchievements = roundAchievements.Concat(userAchievements).ToList();
+
                 if (!newAchievements.Any()) continue;
                 _documentSession.Update(userInRound);
                 newUserAchievements.AddRange(newAchievements);
             }
-            
+
             return newUserAchievements;
         }
     }

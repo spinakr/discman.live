@@ -56,6 +56,25 @@ namespace Web.Courses
             {
                 EvaluateAchievements(documentSession, round);
             }
+
+            var users = documentSession
+                .Query<User>()
+                .ToList();
+
+            foreach (var user in users)
+            {
+                var userRounds = documentSession
+                    .Query<Round>()
+                    .Where(r => !r.Deleted)
+                    .Where(r => r.IsCompleted)
+                    .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
+                    .ToList();
+
+                if (user.Achievements is null) user.Achievements = new Achievements();
+                var userAchievements = user.Achievements.EvaluateUserRounds(userRounds, user.Username);
+                documentSession.Update(user);
+            }
+            
             
             documentSession.SaveChanges();
         }

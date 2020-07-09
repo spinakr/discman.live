@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Web.Rounds;
@@ -32,6 +33,30 @@ namespace Web.Users
                 if (res && !_achievements.Any(a =>
                     a.AchievementName == achievementObj.AchievementName &&
                     a.RoundId == achievementObj.RoundId))
+                {
+                    newAchievements.Add(achievementObj);
+                }
+            }
+
+            _achievements.AddRange(newAchievements);
+
+            return newAchievements;
+        }
+
+        public List<Achievement> EvaluateUserRounds(List<Round> userRounds, string username)
+        {
+            var userAchievements = Assembly.GetCallingAssembly()
+                .GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(UserAchievement)));
+
+            var newAchievements = new List<Achievement>();
+            foreach (var userAchievement in userAchievements)
+            {
+                var constructor = userAchievement.GetConstructor(new Type[] {typeof(string)});
+                var achievementObj = (UserAchievement) constructor.Invoke(new object[] {username});
+                var evaluationMethod = userAchievement.GetMethod(nameof(UserAchievement.Evaluate));
+                var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {userRounds});
+                if (res && _achievements.All(a => a.AchievementName != achievementObj.AchievementName))
                 {
                     newAchievements.Add(achievementObj);
                 }
@@ -101,6 +126,15 @@ namespace Web.Users
         public abstract bool Evaluate(Round round, string username);
 
         protected RoundAchievement(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+    }
+
+    public abstract class UserAchievement : Achievement
+    {
+        public abstract bool Evaluate(List<Round> rounds);
+
+        protected UserAchievement(string username) : base(Guid.Empty, username)
         {
         }
     }
@@ -187,7 +221,7 @@ namespace Web.Users
     {
         public override bool Evaluate(Round round, string username)
         {
-            if (round.PlayerScores.Count < 3) return false; 
+            if (round.PlayerScores.Count < 3) return false;
             var perHole = new Dictionary<int, bool>();
             foreach (var playerScore in round.PlayerScores)
             {
@@ -209,7 +243,7 @@ namespace Web.Users
         {
         }
     }
-    
+
     public class FiveBirdieRound : RoundAchievement
     {
         public override bool Evaluate(Round round, string username)
@@ -222,7 +256,7 @@ namespace Web.Users
         {
         }
     }
-    
+
     public class ACE : RoundAchievement
     {
         public override bool Evaluate(Round round, string username)
@@ -235,7 +269,7 @@ namespace Web.Users
         {
         }
     }
-    
+
     public class Turkey : RoundAchievement
     {
         public override bool Evaluate(Round round, string username)
@@ -253,6 +287,59 @@ namespace Web.Users
 
         public Turkey(Guid roundId, string username) : base(roundId, username)
         {
+        }
+    }
+
+    public class TenRoundsInAMonth : UserAchievement
+    {
+        public TenRoundsInAMonth(string username) : base(username)
+        {
+        }
+
+        public override bool Evaluate(List<Round> rounds)
+        {
+            var perMonth = rounds.GroupBy(r => r.StartTime.Month);
+            return perMonth.Any(g => g.Count() > 9);
+        }
+    }
+    
+    public class TwentyRoundsInAMonth : UserAchievement
+    {
+        public TwentyRoundsInAMonth(string username) : base(username)
+        {
+        }
+
+        public override bool Evaluate(List<Round> rounds)
+        {
+            var perMonth = rounds.GroupBy(r => r.StartTime.Month);
+            return perMonth.Any(g => g.Count() > 19);
+        }
+    }
+    
+    public class PlayEveryDayInAWeek : UserAchievement
+    {
+        public PlayEveryDayInAWeek(string username) : base(username)
+        {
+        }
+
+        public override bool Evaluate(List<Round> rounds)
+        {
+            var perWeek = rounds.GroupBy(r => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+                r.StartTime, CalendarWeekRule.FirstDay, DayOfWeek.Monday));
+            return perWeek.Any(w => w.Select(x => x.StartTime.DayOfWeek).Distinct().Count() == 7);
+        }
+    }
+    
+    public class FiveRoundsInADay : UserAchievement
+    {
+        public FiveRoundsInADay(string username) : base(username)
+        {
+        }
+
+        public override bool Evaluate(List<Round> rounds)
+        {
+            var perDay = rounds.Where(r => r.StartTime != default).GroupBy(r => r.StartTime.Date);
+            return perDay.Any(d => d.Count() > 4);
         }
     }
 }
