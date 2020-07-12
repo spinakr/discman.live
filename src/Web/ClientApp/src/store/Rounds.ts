@@ -105,6 +105,10 @@ export interface SetActiveHoleAction {
   hole: number;
 }
 
+export interface CourseWasSavedAction {
+  type: "COURSE_WAS_SAVED";
+}
+
 export interface RoundWasCompletedAction {
   type: "ROUND_WAS_COMPLETED";
 }
@@ -138,7 +142,8 @@ export type KnownAction =
   | SetActiveHoleAction
   | RoundWasCompletedAction
   | PlayerCourseStatsFethSuceed
-  | ToggleScoreCardAction;
+  | ToggleScoreCardAction
+  | CourseWasSavedAction;
 
 const fetchRound = (
   roundId: string,
@@ -521,6 +526,38 @@ export const actionCreators = {
       })
       .then((response) => {
         if (response.ok) dispatch({ type: "ROUND_WAS_COMPLETED" });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Complete round failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
+  saveAsCourse: (courseName: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    const loggedInUser = appState?.user?.user;
+    const roundId = appState.rounds?.round?.id;
+    if (!loggedInUser || !roundId) return;
+
+    fetch(`api/rounds/${roundId}/savecourse`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${loggedInUser.token}`,
+      },
+      body: JSON.stringify({ courseName }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => {
+        if (response.ok) dispatch({ type: "COURSE_WAS_SAVED" });
       })
       .catch((err: Error) => {
         notificationActions.showNotification(

@@ -21,9 +21,7 @@ const NewHole = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState<number>(0);
   const [selectedPar, setSelectedPar] = useState<number>(3);
-  const [selectedDistance, setSelectedDistance] = useState<
-    number | undefined
-  >();
+  const [selectedDistance, setSelectedDistance] = useState<string>("");
   const { addHole, round } = props;
 
   const onDialogOpen = () => {
@@ -84,8 +82,8 @@ const NewHole = (props: Props) => {
               <input
                 value={selectedDistance}
                 className="input"
-                type="number"
-                onChange={(e) => setSelectedDistance(+e.target.value)}
+                type="text"
+                onChange={(e) => setSelectedDistance(e.target.value)}
               ></input>
               <div className="control"></div>
             </div>
@@ -95,7 +93,7 @@ const NewHole = (props: Props) => {
             <button
               className="button is-success"
               onClick={() => {
-                addHole(selectedNumber, selectedPar, selectedDistance || 0);
+                addHole(selectedNumber, selectedPar, +selectedDistance);
                 setShowDialog(false);
               }}
             >

@@ -94,6 +94,18 @@ namespace Web.Users
 
             return Ok(authenticatedUser);
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> SearchUsers([FromQuery] string searchString)
+        {
+            var users = await _documentSession
+                .Query<User>()
+                .Where(u => u.Username.Contains(searchString.ToLower()))
+                .Select(u => u.Username)
+                .ToListAsync();
+                
+            return Ok(users);
+        }
 
         [HttpGet("{username}/stats")]
         public async Task<IActionResult> GetUserStats(string username, [FromQuery] DateTime since, [FromQuery] int includeMonths)

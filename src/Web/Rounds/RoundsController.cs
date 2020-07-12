@@ -160,6 +160,28 @@ namespace Web.Matches
             await PersistUpdatedRound(round);
             return Ok();
         }
+        
+        [HttpPost("{roundId}/savecourse")]
+        public async Task<IActionResult> CompleteRound(Guid roundId, [FromBody]SaveCourseRequest request)
+        {
+            var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == roundId);
+            round.CourseName = request.CourseName;
+
+            var (isAuthorized, result) = IsUserAuthorized(round);
+            if (!isAuthorized) return result;
+
+            var holes = round
+                .PlayerScores
+                .First().Scores
+                .Select(x => new Hole(x.Hole.Number, x.Hole.Par, x.Hole.Distance))
+                .ToList();
+            
+            var newCourse = new Course(request.CourseName, holes);
+            _documentSession.Store(newCourse);
+            await PersistUpdatedRound(round);
+
+            return Ok(newCourse);
+        }
 
 
         [HttpGet("{roundId}/stats")]
@@ -278,6 +300,11 @@ namespace Web.Matches
 
             return newUserAchievements;
         }
+    }
+
+    public class SaveCourseRequest
+    {
+        public string CourseName { get; set; }
     }
 
     public class ChangeScoreModeRequest

@@ -20,6 +20,13 @@ namespace Web.Courses
             Admins = new List<string>{admin, "kofoed"};
         }
 
+        public Course(string courseName, List<Hole> holes)
+        {
+            Id = Guid.NewGuid();
+            Name = courseName;
+            Holes = holes;
+        }
+
         public Guid Id { get; set; }
         public string Name { get; set; }
         public List<Hole> Holes { get; set; }

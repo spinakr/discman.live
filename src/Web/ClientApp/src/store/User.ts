@@ -37,6 +37,12 @@ export interface UserState {
   userStats: UserStats | null;
   userRounds: Round[];
   userAchievements: GroupedAchievement[];
+  searchedUsers: string[];
+}
+
+export interface SearchUsersSuccessAction {
+  type: "SEARCH_USERS_SUCCESS";
+  users: string[];
 }
 
 export interface FetchUserAchievementsSuccessAction {
@@ -91,7 +97,8 @@ export type KnownAction =
   | FetchUserStatsSuccessAction
   | FetchUserRoundsSuccessAction
   | FetchOtherUserSuccessAction
-  | FetchUserAchievementsSuccessAction;
+  | FetchUserAchievementsSuccessAction
+  | SearchUsersSuccessAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -107,6 +114,7 @@ const initialState: UserState = user
       userStats: null,
       userRounds: [],
       userAchievements: [],
+      searchedUsers: [],
     }
   : {
       loggedIn: false,
@@ -116,6 +124,7 @@ const initialState: UserState = user
       userStats: null,
       userRounds: [],
       userAchievements: [],
+      searchedUsers: [],
     };
 
 const logout = (dispatch: (action: KnownAction) => void) => {
@@ -281,6 +290,39 @@ export const actionCreators = {
         );
       });
   },
+  searchUsers: (searchString: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users?searchString=${searchString}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => response.json() as Promise<string[]>)
+      .then((data) => {
+        dispatch({
+          type: "SEARCH_USERS_SUCCESS",
+          users: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Search friends failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   fetchUserStats: (
     sinceMonths: number,
     username?: string
@@ -409,6 +451,11 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         userAchievements: action.achievements,
+      };
+    case "SEARCH_USERS_SUCCESS":
+      return {
+        ...state,
+        searchedUsers: action.users,
       };
     default:
       return state;

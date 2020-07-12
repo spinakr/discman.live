@@ -116,7 +116,6 @@ const NewRound = (props: Props) => {
                   </select>
                 </div>
               </div>
-              <AddFriends />
             </div>
             <br />
             {selectedPlayers.map((p) => (

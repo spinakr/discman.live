@@ -8,6 +8,7 @@ import UserRounds from "./User/UserRounds";
 import { useState } from "react";
 import GlobalLeaderBoard from "./GlobalLeaderBoard";
 import HallOfFame from "./HallOfFame";
+import AddFriends from "./AddFriends";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -60,6 +61,11 @@ const Home = (props: Props) => {
               <div className="columns is-centered is-mobile">
                 <div className="column is-one-third">
                   <NewRound />
+                </div>
+              </div>
+              <div className="columns is-centered is-mobile">
+                <div className="column is-one-third">
+                  <AddFriends />
                 </div>
               </div>
             </>
