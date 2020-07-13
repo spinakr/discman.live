@@ -1,12 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { useSwipeable } from "react-swipeable";
-import {
-  Round,
-  HoleScore,
-  PlayerScore,
-  PlayerCourseStats,
-} from "../../store/Rounds";
+import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
 import RoundChart from "./RoundChart";
 import RoundPrices from "./RoundPrices";
 import PlayerCourseImprovments from "./PlayerCourseImprovments";

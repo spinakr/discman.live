@@ -191,8 +191,7 @@ const initialState: RoundsState = {
 
 export const actionCreators = {
   setScorecardOpen: (open: boolean): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
+    dispatch
   ) => {
     dispatch({ type: "TOGGLE_SCORECARD", open });
   },
@@ -354,7 +353,6 @@ export const actionCreators = {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    const username = appState.user.user.username;
     const roundId = appState.rounds?.round?.id;
     fetch(`api/rounds/${roundId}/holes`, {
       method: "POST",
@@ -567,16 +565,10 @@ export const actionCreators = {
         );
       });
   },
-  setActiveHole: (hole: number): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
+  setActiveHole: (hole: number): AppThunkAction<KnownAction> => (dispatch) => {
     dispatch({ type: "SET_ACTIVE_HOLE", hole: hole });
   },
 };
-
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const getActiveHolde = (round: Round) => {
   const activeHole = round.playerScores

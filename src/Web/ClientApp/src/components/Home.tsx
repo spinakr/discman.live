@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import * as React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { RouteComponentProps } from "react-router";

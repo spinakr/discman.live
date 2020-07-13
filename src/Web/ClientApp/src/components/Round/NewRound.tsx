@@ -7,7 +7,6 @@ import {
 } from "../../store/Courses";
 import { actionCreators as loginActionCreator } from "../../store/User";
 import { actionCreators as roundsActionCreator } from "../../store/Rounds";
-import AddFriends from "../AddFriends";
 
 const mapState = (state: ApplicationState) => {
   return {

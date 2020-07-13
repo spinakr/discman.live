@@ -1,5 +1,5 @@
 import React from "react";
-import { Round, HoleScore } from "../../store/Rounds";
+import { Round } from "../../store/Rounds";
 
 export interface ScoreCardProps {
   username: string;

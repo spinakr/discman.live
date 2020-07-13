@@ -294,6 +294,7 @@ export const actionCreators = {
     dispatch,
     getState
   ) => {
+    if (searchString.length < 3) return;
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;

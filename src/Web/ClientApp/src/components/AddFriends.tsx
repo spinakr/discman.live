@@ -32,14 +32,17 @@ const AddFriends = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const searchStringChanged = (newSearchString: string) => {
     setSearchString(newSearchString);
-    if (newSearchString.length > 2) {
-      props.searchUsers(newSearchString);
-    }
+    props.searchUsers(newSearchString);
   };
   return (
     <>
       <div className={showDialog ? "modal is-active" : "modal"}>
-        <div onClick={() => setShowDialog(false)}>
+        <div
+          onClick={() => {
+            setShowDialog(false);
+            searchStringChanged("");
+          }}
+        >
           <div className="modal-background"></div>
         </div>
         <div className="modal-card">
@@ -60,9 +63,14 @@ const AddFriends = (props: Props) => {
             </div>
             <div>
               {props.searchedUsers.map((s) => (
-                <div className="field has-addons">
+                <div className="field has-addons" key={s}>
                   <div className="control">
-                    <input className="input is-small" type="text" value={s} />
+                    <input
+                      className="input is-small"
+                      type="text"
+                      value={s}
+                      onChange={() => {}}
+                    />
                   </div>
                   <div className="control">
                     <a

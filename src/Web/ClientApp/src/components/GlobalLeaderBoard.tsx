@@ -4,7 +4,6 @@ import { ApplicationState } from "../store";
 import { actionCreators as leaderboardActionCreators } from "../store/Leaderboard";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import UserStats from "./User/UserStats";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -33,9 +32,6 @@ const months = [
   "November",
   "December",
 ];
-
-const getYearMonthString = (month: number) =>
-  `${months[month - 1]} ${new Date().getFullYear()}`;
 
 const GlobalLeaderBoard = (props: Props) => {
   const [activeMonth, setActiveMonth] = useState(new Date().getMonth() + 1);

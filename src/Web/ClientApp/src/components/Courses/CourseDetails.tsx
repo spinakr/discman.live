@@ -83,7 +83,7 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
   var chunks = chunkArray(currentCourse.holes, 6, setEditHole);
   return (
     <>
-      <div>
+      <div className="section">
         <h1 className="title">{currentCourse.name}</h1>
 
         <div className="table-container">
