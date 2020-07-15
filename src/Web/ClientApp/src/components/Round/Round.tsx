@@ -11,6 +11,7 @@ import RoundSummary from "./RoundSummary";
 import { Round } from "../../store/Rounds";
 import HoleScore from "./HoleScore";
 import RoundScoreCardModal from "./RoundScoreCardModal";
+import ScoreAnimations from "./ScoreAnimations";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -83,6 +84,7 @@ const RoundComponent = (props: Props) => {
         <hr />
         <HoleScoreSelector />
         <WindowFocusHandler />
+        <ScoreAnimations />
       </>
     );
   };
