@@ -83,59 +83,52 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
   var chunks = chunkArray(currentCourse.holes, 6, setEditHole);
   return (
     <>
-      <div className="section">
-        <h1 className="title">{currentCourse.name}</h1>
-
-        <div className="table-container">
-          {chunks.map((c, i) => {
-            return (
-              <table
-                key={i}
-                className="table is-fullwidth is-narrow is-bordered"
-              >
-                <thead>
-                  <tr>
-                    <th>Hole</th>
-                    {c.map((t) => t.header)}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th>Par</th>
-                    {c.map((t) => t.par)}
-                  </tr>
-                  <tr>
-                    <th
-                      className="has-tooltip-right"
-                      data-tooltip="Distance/length of hole"
-                    >
-                      Dist.
-                    </th>
-                    {c.map((t) => t.distance)}
-                  </tr>
-                  <tr>
-                    <th
-                      className="has-tooltip-right"
-                      data-tooltip="Hole average total"
-                    >
-                      Avg.
-                    </th>
-                    {c.map((t) => t.average)}
-                  </tr>
-                  <tr>
-                    <th
-                      className="has-tooltip-right"
-                      data-tooltip="Hole rating, 1 is most dificult"
-                    >
-                      Rat.
-                    </th>
-                    {c.map((t) => t.rating)}
-                  </tr>
-                </tbody>
-              </table>
-            );
-          })}
-        </div>
+      <div className="table-container">
+        {chunks.map((c, i) => {
+          return (
+            <table key={i} className="table is-fullwidth is-narrow is-bordered">
+              <thead>
+                <tr>
+                  <th>Hole</th>
+                  {c.map((t) => t.header)}
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Par</th>
+                  {c.map((t) => t.par)}
+                </tr>
+                <tr>
+                  <th
+                    className="has-tooltip-right"
+                    data-tooltip="Distance/length of hole"
+                  >
+                    Dist.
+                  </th>
+                  {c.map((t) => t.distance)}
+                </tr>
+                <tr>
+                  <th
+                    className="has-tooltip-right"
+                    data-tooltip="Hole average total"
+                  >
+                    Avg.
+                  </th>
+                  {c.map((t) => t.average)}
+                </tr>
+                <tr>
+                  <th
+                    className="has-tooltip-right"
+                    data-tooltip="Hole rating, 1 is most dificult"
+                  >
+                    Rat.
+                  </th>
+                  {c.map((t) => t.rating)}
+                </tr>
+              </tbody>
+            </table>
+          );
+        })}
       </div>
       <div className={editHole !== null ? "modal is-active" : "modal"}>
         <div onClick={() => setEditHole(null)}>

@@ -5,7 +5,7 @@ import * as CoursesStore from "../../store/Courses";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { Course } from "../../store/Courses";
-import CourseDetails from "./CourseDetails";
+import CourseComponent from "./CourseComponent";
 import NewCourse from "./NewCourse";
 
 const mapState = (state: ApplicationState) => {
@@ -20,40 +20,48 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-const renderCoursesList = (courses: Course[]) => {
+const renderCoursesList = (layouts: Course[]) => {
+  const onlyUnique = (value: any, index: any, self: any) => {
+    return self.indexOf(value) === index;
+  };
+  var courseNames = layouts.map((l) => l.name).filter(onlyUnique);
   return (
-    <section className="section">
-      <NewCourse />
+    <>
+      <NewCourse currentCourseName={""} />
       <hr />
       <div className="list">
-        {courses &&
-          courses.map((c) => (
-            <Link key={c.id} to={`/courses/${c.id}`} className="list-item">
-              {c.name}
+        {courseNames &&
+          courseNames.map((c) => (
+            <Link key={c} to={`/courses/${c}`} className="list-item">
+              {c}
             </Link>
           ))}
       </div>
-    </section>
+    </>
   );
 };
 
 const CoursesComponent = (props: Props) => {
   const { fetchCourses } = props;
-  let { courseId } = useParams();
+  let { courseName } = useParams();
   useEffect(() => {
     fetchCourses();
   }, [fetchCourses]);
 
-  const course = props.courses.find((c) => c.id === courseId);
+  const layouts = props.courses.find((c) => c[0] === courseName);
+  const courses = props.courses.map((x) => x[1]);
 
   return (
     <>
-      {course && (
-        <section className="container">
-          <CourseDetails course={course} updateCourse={props.updateCourse} />
-        </section>
-      )}
-      {!courseId && renderCoursesList(props.courses)}
+      <section className="section has-text-centered">
+        {layouts && (
+          <CourseComponent
+            layouts={layouts[1]}
+            updateCourse={props.updateCourse}
+          />
+        )}
+        {!courseName && renderCoursesList(([] as Course[]).concat(...courses))}
+      </section>
     </>
   );
 };

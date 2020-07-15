@@ -8,11 +8,12 @@ import { actionCreators as UserActions } from "./User";
 export interface Course {
   id: string;
   name: string;
+  layout: string;
   holes: Hole[];
 }
 
 export interface CoursesState {
-  courses: Course[];
+  courses: [string, Course[]][];
 }
 
 //Actions
@@ -74,6 +75,7 @@ export const actionCreators = {
   },
   createCourse: (
     courseName: string,
+    layoutName: string,
     numberOfHoles: number
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
@@ -87,6 +89,7 @@ export const actionCreators = {
       },
       body: JSON.stringify({
         courseName,
+        layoutName,
         numberOfHoles,
       }),
     })
@@ -168,20 +171,62 @@ export const reducer: Reducer<CoursesState> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case "FETCH_COURSES_SUCCEED":
-      return { ...state, courses: action.courses };
+      return {
+        ...state,
+        courses: action.courses.reduce((g, course: Course) => {
+          const existingEl = g.find((x) => x[0] === course.name);
+          if (existingEl) {
+            existingEl[1].push(course);
+          } else {
+            g.push([course.name, [course]]);
+          }
+
+          return g;
+        }, [] as [string, Course[]][]),
+      };
     case "COURSE_UPDATED_SUCCEED":
       return {
         ...state,
         courses: [
-          ...state.courses.filter((c) => c.id !== action.course.id),
-          action.course,
+          ...state.courses.map((c) => {
+            const layout = c[1].find((l) => l.id === action.course.id);
+            if (layout) {
+              var newc: [string, Course[]] = [
+                c[0],
+                [
+                  ...c[1].filter((x) => x.id !== action.course.id),
+                  action.course,
+                ],
+              ];
+              return newc;
+            }
+            return c;
+          }),
         ],
       };
     case "COURSE_CREATED_SUCCEED":
-      return {
-        ...state,
-        courses: [...state.courses, action.course],
-      };
+      if (state.courses.some((c) => c[0] === action.course.name)) {
+        return {
+          ...state,
+          courses: [
+            ...state.courses.map((c) => {
+              if (c[0] === action.course.name) {
+                return [c[0], [...c[1], action.course]] as [string, Course[]];
+              }
+              return c;
+            }),
+          ],
+        };
+      } else {
+        return {
+          ...state,
+          courses: [
+            ...state.courses,
+            [action.course.name, [action.course]] as [string, Course[]],
+          ],
+        };
+      }
+
     default:
       return state;
   }

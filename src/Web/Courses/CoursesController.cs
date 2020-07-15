@@ -30,14 +30,16 @@ namespace Web.Courses
         {
             var courses = _documentSession
                 .Query<Course>()
-                .Take(10)
+                .OrderByDescending(c => c.CreatedAt)
+                .ThenByDescending(c => c.Name)
                 .ToList();
 
             return Ok(courses);
         }
 
+
         [HttpPost]
-        public IActionResult CreateCourse(CourseRequest request)
+        public async Task<IActionResult> CreateCourse(CourseRequest request)
         {
             if (request.HoleDistances is null || !request.HoleDistances.Any())
             {
@@ -49,11 +51,21 @@ namespace Web.Courses
                 request.HolePars = new int[request.NumberOfHoles].Populate(3).ToList();
             }
 
+            var existingLayouts = await _documentSession.Query<Course>().Where(c => c.Name == request.CourseName).ToListAsync();
+            if (existingLayouts.Any(l => l.Layout == request.LayoutName))
+                return Conflict($"Layout on course {request.CourseName} with name {request.LayoutName} already exist");
+            var layoutsWithoutName = existingLayouts.Where(l => string.IsNullOrWhiteSpace(l.Layout));
+            foreach (var layoutWithoutName in layoutsWithoutName)
+            {
+                layoutWithoutName.Layout = $"Main{layoutWithoutName.CreatedAt.Year}";
+                _documentSession.Update(layoutWithoutName);
+            }
+
             var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var newCourse = new Course(request.CourseName, authenticatedUsername, request.HolePars, request.HoleDistances);
+            var newCourse = new Course(request.CourseName, request.LayoutName, authenticatedUsername, request.HolePars, request.HoleDistances);
 
             _documentSession.Store(newCourse);
-            _documentSession.SaveChanges();
+            await _documentSession.SaveChangesAsync();
 
             return Ok(newCourse);
         }
@@ -71,16 +83,15 @@ namespace Web.Courses
 
             return Ok(course);
         }
-
     }
 
 
     public class CourseRequest
     {
+        public string LayoutName { get; set; }
         public string CourseName { get; set; }
         public List<int> HolePars { get; set; }
         public List<int> HoleDistances { get; set; }
         public int NumberOfHoles { get; set; }
-        
     }
 }

@@ -11,7 +11,11 @@ export default () => (
   <Layout>
     <Route exact path="/" component={Home} />
     <Route exact path="/rounds/:roundId" component={Round} />
-    <Route exact path="/courses/:courseId?" component={Courses} />
+    <Route
+      exact
+      path="/courses/:courseName?/:courseLayout?"
+      component={Courses}
+    />
     <Route exact path="/user" component={User} />
     <Route exact path="/users/:username" component={User} />
     <Route exact path="/friends" component={Friends} />

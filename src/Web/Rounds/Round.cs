@@ -45,6 +45,7 @@ namespace Web.Rounds
         /// </summary>
         public string RoundName { get; set; }
         public string CourseName { get; set; }
+        public string CourseLayout { get; set; }
         public DateTime StartTime { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime CompletedAt { get; set; }

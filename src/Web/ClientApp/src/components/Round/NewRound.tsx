@@ -28,16 +28,26 @@ type Props = PropsFromRedux & {};
 
 const NewRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<Course | undefined>(
+  const [selectedLayout, setSelectedLayout] = useState<Course | undefined>(
     undefined
   );
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [manualReg, setManualReg] = useState<boolean>(false);
   const [roundName, setRoundName] = useState<string>("");
+  const [availableLayouts, setAvailableLayouts] = useState<
+    Course[] | undefined
+  >(undefined);
   const { fetchCourses, fetchUsers } = props;
-  const courseSelected = (courseId: string) => {
-    props.courses &&
-      setSelectedCourse(props.courses.find((c) => c.id === courseId));
+  const courseSelected = (courseName: string) => {
+    if (!props.courses) return;
+    const layouts = props.courses.find((c) => c[0] === courseName);
+    layouts && setAvailableLayouts(layouts[1]);
+    layouts && setSelectedLayout(layouts[1][0]);
+  };
+  const layoutSelected = (courseId: string) => {
+    const layout =
+      availableLayouts && availableLayouts.find((l) => l.id === courseId);
+    layout && setSelectedLayout(layout);
   };
   const playerAdded = (playerName: string) => {
     if (selectedPlayers.some((p) => p === playerName)) return;
@@ -45,6 +55,13 @@ const NewRound = (props: Props) => {
   };
   const removePlayer = (playerName: string) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p !== playerName));
+  };
+
+  const clearRoundInfo = () => {
+    setSelectedPlayers([]);
+    setRoundName("");
+    setAvailableLayouts(undefined);
+    setSelectedLayout(undefined);
   };
 
   useEffect(() => {
@@ -74,13 +91,23 @@ const NewRound = (props: Props) => {
                       <select onChange={(e) => courseSelected(e.target.value)}>
                         <option></option>
                         {props.courses?.map((c) => (
-                          <option key={c.name} value={c.id}>
-                            {c.name}
+                          <option key={c[0]} value={c[0]}>
+                            {c[0]}
                           </option>
                         ))}
                       </select>
                     </div>
-                    {!selectedCourse && <span></span>}
+                  </div>
+                  <div className="control">
+                    <div className="select is-primary">
+                      <select onChange={(e) => layoutSelected(e.target.value)}>
+                        {availableLayouts?.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {c.layout}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </>
               ) : (
@@ -97,7 +124,10 @@ const NewRound = (props: Props) => {
                 <label className="checkbox">
                   <input
                     type="checkbox"
-                    onChange={() => setManualReg(!manualReg)}
+                    onChange={() => {
+                      setManualReg(!manualReg);
+                      clearRoundInfo();
+                    }}
                   />
                   Manual registration
                 </label>
@@ -132,7 +162,7 @@ const NewRound = (props: Props) => {
             <button
               className="button is-success"
               onClick={() => {
-                props.newRound(selectedCourse, selectedPlayers, roundName);
+                props.newRound(selectedLayout, selectedPlayers, roundName);
                 setShowDialog(false);
               }}
             >

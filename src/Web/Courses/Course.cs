@@ -8,16 +8,19 @@ namespace Web.Courses
 {
     public class Course
     {
+
         public Course()
         {
         }
 
-        public Course(string courseName, string admin, List<int> holePars, List<int> holeDistances)
+        public Course(string courseName, string layoutName, string admin, List<int> holePars, List<int> holeDistances)
         {
             Id = Guid.NewGuid();
             Name = courseName;
             Holes = holePars.Select((h, i) => new Hole(i + 1, h, holeDistances[i])).ToList();
             Admins = new List<string>{admin, "kofoed"};
+            Layout = layoutName;
+            CreatedAt = DateTime.Now;
         }
 
         public Course(string courseName, List<Hole> holes)
@@ -29,6 +32,10 @@ namespace Web.Courses
 
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public DateTime CreatedAt { get; set; }
+
+        public string Layout { get; set; }
+
         public List<Hole> Holes { get; set; }
         public List<string> Admins { get; set; }
 
