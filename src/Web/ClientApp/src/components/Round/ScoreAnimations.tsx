@@ -49,6 +49,13 @@ const ScoreAnimations = (props: Props) => {
   const previousScoreValue = useRef(lastScore);
 
   useEffect(() => {
+    birdies.forEach((picture) => {
+      const img = new Image();
+      img.src = picture;
+    });
+  }, []);
+
+  useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
     } else {
@@ -61,7 +68,7 @@ const ScoreAnimations = (props: Props) => {
         setAnimate(imageName);
         setTimeout(() => {
           setAnimate("");
-        }, 10000);
+        }, 20000);
       }
       previousScoreValue.current = lastScore;
     }
