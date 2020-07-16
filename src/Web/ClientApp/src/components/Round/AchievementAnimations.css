@@ -4,7 +4,7 @@
 
 .flier > * {
 /* Adjust animation duration to change the element’s speed */
-        animation: fly 50s linear infinite;
+        animation: fly 30s linear infinite;
         pointer-events: none !important;
 	top: 0;
 	left: 0;
