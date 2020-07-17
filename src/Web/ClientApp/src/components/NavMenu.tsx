@@ -24,6 +24,7 @@ type Props = PropsFromRedux & {};
 const NavMenu = (props: Props) => {
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmSkipHole, setConfirmSkipHole] = useState(false);
   return (
     <>
       <nav className="navbar is-fixed-bottom is-light">
@@ -103,6 +104,12 @@ const NavMenu = (props: Props) => {
                             >
                               <strong>Delete round</strong>
                             </a>
+                            <a
+                              className="navbar-item has-text-danger"
+                              onClick={() => setConfirmSkipHole(true)}
+                            >
+                              <strong>Skip hole</strong>
+                            </a>
                           </>
                         )}
                       </>
@@ -135,6 +142,36 @@ const NavMenu = (props: Props) => {
           </div>
         </div>
       </nav>
+
+      <div className={`modal ${confirmSkipHole ? "is-active" : ""}`}>
+        <a href="" onClick={() => setConfirmSkipHole(false)}>
+          {" "}
+          <div className="modal-background"></div>{" "}
+        </a>
+        <div className="modal-card">
+          <header className="modal-card-head">
+            <p className="modal-card-title">Skip hole?</p>
+          </header>
+          <section className="modal-card-body">
+            <p>Hole will be removed from the current round, are you sure?</p>
+            <hr />
+            <div className="field">
+              <div className="control">
+                <button
+                  className="button is-danger"
+                  onClick={() => {
+                    setOpen(false);
+                    setConfirmSkipHole(false);
+                    props.skipHole(props.round?.id || "");
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
 
       <div className={`modal ${confirmDelete ? "is-active" : ""}`}>
         <a href="" onClick={() => setConfirmDelete(false)}>

@@ -120,6 +120,25 @@ namespace Web.Matches
             await _documentSession.SaveChangesAsync();
             return Ok();
         }
+        
+        [HttpDelete("{roundId}/holes/{holeNumber}")]
+        public async Task<IActionResult> DeleteHole(Guid roundId, int holeNumber)
+        {
+            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+
+            var round = await _documentSession
+                .Query<Round>().SingleAsync(x => x.Id == roundId);
+
+            if (round.CreatedBy != username) return Forbid("Only rounds created by yourself can be modified");
+
+            foreach (var playerScore in round.PlayerScores)
+            {
+                playerScore.Scores = playerScore.Scores.Where(s => s.Hole.Number != holeNumber).ToList();
+            }
+
+            await PersistUpdatedRound(round);
+            return Ok();
+        }
 
         [HttpPut("{roundId}/scores")]
         public async Task<IActionResult> UpdateScore(Guid roundId, [FromBody] UpdateScoreRequest request)

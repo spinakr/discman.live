@@ -409,6 +409,35 @@ export const actionCreators = {
         );
       });
   },
+  skipHole: (roundId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+
+    const holeNumber = appState.rounds?.activeHole;
+    if (!holeNumber || !roundId) return;
+    fetch(`api/rounds/${roundId}/holes/${holeNumber}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Delete hole failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   setScore: (
     score: number,
     strokes: StrokeOutcome[]
