@@ -87,11 +87,13 @@ namespace Web
 
                 if (roundScores.Count < 3) continue;
 
-                var adjustedAverage = roundScores.Average(s =>
-                {
-                    var playerRoundScore = s.PlayerRoundScores.Scores.Sum(x => x.RelativeToPar);
-                    return playerRoundScore - courseAverages[s.CourseName];
-                });
+                var adjustedAverage = roundScores
+                    .Where(r => !string.IsNullOrWhiteSpace(r.CourseName))
+                    .Average(s =>
+                    {
+                        var playerRoundScore = s.PlayerRoundScores.Scores.Sum(x => x.RelativeToPar);
+                        return playerRoundScore - courseAverages[s.CourseName];
+                    });
 
                 var playerScores = roundScores.Select(x => x.PlayerRoundScores).ToList();
                 var avg = playerScores.Average(s => s.Scores.Sum(x => x.RelativeToPar));
