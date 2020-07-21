@@ -108,6 +108,21 @@ namespace Web.Matches
             await PersistUpdatedRound(round);
             return Ok(round);
         }
+        
+        [HttpDelete("{roundId}/users")]
+        public async Task<IActionResult> LeaveRound(Guid roundId)
+        {
+            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+
+            var round = await _documentSession
+                .Query<Round>().SingleAsync(x => x.Id == roundId);
+
+            round.PlayerScores = round.PlayerScores.Where(s => s.PlayerName != username).ToList();
+
+            _documentSession.Update(round);
+            await PersistUpdatedRound(round);
+            return Ok();
+        }
 
         [HttpDelete("{roundId}")]
         public async Task<IActionResult> DeleteRound(Guid roundId)

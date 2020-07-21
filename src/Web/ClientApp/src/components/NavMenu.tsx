@@ -25,6 +25,7 @@ const NavMenu = (props: Props) => {
   const [open, setOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [confirmSkipHole, setConfirmSkipHole] = useState(false);
+  const [confirmLeaveRound, setConfirmLeaveRound] = useState(false);
   return (
     <>
       <nav className="navbar is-fixed-bottom is-light">
@@ -69,6 +70,15 @@ const NavMenu = (props: Props) => {
                         {props.round.isCompleted && !props.round.courseName && (
                           <SaveCourseFromRound setOpen={setOpen} />
                         )}
+                        <a
+                          className="navbar-item"
+                          onClick={() => {
+                            setOpen(false);
+                            setConfirmLeaveRound(true);
+                          }}
+                        >
+                          Leave round
+                        </a>
 
                         {props.user?.user?.username ===
                           props.round?.createdBy && (
@@ -142,6 +152,39 @@ const NavMenu = (props: Props) => {
           </div>
         </div>
       </nav>
+
+      <div className={`modal ${confirmLeaveRound ? "is-active" : ""}`}>
+        <a href="" onClick={() => setConfirmLeaveRound(false)}>
+          {" "}
+          <div className="modal-background"></div>{" "}
+        </a>
+        <div className="modal-card">
+          <header className="modal-card-head">
+            <p className="modal-card-title">Leave round?</p>
+          </header>
+          <section className="modal-card-body">
+            <p>
+              You will be removed from the round and all your scores deleted,
+              are you sure?
+            </p>
+            <hr />
+            <div className="field">
+              <div className="control">
+                <button
+                  className="button is-danger"
+                  onClick={() => {
+                    setOpen(false);
+                    setConfirmLeaveRound(false);
+                    props.leaveRound(props.round?.id || "");
+                  }}
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
 
       <div className={`modal ${confirmSkipHole ? "is-active" : ""}`}>
         <a href="" onClick={() => setConfirmSkipHole(false)}>

@@ -440,6 +440,34 @@ export const actionCreators = {
         );
       });
   },
+  leaveRound: (roundId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+
+    if (!roundId) return;
+    fetch(`api/rounds/${roundId}/users`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Leave round failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   setScore: (
     score: number,
     strokes: StrokeOutcome[]
