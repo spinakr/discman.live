@@ -12,7 +12,7 @@ namespace Web.Rounds
         {
         }
 
-        public Round(Course course, List<string> players, string createdBy, string roundName)
+        public Round(Course course, List<string> players, string createdBy, string roundName, ScoreMode scoreMode)
         {
             Id = Guid.NewGuid();
             CourseName = course.Name;
@@ -20,9 +20,10 @@ namespace Web.Rounds
             PlayerScores = GenerateEmptyScoreCard(course.Holes, players);
             CreatedBy = createdBy;
             RoundName = roundName;
+            ScoreMode = scoreMode;
         }
 
-        public Round(List<string> players, string createdBy, string roundName)
+        public Round(List<string> players, string createdBy, string roundName, ScoreMode scoreMode)
         {
             Id = Guid.NewGuid();
             StartTime = DateTime.Now;
@@ -34,6 +35,7 @@ namespace Web.Rounds
                 }).ToList();
             RoundName = roundName;
             CreatedBy = createdBy;
+            ScoreMode = scoreMode;
         }
 
         public Guid Id { get; set; }

@@ -1,6 +1,7 @@
 import "./styles.scss";
 import "@fortawesome/fontawesome-free/css/all.css";
 import "@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css";
+import "bulma-switch/dist/css/bulma-switch.min.css";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";

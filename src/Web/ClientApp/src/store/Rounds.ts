@@ -28,9 +28,9 @@ export type StrokeOutcome =
   | "Basket";
 
 export enum ScoreMode {
-  DetailedLive,
-  StrokesLive,
-  OneForAll,
+  DetailedLive = 0,
+  StrokesLive = 1,
+  OneForAll = 2,
 }
 
 export interface PlayerScore {
@@ -296,7 +296,8 @@ export const actionCreators = {
   newRound: (
     course: Course | undefined,
     players: string[],
-    roundName: string
+    roundName: string,
+    scoreMode: ScoreMode
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
@@ -315,6 +316,7 @@ export const actionCreators = {
         courseId: course?.id,
         players: players,
         roundName,
+        scoreMode,
       }),
     })
       .then((response) => {

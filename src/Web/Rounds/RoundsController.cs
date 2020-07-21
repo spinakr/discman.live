@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Web.Courses;
@@ -85,7 +86,9 @@ namespace Web.Matches
                 .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10));
             if (justStartedRound is object) return Conflict(justStartedRound);
 
-            var round = course != null ? new Round(course, players, username, request.RoundName) : new Round(players, username, request.RoundName);
+            var round = course != null
+                ? new Round(course, players, username, request.RoundName, request.ScoreMode)
+                : new Round(players, username, request.RoundName, request.ScoreMode);
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 
@@ -120,7 +123,7 @@ namespace Web.Matches
             await _documentSession.SaveChangesAsync();
             return Ok();
         }
-        
+
         [HttpDelete("{roundId}/holes/{holeNumber}")]
         public async Task<IActionResult> DeleteHole(Guid roundId, int holeNumber)
         {
@@ -179,9 +182,9 @@ namespace Web.Matches
             await PersistUpdatedRound(round);
             return Ok();
         }
-        
+
         [HttpPost("{roundId}/savecourse")]
-        public async Task<IActionResult> CompleteRound(Guid roundId, [FromBody]SaveCourseRequest request)
+        public async Task<IActionResult> CompleteRound(Guid roundId, [FromBody] SaveCourseRequest request)
         {
             var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == roundId);
             round.CourseName = request.CourseName;
@@ -194,7 +197,7 @@ namespace Web.Matches
                 .First().Scores
                 .Select(x => new Hole(x.Hole.Number, x.Hole.Par, x.Hole.Distance))
                 .ToList();
-            
+
             var newCourse = new Course(request.CourseName, holes);
             _documentSession.Store(newCourse);
             await PersistUpdatedRound(round);
@@ -303,13 +306,13 @@ namespace Web.Matches
                     .Where(r => !r.Deleted)
                     .Where(r => r.PlayerScores.Any(p => p.PlayerName == userInRound.Username))
                     .Where(r => r.IsCompleted)
-                    .Where(r => r.CompletedAt > new DateTime(now.Year,1,1))
+                    .Where(r => r.CompletedAt > new DateTime(now.Year, 1, 1))
                     .ToList();
 
                 var userRounds = rounds.Concat(new List<Round> {round}).ToList();
 
                 var userAchievements = userInRound.Achievements.EvaluateUserRounds(userRounds, userInRound.Username);
-                
+
                 var newAchievements = roundAchievements.Concat(userAchievements).ToList();
 
                 if (!newAchievements.Any()) continue;
@@ -336,7 +339,9 @@ namespace Web.Matches
         public Guid CourseId { get; set; }
         public string RoundName { get; set; }
         public List<string> Players { get; set; }
+        public ScoreMode ScoreMode { get; set; }
     }
+
 
     public class AddHoleRequest
     {

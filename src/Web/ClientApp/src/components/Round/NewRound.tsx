@@ -6,7 +6,10 @@ import {
   Course,
 } from "../../store/Courses";
 import { actionCreators as loginActionCreator } from "../../store/User";
-import { actionCreators as roundsActionCreator } from "../../store/Rounds";
+import {
+  actionCreators as roundsActionCreator,
+  ScoreMode,
+} from "../../store/Rounds";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -64,6 +67,8 @@ const NewRound = (props: Props) => {
     setSelectedLayout(undefined);
   };
 
+  const [scoreType, setScoreType] = useState<number>(ScoreMode.DetailedLive);
+
   useEffect(() => {
     showDialog && fetchCourses();
     showDialog && fetchUsers();
@@ -80,12 +85,50 @@ const NewRound = (props: Props) => {
             <p className="modal-card-title">Start new round</p>
           </header>
           <section className="modal-card-body">
+            <label className="label">Scoring</label>
+            <div className="field is-grouped">
+              <div className="control">
+                <div className="select is-primary">
+                  <select
+                    value={scoreType}
+                    onChange={(e) => {
+                      setScoreType(+e.target.value);
+                    }}
+                  >
+                    <option value={ScoreMode.DetailedLive}>
+                      Detailed live
+                    </option>
+                    <option value={ScoreMode.StrokesLive}>Simple live</option>
+                  </select>
+                </div>
+              </div>
+              <input
+                id="switchExample"
+                type="checkbox"
+                name="switchExample"
+                className="switch"
+                onChange={() => {
+                  setManualReg(!manualReg);
+                  clearRoundInfo();
+                }}
+              />
+              <label htmlFor="switchExample">On-the-fly</label>
+              <div
+                className="has-tooltip has-tooltip-left has-tooltip-multiline"
+                data-tooltip="Create the course while playing, add new holes by reading par and distance of information signs on the actual course."
+              >
+                <span className="icon icon has-text-info">
+                  <i className="fas fa-lg fa-info"></i>
+                </span>
+              </div>
+            </div>
+
             <label className="label">
               {manualReg ? "Round Name" : "Course"}
             </label>
-            <div className="field is-grouped">
-              {manualReg === false ? (
-                <>
+            {manualReg === false ? (
+              <>
+                <div className="field">
                   <div className="control">
                     <div className="select is-primary">
                       <select onChange={(e) => courseSelected(e.target.value)}>
@@ -98,6 +141,8 @@ const NewRound = (props: Props) => {
                       </select>
                     </div>
                   </div>
+                </div>
+                <div className="field">
                   <div className="control">
                     <div className="select is-primary">
                       <select onChange={(e) => layoutSelected(e.target.value)}>
@@ -109,8 +154,10 @@ const NewRound = (props: Props) => {
                       </select>
                     </div>
                   </div>
-                </>
-              ) : (
+                </div>
+              </>
+            ) : (
+              <div className="field">
                 <div className="control">
                   <input
                     className="input"
@@ -119,20 +166,8 @@ const NewRound = (props: Props) => {
                     onChange={(e) => setRoundName(e.target.value)}
                   ></input>
                 </div>
-              )}
-              <div className="control">
-                <label className="checkbox">
-                  <input
-                    type="checkbox"
-                    onChange={() => {
-                      setManualReg(!manualReg);
-                      clearRoundInfo();
-                    }}
-                  />
-                  Manual registration
-                </label>
               </div>
-            </div>
+            )}
             <label className="label">Friends</label>
             <div className="field is-grouped">
               <div className="control">
@@ -162,7 +197,12 @@ const NewRound = (props: Props) => {
             <button
               className="button is-success"
               onClick={() => {
-                props.newRound(selectedLayout, selectedPlayers, roundName);
+                props.newRound(
+                  selectedLayout,
+                  selectedPlayers,
+                  roundName,
+                  scoreType
+                );
                 setShowDialog(false);
               }}
             >

@@ -66,7 +66,7 @@ namespace Web.Courses
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError($"Failed to update ratings of course {course.Id} {course.Name} {e.StackTrace}");
+                    _logger.LogWarning($"Failed to update ratings of course {course.Id} {course.Name} {e.StackTrace}");
                 }
             }
 
