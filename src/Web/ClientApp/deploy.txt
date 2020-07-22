@@ -1,1 +1,8 @@
 docker build -t sp1nakr/disclive:0.50 . ; docker push sp1nakr/disclive:0.50
+
+
+# Backup
+ docker exec -t postgres pg_dumpall -c -U postgres > dump_`date +%d-%m-%Y"_"%H_%M_%S`.sql
+
+# Restore 
+cat your_dump.sql | docker exec -i your-db-container psql -U postgres

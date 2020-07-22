@@ -166,7 +166,7 @@ namespace Web.Users
             var fairwayHitRate = holesWithDetails.FairwayRate();
             var onePutRate = holesWithDetails.OnePutRate();
 
-            return new UserStats(roundsPlayed, holesPlayed, putsPerHole, fairwayHitRate, scrambleRate, onePutRate, totalScore,
+            return new UserStats(roundsPlayed, holesPlayed, putsPerHole, fairwayHitRate, scrambleRate, onePutRate, playerRoundAverage,
                 strokesGained);
         }
 

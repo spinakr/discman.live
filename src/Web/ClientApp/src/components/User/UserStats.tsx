@@ -87,12 +87,15 @@ const UserStatsComponent = (props: Props) => {
             </div>
             <div className="columns is-centered is-mobile">
               <div className="column has-text-centered">
-                <h6 className="title is-6">Total score</h6>
-                {`${stats.totalScore < 0 ? "-" : "+"}${Math.abs(
-                  stats.totalScore
-                )}`}
+                <h6 className="title is-6">Average score</h6>
+                {`${stats.averageScore < 0 ? "-" : "+"}${Math.abs(
+                  stats.averageScore
+                ).toFixed(1)}`}
               </div>
-              <div className="column has-text-centered">
+              <div
+                data-tooltip="Average score matched against the average of alle other players"
+                className="has-tooltip has-tooltip-multiline column has-text-centered"
+              >
                 <h6 className="title is-6">Strokes gained</h6>
                 {stats.strokesGained.toFixed(1)}
               </div>

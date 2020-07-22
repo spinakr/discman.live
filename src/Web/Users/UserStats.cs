@@ -8,11 +8,11 @@ namespace Web.Users
         public double FairwayHitRate { get; }
         public double ScrambleRate { get; }
         public double OnePutRate { get; }
-        public int TotalScore { get; }
+        public double AverageScore { get; }
         public double StrokesGained { get; }
 
         public UserStats(int roundsPlayed, int holesPlayed, double putsPerHole, double fairwayHitRate, double scrambleRate, double onePutRate,
-            int totalScore, double strokesGained)
+            double averageScore, double strokesGained)
         {
             this.RoundsPlayed = roundsPlayed;
             this.HolesPlayed = holesPlayed;
@@ -20,7 +20,7 @@ namespace Web.Users
             this.FairwayHitRate = fairwayHitRate;
             this.ScrambleRate = scrambleRate;
             this.OnePutRate = onePutRate;
-            this.TotalScore = totalScore;
+            this.AverageScore = averageScore;
             this.StrokesGained = strokesGained;
         }
     }

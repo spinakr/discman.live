@@ -15,7 +15,7 @@ export interface UserStats {
   fairwayHitRate: number;
   scrambleRate: number;
   onePutRate: number;
-  totalScore: number;
+  averageScore: number;
   strokesGained: number;
 }
 

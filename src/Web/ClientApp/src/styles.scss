@@ -8,6 +8,10 @@ $navbar-breakpoint: 0;
     line-height: 0.5
 }
 
+.box {
+  position: relative;
+}
+
 .box a {
   color: black;
   text-decoration: none; /* no underline */
