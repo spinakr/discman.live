@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import { actionCreators as leaderboardActionCreators } from "../store/Leaderboard";
 import { useEffect } from "react";
+import InformationDialogue from "./InformationDialogue";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -31,14 +32,10 @@ const HallOfFame = (props: Props) => {
         <div className="column is-half">
           <h5 className="title is-5">Hall of Fame </h5>
         </div>
-        <div
-          className="column is-4 has-tooltip has-tooltip-left has-tooltip-multiline"
-          data-tooltip="Hall of Fame is updated at end of each month. Only rounds with at least 2 players count. Only players with at least 5 rounds can win."
-        >
-          <span className="icon is-large icon has-text-info is-inline-block">
-            <i className="fas fa-lg fa-info"></i>
-          </span>
-        </div>
+        <InformationDialogue
+          title="Hall of Fame"
+          text="Hall of Fame is updated at end of each month. Only rounds with at least 2 players count. Only players with at least 5 rounds can win."
+        />
       </div>
 
       <table className="table is-fullwidth is-narrow is-striped">
@@ -97,7 +94,9 @@ const HallOfFame = (props: Props) => {
               )}
             </td>
             <td>{currentHallOfFame?.bestRoundAverage.username}</td>
-            <td>{currentHallOfFame?.bestRoundAverage.roundAverage}</td>
+            <td>
+              {currentHallOfFame?.bestRoundAverage.roundAverage.toFixed(1)}
+            </td>
             <td>{currentHallOfFame?.bestRoundAverage.daysInHallOfFame}</td>
           </tr>
         </tbody>

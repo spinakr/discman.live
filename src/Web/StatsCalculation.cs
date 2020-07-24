@@ -80,7 +80,7 @@ namespace Web
             foreach (var player in players)
             {
                 var roundScores = rounds
-                    .Where(r => r.PlayerScores.Count > 1) // only rounds with at least 2 players
+                    // .Where(r => r.PlayerScores.Count > 1) // only rounds with at least 2 players
                     .Select(r => (r.CourseName, PlayerRoundScores: r.PlayerScores.SingleOrDefault(p => p.PlayerName == player)))
                     .Where(x => x.PlayerRoundScores != null)
                     .ToList();

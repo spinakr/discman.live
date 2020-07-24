@@ -10,6 +10,7 @@ import {
   actionCreators as roundsActionCreator,
   ScoreMode,
 } from "../../store/Rounds";
+import InformationDialogue from "../InformationDialogue";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -83,6 +84,14 @@ const NewRound = (props: Props) => {
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Start new round</p>
+            <InformationDialogue
+              title="Start Round"
+              text={`Select course and layout.
+
+On-the-fly mode allows adding new holes by reading par and distance of information signs on the actual course while playing.
+
+After finishing the round, an actuall course can be created from the registered holes.`}
+            />
           </header>
           <section className="modal-card-body">
             <label className="label">Scoring</label>
@@ -113,14 +122,6 @@ const NewRound = (props: Props) => {
                 }}
               />
               <label htmlFor="switchExample">On-the-fly</label>
-              <div
-                className="has-tooltip has-tooltip-left has-tooltip-multiline"
-                data-tooltip="Create the course while playing, add new holes by reading par and distance of information signs on the actual course."
-              >
-                <span className="icon icon has-text-info">
-                  <i className="fas fa-lg fa-info"></i>
-                </span>
-              </div>
             </div>
 
             <label className="label">

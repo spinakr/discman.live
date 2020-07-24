@@ -56,7 +56,9 @@ namespace Web.Users
                 var achievementObj = (UserAchievement) constructor.Invoke(new object[] {username});
                 var evaluationMethod = userAchievement.GetMethod(nameof(UserAchievement.Evaluate));
                 var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {userRounds});
-                if (res && _achievements.All(a => a.AchievementName != achievementObj.AchievementName))
+                if (res && !_achievements.Any(a =>
+                    a.AchievementName == achievementObj.AchievementName &&
+                    a.AchievedAt.Month == achievementObj.AchievedAt.Month))
                 {
                     newAchievements.Add(achievementObj);
                 }

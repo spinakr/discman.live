@@ -95,14 +95,14 @@ export const actionCreators = {
         );
       });
   },
-  fetchLeaderboard: (month: number = 0): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
+  fetchLeaderboard: (
+    onlyFriends: boolean,
+    month: number = 0
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/leaderboard?month=${month}`, {
+    fetch(`api/leaderboard?month=${month}&onlyFriends=${onlyFriends}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
