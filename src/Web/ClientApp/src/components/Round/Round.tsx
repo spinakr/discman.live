@@ -44,11 +44,12 @@ const calculateDurationString = (round: Round) => {
 };
 
 const RoundComponent = (props: Props) => {
-  const { round, activeHole, fetchRound } = props;
+  const { round, activeHole, fetchRound, fetchStatsOnCourse } = props;
   let { roundId } = useParams();
   useEffect(() => {
     fetchRound(roundId as string);
-  }, [fetchRound, roundId]);
+    roundId && fetchStatsOnCourse(roundId);
+  }, [fetchRound, fetchStatsOnCourse, roundId]);
 
   const renderRound = (round: Round, activeHole: number) => {
     if (round.isCompleted) {

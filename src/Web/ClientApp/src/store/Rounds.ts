@@ -39,10 +39,21 @@ export interface PlayerScore {
 }
 
 export interface PlayerCourseStats {
+  courseName: string;
+  layoutName: string;
   playerName: string;
   courseAverage: number;
   thisRoundVsAverage: number;
-  numberOfRounds: number;
+  playerCourseRecord: number;
+  holeAverages: number[];
+  averagePrediction: number[];
+  roundsPlayed: string;
+}
+
+export interface PlayerRoundProgression {
+  courseAverage: number;
+  holeAverages: [number, number][];
+  averagePrediction: [number, number][];
 }
 
 export interface HoleScore {

@@ -6,6 +6,7 @@ import * as RoundsStore from "../store/Rounds";
 import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
 import SaveCourseFromRound from "./Round/SaveCourseFromRound";
+import RoundStatus from "./Round/RoundStatus";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -37,14 +38,19 @@ const NavMenu = (props: Props) => {
               </>
             )}
           {props.round && props.location.pathname.startsWith("/rounds") && (
-            <div className="navbar-item">
-              <button
-                className="button is-warning tour-scorecard"
-                onClick={() => props.setScorecardOpen(true)}
-              >
-                <strong>Scorecard</strong>
-              </button>
-            </div>
+            <>
+              <div className="navbar-item">
+                <button
+                  className="button is-warning tour-scorecard"
+                  onClick={() => props.setScorecardOpen(true)}
+                >
+                  <strong>Scorecard</strong>
+                </button>
+              </div>
+              <div className="navbar-item">
+                <RoundStatus />
+              </div>
+            </>
           )}
         </div>
 

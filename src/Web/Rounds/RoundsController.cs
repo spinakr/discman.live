@@ -108,7 +108,7 @@ namespace Web.Matches
             await PersistUpdatedRound(round);
             return Ok(round);
         }
-        
+
         [HttpDelete("{roundId}/users")]
         public async Task<IActionResult> LeaveRound(Guid roundId)
         {
@@ -199,7 +199,7 @@ namespace Web.Matches
         }
 
         [HttpPost("{roundId}/savecourse")]
-        public async Task<IActionResult> CompleteRound(Guid roundId, [FromBody] SaveCourseRequest request)
+        public async Task<IActionResult> SaveCourse(Guid roundId, [FromBody] SaveCourseRequest request)
         {
             var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == roundId);
             round.CourseName = request.CourseName;
@@ -220,14 +220,51 @@ namespace Web.Matches
             return Ok(newCourse);
         }
 
-
+        [HttpGet("{roundId}/progression")]
+        // public IActionResult GetRoundProgression(Guid roundId)
+        // {
+        //     var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+        //     var activeRound = _documentSession
+        //         .Query<Round>()
+        //         .Where(r => !r.Deleted)
+        //         .SingleOrDefault(x => x.Id == roundId);
+        //     if (activeRound is null) return NotFound();
+        //
+        //     var roundsOnCourse = _documentSession
+        //         .Query<Round>()
+        //         .Where(r => !r.Deleted)
+        //         .Where(r => r.CourseName == activeRound.CourseName && r.CourseLayout == activeRound.CourseLayout)
+        //         .ToList();
+        //
+        //     var course = _documentSession
+        //         .Query<Course>()
+        //         .Single(c => c.Name == activeRound.CourseName && c.Layout == activeRound.CourseLayout);
+        //
+        //     var courseAverage = roundsOnCourse.Average(r => r.PlayerScore(username));
+        //
+        //     var playerHoleAverages = roundsOnCourse
+        //         .SelectMany(r => r.PlayerScores.Where(s => s.PlayerName == username))
+        //         .SelectMany(s => s.Scores)
+        //         .GroupBy(s => s.Hole.Number)
+        //         .ToDictionary(x => x.Key, x => x.Average(y => y.RelativeToPar));
+        //
+        //     var progressionDataPoints = playerHoleAverages.Scan((state, item) => state + item.Value, 0.0).Skip(1).ToList();
+        //
+        //
+        //     return Ok(new PlayerRoundProgression
+        //     {
+        //         HoleAverages = playerHoleAverages.Select(x => (x.Key, x.Value)).ToList(),
+        //         AveragePrediction = progressionDataPoints
+        //     });
+        // }
         [HttpGet("{roundId}/stats")]
-        public async Task<IActionResult> GetStatsOnCourse(Guid roundId)
+        public async Task<IActionResult> GetRoundStatsOnCourse(Guid roundId)
         {
             var activeRound = await _documentSession
                 .Query<Round>()
                 .SingleAsync(r => r.Id == roundId);
             var courseName = activeRound.CourseName;
+            var layoutName = activeRound.CourseLayout;
             var players = activeRound.PlayerScores.Select(p => p.PlayerName);
 
 
@@ -235,14 +272,18 @@ namespace Web.Matches
             if (courseName is null) return Ok(playersStats);
             foreach (var player in players)
             {
-                var allRoundsOnCourse = _documentSession
+                var playerRounds = _documentSession
                     .Query<Round>()
                     .Where(r => !r.Deleted)
-                    .Where(r => r.CourseName == courseName)
+                    .Where(r => r.IsCompleted)
+                    .Where(r => r.PlayerScores.Count > 1)
+                    .Where(r => r.CourseName == courseName && r.CourseLayout == layoutName)
                     .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
                     .ToList();
 
-                var fivePreviousRounds = allRoundsOnCourse
+                var playerCourseRecord = playerRounds.Any() ? playerRounds.Select(r => r.PlayerScore(player)).Min() : (int?) null;
+
+                var fivePreviousRounds = playerRounds
                     .Where(r => r.StartTime < activeRound.StartTime)
                     .OrderByDescending(r => r.StartTime)
                     .Take(5)
@@ -257,16 +298,27 @@ namespace Web.Matches
                     .Single(s => s.PlayerName == player)
                     .Scores.Sum(s => s.RelativeToPar);
 
+                var playerHoleAverages = fivePreviousRounds
+                    .SelectMany(r => r.PlayerScores.Where(s => s.PlayerName == player))
+                    .SelectMany(s => s.Scores)
+                    .GroupBy(s => s.Hole.Number)
+                    .ToDictionary(x => x.Key.ToString(), x => x.Average(y => y.RelativeToPar));
+
+                var progressionDataPoints = playerHoleAverages.Scan((state, item) => state + item.Value, 0.0).Skip(1).ToList();
+
                 playersStats.Add(new PlayerCourseStats
                 {
                     PlayerName = player,
                     CourseName = courseName,
+                    LayoutName = layoutName,
                     CourseAverage = currentCourseAverage,
-                    NumberOfRounds = allRoundsOnCourse.Count,
-                    ThisRoundVsAverage = thisRound - currentCourseAverage
+                    PlayerCourseRecord = playerCourseRecord,
+                    ThisRoundVsAverage = thisRound - currentCourseAverage,
+                    HoleAverages = playerHoleAverages.Select(x => x.Value).ToList(),
+                    AveragePrediction = progressionDataPoints,
+                    RoundsPlayed = playerRounds.Count
                 });
             }
-
 
             return Ok(playersStats.OrderBy(s => s.ThisRoundVsAverage));
         }

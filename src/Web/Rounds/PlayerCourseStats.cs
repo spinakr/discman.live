@@ -1,12 +1,17 @@
+using System.Collections.Generic;
+
 namespace Web.Matches
 {
     public class PlayerCourseStats
     {
         public string CourseName { get; set; }
+        public string LayoutName { get; set; }
         public string PlayerName { get; set; }
         public double CourseAverage { get; set; }
-
+        public int? PlayerCourseRecord { get; set; }
         public double ThisRoundVsAverage { get; set; }
-        public int NumberOfRounds { get; set; }
+        public List<double> HoleAverages { get; set; }
+        public List<double> AveragePrediction { get; set; }
+        public int RoundsPlayed { get; set; }
     }
 }

@@ -58,7 +58,11 @@ const HoleScoreComponent = ({
                   p.playerName === username ? "has-background-light" : ""
                 }
               >
-                {p.playerName}
+                {p.playerName} (
+                {p.scores.reduce((total, score) => {
+                  return total + score.relativeToPar;
+                }, 0)}
+                )
               </th>
             ))}
           </tr>
