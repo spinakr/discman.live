@@ -1,19 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Channels;
-using System.Threading.Tasks;
-using Loggly;
-using Loggly.Config;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Compact;
 
 namespace Web
 {
@@ -46,8 +36,12 @@ namespace Web
                 .Build();
             Serilog.Debugging.SelfLog.Enable(Console.Error);
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .MinimumLevel.Warning()
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                .MinimumLevel.Override("Marten", LogEventLevel.Warning)
+                .WriteTo.Console()
+                .Enrich.WithProperty("ApplicationName", "discman.live")
+                .WriteTo.Http("http://logstash:7000")
+                .MinimumLevel.Information()
                 .CreateLogger();
         }
 

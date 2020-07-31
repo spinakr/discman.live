@@ -24,7 +24,6 @@ namespace Web.Courses
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Timed Hosted Service running.");
             _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(12));
             return Task.CompletedTask;
         }

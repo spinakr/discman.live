@@ -46,7 +46,7 @@ namespace Web.Courses
             if (featureToggles.ReEvaluateAchievementsDone) return;
             featureToggles.ReEvaluateAchievementsDone = true;
             documentSession.Update(featureToggles);
-            _logger.LogInformation("Running reevaluation of achievements!");
+            _logger.LogInformation("Running re-evaluation of achievements!");
             
             var rounds = documentSession
                 .Query<Round>()
@@ -102,8 +102,6 @@ namespace Web.Courses
         
         public Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Timed Hosted Service is stopping.");
-
             _timer?.Change(Timeout.Infinite, 0);
 
             return Task.CompletedTask;

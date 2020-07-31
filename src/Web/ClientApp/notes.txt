@@ -6,3 +6,7 @@ docker build -t sp1nakr/disclive:0.50 . ; docker push sp1nakr/disclive:0.50
 
 # Restore 
 cat your_dump.sql | docker exec -i your-db-container psql -U postgres
+
+
+# ELK
+https://github.com/deviantony/docker-elk
