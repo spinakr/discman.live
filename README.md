@@ -11,3 +11,23 @@ To do development, stop the web container `docker-compose stop web`, and start t
 Run pgadmin tool to query db manually with 
 
 `docker run -d -e PGADMIN_DEFAULT_EMAIL="anders.kfd@gmail.com" -e PGADMIN_DEFAULT_PASSWORD="anderskofoed" -p 1111:80 dpage/pgadmin4`
+
+
+
+### Build new image version
+From `src/Web`-dir run:
+`docker build -t sp1nakr/disclive:0.50 . ; docker push sp1nakr/disclive:0.50`
+
+### Deploy
+From `infrastructure`-dir. Update docker-compose with new version and run `docker-compose up -d disclive`
+
+
+### Backup
+`docker exec -t postgres pg_dumpall -c -U postgres > dump_`date +%d-%m-%Y"_"%H_%M_%S`.sql`
+
+### Restore 
+`cat your_dump.sql | docker exec -i your-db-container psql -U postgres`
+
+
+# ELK
+https://github.com/deviantony/docker-elk
