@@ -30,10 +30,6 @@ namespace Web
 
         private static void ConfigureLogger()
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json")
-                .AddEnvironmentVariables()
-                .Build();
             Serilog.Debugging.SelfLog.Enable(Console.Error);
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)

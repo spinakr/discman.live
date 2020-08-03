@@ -14,7 +14,6 @@ services:
       - "80:80"
       - "443:443"
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    
 
   certbot:
     image: certbot/certbot
@@ -40,24 +39,12 @@ services:
       timeout: 5s
       retries: 5
 
-  disclive:
-    image: sp1nakr/disclive:0.124
-    container_name: discliveweb
-    env_file:
-      - ./variables.env
-
-
-
   elasticsearch:
     build:
       context: elasticsearch/
       args:
         ELK_VERSION: 7.8.0
     volumes:
-      # - type: bind
-      #   source: ./elasticsearch/config/elasticsearch.yml
-      #   target: /usr/share/elasticsearch/config/elasticsearch.yml
-      #   read_only: true
       - type: volume
         source: elasticsearch
         target: /usr/share/elasticsearch/data
@@ -72,15 +59,6 @@ services:
         context: logstash/
         args:
           ELK_VERSION: 7.8.0
-      # volumes:
-        # - type: bind
-        #   source: ./logstash/config/logstash.yml
-        #   target: /usr/share/logstash/config/logstash.yml
-        #   read_only: true
-        # - type: bind
-        #   source: ./logstash/pipeline
-        #   target: /usr/share/logstash/pipeline
-        #   read_only: true
       ports:
         - "7000:7000/tcp"
         - "7000:7000/udp"
@@ -95,17 +73,16 @@ services:
       context: kibana/
       args:
         ELK_VERSION: 7.8.0
-    # volumes:
-      # - type: bind
-      #   source: ./kibana/config/kibana.yml
-      #   target: /usr/share/kibana/config/kibana.yml
-      #   read_only: true
     ports:
       - "5601:5601"
     depends_on:
       - elasticsearch
-  
 
+  web:
+    image: sp1nakr/disclive:0.141
+    container_name: discmanweb
+    env_file:
+      - ./variables.env
 
 volumes:
   elasticsearch:
@@ -114,3 +91,5 @@ volumes:
   certbot:
     driver: local
   db-data:
+
+
