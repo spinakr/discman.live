@@ -32,7 +32,7 @@ namespace Web.Common.Behaviours
 
             var elapsedMilliseconds = _timer.ElapsedMilliseconds;
 
-            if (elapsedMilliseconds > 300)
+            if (elapsedMilliseconds > 100)
             {
                 var requestName = typeof(TRequest).Name;
                 var username = _httpContextAccessor.HttpContext?.User?.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
