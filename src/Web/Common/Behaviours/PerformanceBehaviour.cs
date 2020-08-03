@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Web.Common.Behaviours
 {
@@ -37,8 +38,10 @@ namespace Web.Common.Behaviours
                 var requestName = typeof(TRequest).Name;
                 var username = _httpContextAccessor.HttpContext?.User?.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-                _logger.LogWarning("Discman long running request: {RequestName} {ElapsedMilliseconds} {@Username} {@Request}", requestName,
-                    elapsedMilliseconds, username, request);
+                Log
+                    .ForContext("Request", request, destructureObjects: true)
+                    .Warning("Discman long running request: {RequestName} {ElapsedMilliseconds} {Username}", requestName,
+                        elapsedMilliseconds, username);
             }
 
             return response;
