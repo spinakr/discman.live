@@ -102,6 +102,11 @@ namespace Web.Rounds.Domain
             IsCompleted = true;
             CompletedAt = DateTime.Now;
         }
+
+        public bool IsPartOfRound(string username)
+        {
+            return PlayerScores.Any(p => p.PlayerName == username);
+        }
     }
 
     public enum ScoreMode

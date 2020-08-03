@@ -76,29 +76,21 @@ namespace Web.Matches
         [HttpPost("{roundId}/holes")]
         public async Task<IActionResult> AddHole(Guid roundId, [FromBody] AddHoleRequest request)
         {
-            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var round = await _documentSession.Query<Round>().SingleAsync(r => r.Id == roundId);
-            var (isAuthorized, result) = IsUserAuthorized(round);
-            if (!isAuthorized) return result;
-
-            round.AddHole(request.HoleNumber, request.Par, request.Length);
-
-            await PersistUpdatedRound(round);
+            var round = await _mediator.Send(new AddHoleCommand
+            {
+                HoleNumber = request.HoleNumber,
+                Length = request.Length,
+                Par = request.Par,
+                RoundId = roundId
+            });
+            
             return Ok(round);
         }
 
         [HttpDelete("{roundId}/users")]
         public async Task<IActionResult> LeaveRound(Guid roundId)
         {
-            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-
-            var round = await _documentSession
-                .Query<Round>().SingleAsync(x => x.Id == roundId);
-
-            round.PlayerScores = round.PlayerScores.Where(s => s.PlayerName != username).ToList();
-
-            _documentSession.Update(round);
-            await PersistUpdatedRound(round);
+            await _mediator.Send(new LeaveRoundCommand {RoundId = roundId});
             return Ok();
         }
 
