@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baseline;
 using Marten;
 using Marten.Linq;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -15,7 +16,11 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Web.Courses;
+using Web.Infrastructure;
 using Web.Rounds;
+using Web.Rounds.Commands;
+using Web.Rounds.Domain;
+using Web.Rounds.Queries;
 using Web.Users;
 
 namespace Web.Matches
@@ -27,43 +32,28 @@ namespace Web.Matches
     {
         private readonly ILogger<RoundsController> _logger;
         private readonly IHubContext<RoundsHub> _roundsHub;
+        private readonly IMediator _mediator;
         private readonly IDocumentSession _documentSession;
 
-        public RoundsController(ILogger<RoundsController> logger, IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub)
+        public RoundsController(ILogger<RoundsController> logger, IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub, IMediator mediator)
         {
             _logger = logger;
             _roundsHub = roundsHub;
+            _mediator = mediator;
             _documentSession = documentSession;
         }
 
         [HttpGet("{roundId}")]
-        public IActionResult GetRound(Guid roundId)
+        public async Task<IActionResult> GetRound(Guid roundId)
         {
-            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-
-            var round = _documentSession
-                .Query<Round>()
-                .Where(r => !r.Deleted)
-                .SingleOrDefault(x => x.Id == roundId);
-            if (round is null)
-            {
-                return NotFound();
-            }
-
+            var round = await _mediator.Send(new GetRoundQuery {RoundId = roundId});
             return Ok(round);
         }
 
         [HttpGet]
-        public IActionResult GetUserRounds([FromQuery] string username, [FromQuery] int start = 0, [FromQuery] int count = 5)
+        public async Task<IActionResult> GetUserRounds([FromQuery] string username, [FromQuery] int start = 0, [FromQuery] int count = 5)
         {
-            var rounds = _documentSession
-                .Query<Round>()
-                .Where(r => !r.Deleted)
-                .Where(r => r.PlayerScores.Any(p => p.PlayerName == username))
-                .OrderByDescending(x => x.StartTime)
-                .Skip(start)
-                .Take(count);
-
+            var rounds = await _mediator.Send(new GetUserRoundsQuery {Username = username, Start = start, Count = count});
             return Ok(rounds);
         }
 
@@ -71,27 +61,15 @@ namespace Web.Matches
         public async Task<IActionResult> StartNewRound([FromBody] NewRoundsRequest request)
         {
             var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var players = request.Players.Select(p => p.ToLower()).ToList();
-            if (!players.Any()) players.Add(username);
+            var round = await _mediator.Send(new StartNewRoundCommand
+            {
+                RoundName = request.RoundName,
+                Players = request.Players,
+                CourseId = request.CourseId,
+                ScoreMode = request.ScoreMode,
+            });
 
-            var course = _documentSession
-                .Query<Course>()
-                .SingleOrDefault(x => x.Id == request.CourseId);
-
-            var justStartedRound = await _documentSession
-                .Query<Round>()
-                .Where(r => !r.Deleted)
-                .Where(r => !r.IsCompleted)
-                .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
-                .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10));
-            if (justStartedRound is object) return Conflict(justStartedRound);
-
-            var round = course != null
-                ? new Round(course, players, username, request.RoundName, request.ScoreMode)
-                : new Round(players, username, request.RoundName, request.ScoreMode);
-            _documentSession.Store(round);
-            _documentSession.SaveChanges();
-
+            if (round.CreatedBy != username) return Conflict(round);
             return Ok(round);
         }
 
@@ -220,107 +198,10 @@ namespace Web.Matches
             return Ok(newCourse);
         }
 
-        [HttpGet("{roundId}/progression")]
-        // public IActionResult GetRoundProgression(Guid roundId)
-        // {
-        //     var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-        //     var activeRound = _documentSession
-        //         .Query<Round>()
-        //         .Where(r => !r.Deleted)
-        //         .SingleOrDefault(x => x.Id == roundId);
-        //     if (activeRound is null) return NotFound();
-        //
-        //     var roundsOnCourse = _documentSession
-        //         .Query<Round>()
-        //         .Where(r => !r.Deleted)
-        //         .Where(r => r.CourseName == activeRound.CourseName && r.CourseLayout == activeRound.CourseLayout)
-        //         .ToList();
-        //
-        //     var course = _documentSession
-        //         .Query<Course>()
-        //         .Single(c => c.Name == activeRound.CourseName && c.Layout == activeRound.CourseLayout);
-        //
-        //     var courseAverage = roundsOnCourse.Average(r => r.PlayerScore(username));
-        //
-        //     var playerHoleAverages = roundsOnCourse
-        //         .SelectMany(r => r.PlayerScores.Where(s => s.PlayerName == username))
-        //         .SelectMany(s => s.Scores)
-        //         .GroupBy(s => s.Hole.Number)
-        //         .ToDictionary(x => x.Key, x => x.Average(y => y.RelativeToPar));
-        //
-        //     var progressionDataPoints = playerHoleAverages.Scan((state, item) => state + item.Value, 0.0).Skip(1).ToList();
-        //
-        //
-        //     return Ok(new PlayerRoundProgression
-        //     {
-        //         HoleAverages = playerHoleAverages.Select(x => (x.Key, x.Value)).ToList(),
-        //         AveragePrediction = progressionDataPoints
-        //     });
-        // }
         [HttpGet("{roundId}/stats")]
         public async Task<IActionResult> GetRoundStatsOnCourse(Guid roundId)
         {
-            var activeRound = await _documentSession
-                .Query<Round>()
-                .SingleAsync(r => r.Id == roundId);
-            var courseName = activeRound.CourseName;
-            var layoutName = activeRound.CourseLayout;
-            var players = activeRound.PlayerScores.Select(p => p.PlayerName);
-
-
-            var playersStats = new List<PlayerCourseStats>();
-            if (courseName is null) return Ok(playersStats);
-            foreach (var player in players)
-            {
-                var playerRounds = _documentSession
-                    .Query<Round>()
-                    .Where(r => !r.Deleted)
-                    .Where(r => r.IsCompleted)
-                    .Where(r => r.PlayerScores.Count > 1)
-                    .Where(r => r.CourseName == courseName && r.CourseLayout == layoutName)
-                    .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
-                    .ToList();
-
-                var playerCourseRecord = playerRounds.Any() ? playerRounds.Select(r => r.PlayerScore(player)).Min() : (int?) null;
-
-                var fivePreviousRounds = playerRounds
-                    .Where(r => r.StartTime < activeRound.StartTime)
-                    .OrderByDescending(r => r.StartTime)
-                    .Take(5)
-                    .ToList();
-
-                if (fivePreviousRounds.Count == 0) continue;
-
-                var courseScores = fivePreviousRounds.Select(r => r.PlayerScore(player));
-                var currentCourseAverage = courseScores.Average();
-                var thisRound = activeRound
-                    .PlayerScores
-                    .Single(s => s.PlayerName == player)
-                    .Scores.Sum(s => s.RelativeToPar);
-
-                var playerHoleAverages = fivePreviousRounds
-                    .SelectMany(r => r.PlayerScores.Where(s => s.PlayerName == player))
-                    .SelectMany(s => s.Scores)
-                    .GroupBy(s => s.Hole.Number)
-                    .ToDictionary(x => x.Key.ToString(), x => x.Average(y => y.RelativeToPar));
-
-                var progressionDataPoints = playerHoleAverages.Scan((state, item) => state + item.Value, 0.0).Skip(1).ToList();
-
-                playersStats.Add(new PlayerCourseStats
-                {
-                    PlayerName = player,
-                    CourseName = courseName,
-                    LayoutName = layoutName,
-                    CourseAverage = currentCourseAverage,
-                    PlayerCourseRecord = playerCourseRecord,
-                    ThisRoundVsAverage = thisRound - currentCourseAverage,
-                    HoleAverages = playerHoleAverages.Select(x => x.Value).ToList(),
-                    AveragePrediction = progressionDataPoints,
-                    RoundsPlayed = playerRounds.Count
-                });
-            }
-
-            return Ok(playersStats.OrderBy(s => s.ThisRoundVsAverage));
+            return Ok(await _mediator.Send(new GetPlayersCourseStatsQuery {RoundId = roundId}));
         }
 
         [HttpPut("{roundId}/scoremode")]

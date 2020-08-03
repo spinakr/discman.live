@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd ./src/Web/
+cd ../src/Web/
 
 version=$(git describe --abbrev=0)
 major="$(cut -d'.' -f1 <<<"$version")"
@@ -19,3 +19,5 @@ cd ../../
 echo "Tagging version $nv"
 eval "git tag -a $nv -m 'New image version'"
 
+
+cd ./infrastructure

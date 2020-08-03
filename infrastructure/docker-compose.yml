@@ -79,7 +79,7 @@ services:
       - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.141
+    image: sp1nakr/disclive:0.152
     container_name: discmanweb
     env_file:
       - ./variables.env

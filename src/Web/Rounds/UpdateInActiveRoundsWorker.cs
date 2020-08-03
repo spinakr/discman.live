@@ -7,6 +7,7 @@ using Marten.Util;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Web.Rounds;
+using Web.Rounds.Domain;
 
 namespace Web.Courses
 {

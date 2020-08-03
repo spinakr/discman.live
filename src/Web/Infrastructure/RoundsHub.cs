@@ -1,17 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Marten;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using Serilog;
-using Web.Matches;
 using Web.Rounds;
+using Web.Rounds.Domain;
 
-namespace Web
+namespace Web.Infrastructure
 {
     [Authorize]
     public class RoundsHub : Hub

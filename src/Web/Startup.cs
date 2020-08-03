@@ -1,15 +1,14 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Claims;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Marten.Util;
+using MediatR;
+using MediatR.Pipeline;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -17,10 +16,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using Serilog;
-using Serilog.Context;
+using Web.Common.Behaviours;
 using Web.Courses;
+using Web.Infrastructure;
 using Web.Matches;
 
 namespace Web
@@ -43,8 +41,10 @@ namespace Web
             services.AddHostedService<UpdateInActiveRoundsWorker>();
             services.AddHostedService<LeaderboardWorker>();
             services.AddHostedService<AchievementsWorker>();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews(options => options.Filters.Add(new ApiExceptionFilter()));
+            services.AddHttpContextAccessor();
 
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
@@ -114,7 +114,6 @@ namespace Web
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMiddleware<SerilogRequestLogger>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<RoundsHub>("/roundHub");
@@ -130,40 +129,6 @@ namespace Web
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-        }
-    }
-
-    public class SerilogRequestLogger
-    {
-        readonly RequestDelegate _next;
-
-        public SerilogRequestLogger(RequestDelegate next)
-        {
-            if (next == null) throw new ArgumentNullException(nameof(next));
-            _next = next;
-        }
-
-        public async Task Invoke(HttpContext httpContext)
-        {
-            if (httpContext == null) throw new ArgumentNullException(nameof(httpContext));
-            var authedUser = httpContext.User.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-            if (authedUser is object) LogContext.PushProperty("Username", authedUser);
-            try
-            {
-                await _next(httpContext);
-            }
-            catch (Exception exception)
-            {
-                Guid errorId = Guid.NewGuid();
-                Log.ForContext("Type", "Error")
-                    .ForContext("Exception", exception, destructureObjects: true)
-                    .Error(exception, exception.Message + ". {@errorId}", errorId);
-
-                var result = JsonConvert.SerializeObject(new {error = "Sorry, an unexpected error has occurred", errorId = errorId.ToString()});
-                httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = 500;
-                await httpContext.Response.WriteAsync(result);
-            }
         }
     }
 }

@@ -31,3 +31,13 @@ From `infrastructure`-dir. Update docker-compose with new version and run `docke
 
 # ELK
 https://github.com/deviantony/docker-elk
+
+
+
+## Ignore files:
+git update-index --assume-unchanged <file>
+git update-index --no-assume-unchanged <file>
+infrastructure/kibana/config/kibana.yml
+infrastructure/logstash/config/logstash.yml
+infrastructure/logstash/pipeline/logstash.conf
+infrastructure/variables.env

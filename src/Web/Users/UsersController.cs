@@ -16,6 +16,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Web.Matches;
 using Web.Rounds;
+using Web.Rounds.Domain;
 
 namespace Web.Users
 {

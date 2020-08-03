@@ -4,7 +4,7 @@ using System.Linq;
 using Web.Courses;
 using Web.Users;
 
-namespace Web.Rounds
+namespace Web.Rounds.Domain
 {
     public class Round
     {
@@ -16,6 +16,7 @@ namespace Web.Rounds
         {
             Id = Guid.NewGuid();
             CourseName = course.Name;
+            CourseLayout = course.Layout;
             StartTime = DateTime.Now;
             PlayerScores = GenerateEmptyScoreCard(course.Holes, players);
             CreatedBy = createdBy;

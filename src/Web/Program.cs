@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using EnvironmentName = Microsoft.Extensions.Hosting.EnvironmentName;
 
 namespace Web
 {
@@ -31,14 +32,21 @@ namespace Web
         private static void ConfigureLogger()
         {
             Serilog.Debugging.SelfLog.Enable(Console.Error);
-            Log.Logger = new LoggerConfiguration()
+            var logConfig = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                 .MinimumLevel.Override("Marten", LogEventLevel.Warning)
                 .WriteTo.Console()
                 .Enrich.WithProperty("ApplicationName", "discman.live")
-                .WriteTo.Http("http://logstash:7000")
-                .MinimumLevel.Information()
-                .CreateLogger();
+                .MinimumLevel.Information();
+
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var isDevelopment = environment == Environments.Development;
+            if (!isDevelopment)
+            {
+                logConfig.WriteTo.Http("http://logstash:7000");
+            }
+
+            Log.Logger = logConfig.CreateLogger();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

@@ -7,5 +7,5 @@ minor="$(cut -d'.' -f2 <<<"$nv")"
 pv="$major.$(($minor - 1))"
 
 sed -i '' "s/$pv/$nv/g" docker-compose.yml
-echo "Re-deploying discman container with version $nv"
-docker-compose up -d disclive
+echo "Re-deploying discman web container with version $nv"
+docker-compose up -d web

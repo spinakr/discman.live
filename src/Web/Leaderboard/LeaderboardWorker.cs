@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Web.Leaderboard;
 using Web.Matches;
 using Web.Rounds;
+using Web.Rounds.Domain;
 
 namespace Web.Courses
 {
