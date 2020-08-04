@@ -48,9 +48,9 @@ services:
       - type: volume
         source: elasticsearch
         target: /usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+    # ports:
+    #   - "9200:9200"
+    #   - "9300:9300"
     environment:
       - variables.env
 
@@ -59,10 +59,10 @@ services:
         context: logstash/
         args:
           ELK_VERSION: 7.8.0
-      ports:
-        - "7000:7000/tcp"
-        - "7000:7000/udp"
-        - "9600:9600"
+      # ports:
+      #   - "7000:7000/tcp"
+      #   - "7000:7000/udp"
+      #   - "9600:9600"
       environment:
         - variables.env
       depends_on:
@@ -74,12 +74,12 @@ services:
       args:
         ELK_VERSION: 7.8.0
     ports:
-      - "5601:5601"
+      - "9999:5601"
     depends_on:
       - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.159
+    image: sp1nakr/disclive:0.160
     container_name: discmanweb
     env_file:
       - ./variables.env
