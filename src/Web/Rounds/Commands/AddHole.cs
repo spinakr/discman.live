@@ -7,14 +7,12 @@ using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Web.Infrastructure;
-using Web.Rounds.Domain;
+using Web.Rounds;
 
 namespace Web.Rounds.Commands
 {
-    public class AddHoleCommand : IRequest<Round>, IRequest<Unit>
+    public class AddHoleCommand : IRequest<Round>
     {
         public Guid RoundId { get; set; }
         public int HoleNumber { get; set; }

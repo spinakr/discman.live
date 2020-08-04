@@ -1,22 +1,19 @@
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using Marten;
-using Marten.Linq;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Web.Matches;
 using Web.Rounds;
-using Web.Rounds.Domain;
+using Web.Users.Commands;
+using Web.Users.Queries;
 
 namespace Web.Users
 {
@@ -29,16 +26,18 @@ namespace Web.Users
         private readonly IConfiguration _configuration;
         private readonly IDocumentSession _documentSession;
         private readonly UserStatsCache _userStatsCache;
+        private readonly IMediator _mediator;
         private static readonly List<DateTime> FailedLoginRequests = new List<DateTime>();
         private readonly string _tokenSecret;
 
         public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession,
-            UserStatsCache userStatsCache)
+            UserStatsCache userStatsCache, IMediator mediator)
         {
             _logger = logger;
             _configuration = configuration;
             _documentSession = documentSession;
             _userStatsCache = userStatsCache;
+            _mediator = mediator;
             _tokenSecret = _configuration.GetValue<string>("TOKEN_SECRET");
         }
 
@@ -48,20 +47,12 @@ namespace Web.Users
         [Consumes("application/json")]
         public async Task<IActionResult> CreateNewUser(NewUserRequest request)
         {
-            var userExists = await _documentSession.Query<User>().SingleOrDefaultAsync(u => u.Username == request.Username);
-
-            if (userExists is object ||
-                request.Password.Length < 5 || request.Password.Length > 200 || request.Username.Length < 3 || request.Username.Length > 30)
+            var authenticatedUser = await _mediator.Send(new CreateNewUserCommand
             {
-                return BadRequest("Terrible request");
-            }
+                Username = request.Username,
+                Password = request.Password
+            });
 
-            var hashedPw = new SaltSeasonedHashedPassword(request.Password);
-            var newUser = new User(request.Username, hashedPw);
-
-            _documentSession.Store(newUser);
-            await _documentSession.SaveChangesAsync();
-            var authenticatedUser = newUser.Authenticated(_tokenSecret);
             return Ok(authenticatedUser);
         }
 
@@ -72,7 +63,7 @@ namespace Web.Users
         {
             var requestsLast10Sec = FailedLoginRequests.Count(r => r > DateTime.Now.AddSeconds(-10));
             FailedLoginRequests.RemoveAll(r => r < DateTime.Now.AddSeconds(-20));
-            if (requestsLast10Sec > 2)
+            if (requestsLast10Sec > 10)
             {
                 return StatusCode(StatusCodes.Status429TooManyRequests);
             }
@@ -95,17 +86,11 @@ namespace Web.Users
 
             return Ok(authenticatedUser);
         }
-        
+
         [HttpGet]
         public async Task<IActionResult> SearchUsers([FromQuery] string searchString)
         {
-            var users = await _documentSession
-                .Query<User>()
-                .Where(u => u.Username.Contains(searchString.ToLower()))
-                .Select(u => u.Username)
-                .ToListAsync();
-                
-            return Ok(users);
+            return Ok(await _mediator.Send(new FindUsersQuery {UsernameSearchString = searchString}));
         }
 
         [HttpGet("{username}/stats")]
@@ -123,13 +108,13 @@ namespace Web.Users
             var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == username);
 
             var userAchievements = user
-                    .Achievements
-                    .GroupBy(x => x.AchievementName)
-                    .Select(x => new
-                    {
-                        Achievement = x.OrderByDescending(y=> y.AchievedAt).First(), 
-                        Count = x.Count()
-                    })
+                .Achievements
+                .GroupBy(x => x.AchievementName)
+                .Select(x => new
+                {
+                    Achievement = x.OrderByDescending(y => y.AchievedAt).First(),
+                    Count = x.Count()
+                })
                 .ToList();
 
             return Ok(userAchievements);

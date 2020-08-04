@@ -6,7 +6,6 @@ using Marten;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Web.Rounds;
-using Web.Rounds.Domain;
 
 namespace Web.Infrastructure
 {

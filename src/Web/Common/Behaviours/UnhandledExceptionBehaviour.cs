@@ -28,7 +28,7 @@ namespace Web.Common.Behaviours
             catch (Exception ex)
             {
                 var requestName = typeof(TRequest).Name;
-                var authedUser = _httpContextAccessor.HttpContext?.User?.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                var authedUser = _httpContextAccessor.HttpContext?.User?.Claims?.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
                 if (authedUser != null) LogContext.PushProperty("Username", authedUser);
                 Log
                     .ForContext("Username", authedUser)

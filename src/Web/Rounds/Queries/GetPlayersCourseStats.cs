@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Marten;
 using MediatR;
-using Web.Rounds.Domain;
+using Web.Rounds;
 
 namespace Web.Rounds.Queries
 {

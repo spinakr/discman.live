@@ -2,6 +2,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Baseline.Reflection;
 using MediatR.Pipeline;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,7 @@ namespace Web.Common.Behaviours
         public Task Process(TRequest request, CancellationToken cancellationToken)
         {
             var requestName = typeof(TRequest).Name;
-            var username = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var username = _httpContextAccessor.HttpContext?.User?.Claims?.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
             Log
                 .ForContext("Request", request, destructureObjects: true)

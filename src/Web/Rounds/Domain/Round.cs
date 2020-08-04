@@ -4,7 +4,7 @@ using System.Linq;
 using Web.Courses;
 using Web.Users;
 
-namespace Web.Rounds.Domain
+namespace Web.Rounds
 {
     public class Round
     {

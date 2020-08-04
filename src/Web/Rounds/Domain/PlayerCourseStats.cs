@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Web.Rounds.Domain
+namespace Web.Rounds
 {
     public class PlayerCourseStats
     {

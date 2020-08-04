@@ -36,7 +36,7 @@ namespace Web.Common.Behaviours
             if (elapsedMilliseconds > 100)
             {
                 var requestName = typeof(TRequest).Name;
-                var username = _httpContextAccessor.HttpContext?.User?.Claims.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+                var username = _httpContextAccessor.HttpContext?.User?.Claims?.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
                 Log
                     .ForContext("Request", request, destructureObjects: true)

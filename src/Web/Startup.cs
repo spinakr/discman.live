@@ -42,8 +42,9 @@ namespace Web
             services.AddHostedService<LeaderboardWorker>();
             services.AddHostedService<AchievementsWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             
             
             services.AddControllersWithViews(options => options.Filters.Add(new ApiExceptionFilter()));

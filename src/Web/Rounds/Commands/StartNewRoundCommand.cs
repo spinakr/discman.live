@@ -8,7 +8,7 @@ using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Web.Courses;
-using Web.Rounds.Domain;
+using Web.Rounds;
 
 namespace Web.Rounds.Commands
 {

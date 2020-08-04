@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Web.Infrastructure;
-using Web.Leaderboard;
-using Web.Matches;
 using Web.Rounds;
-using Web.Rounds.Domain;
 using Web.Users;
 
 namespace Web.Courses

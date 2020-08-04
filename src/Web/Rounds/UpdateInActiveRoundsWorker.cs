@@ -3,11 +3,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
+using Marten.Linq.SoftDeletes;
 using Marten.Util;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Web.Rounds;
-using Web.Rounds.Domain;
 
 namespace Web.Courses
 {
@@ -34,9 +34,13 @@ namespace Web.Courses
             using var documentSession = _documentStore.OpenSession();
             var activeRounds = documentSession
                 .Query<Round>()
+                .Where(r => !r.Deleted)
                 .Where(r => !r.IsCompleted)
                 .Where(r => r.StartTime < DateTime.Today.AddDays(-2)).ToList();
-            _logger.LogInformation($"Cleaning up active rounds older than 3 days {activeRounds.Count} courses");
+
+            if (!activeRounds.Any()) return;
+            
+            _logger.LogInformation($"Cleaning up active rounds older than 3 days. {activeRounds.Count} active rounds will be completed or deleted");
             foreach (var round in activeRounds)
             {
                 if (round.PlayerScores.SelectMany(s => s.Scores).Count(s => s.Strokes != 0) < 10)
@@ -56,8 +60,6 @@ namespace Web.Courses
 
         public Task StopAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Timed Hosted Service is stopping.");
-
             _timer?.Change(Timeout.Infinite, 0);
 
             return Task.CompletedTask;

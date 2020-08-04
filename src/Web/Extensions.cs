@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Web.Infrastructure;
-using Web.Rounds.Domain;
+using Web.Rounds;
 
 namespace Web
 {
