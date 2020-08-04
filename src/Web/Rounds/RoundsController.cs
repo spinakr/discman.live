@@ -97,55 +97,29 @@ namespace Web.Matches
         [HttpDelete("{roundId}")]
         public async Task<IActionResult> DeleteRound(Guid roundId)
         {
-            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-
-            var round = await _documentSession
-                .Query<Round>().SingleAsync(x => x.Id == roundId);
-
-            if (round.CreatedBy != username) return Forbid("Only rounds created by yourself can be deleted");
-
-            _documentSession.Delete(round);
-            await _documentSession.SaveChangesAsync();
+            await _mediator.Send(new DeleteRoundCommand {RoundId = roundId});
             return Ok();
         }
 
         [HttpDelete("{roundId}/holes/{holeNumber}")]
         public async Task<IActionResult> DeleteHole(Guid roundId, int holeNumber)
         {
-            var username = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-
-            var round = await _documentSession
-                .Query<Round>().SingleAsync(x => x.Id == roundId);
-
-            if (round.CreatedBy != username) return Forbid("Only rounds created by yourself can be modified");
-
-            foreach (var playerScore in round.PlayerScores)
-            {
-                playerScore.Scores = playerScore.Scores.Where(s => s.Hole.Number != holeNumber).ToList();
-            }
-
-            await PersistUpdatedRound(round);
+            await _mediator.Send(new DeleteHoleCommand {RoundId = roundId, HoleNumber = holeNumber});
             return Ok();
         }
 
         [HttpPut("{roundId}/scores")]
         public async Task<IActionResult> UpdateScore(Guid roundId, [FromBody] UpdateScoreRequest request)
         {
-            var round = await _documentSession
-                .Query<Round>()
-                .SingleOrDefaultAsync(x => x.Id == roundId);
-
-            var (isAuthorized, result) = IsUserAuthorized(round, request.Username);
-            if (!isAuthorized) return result;
-
-            var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            round.PlayerScores
-                .Single(p => p.PlayerName == authenticatedUsername).Scores
-                .Single(s => s.Hole.Number == request.Hole)
-                .UpdateScore(request.Strokes, request.StrokeOutcomes);
-
-            await PersistUpdatedRound(round);
-
+            var round = await _mediator.Send(new UpdatePlayerScoreCommand
+            {
+                RoundId = roundId,
+                Hole = request.Hole,
+                Strokes = request.Strokes,
+                StrokeOutcomes = request.StrokeOutcomes,
+                Username = request.Username
+            });
+ 
             return Ok(round);
         }
 
