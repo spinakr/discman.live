@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
+using Web.Matches;
 
-namespace Web.Matches
+namespace Web.Leaderboard
 {
 
     public class LeaderboardCache

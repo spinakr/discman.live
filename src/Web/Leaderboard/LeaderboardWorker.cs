@@ -2,15 +2,12 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Marten;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Web.Leaderboard;
-using Web.Matches;
 using Web.Rounds;
 
-namespace Web.Courses
+namespace Web.Leaderboard
 {
     public class LeaderboardWorker : IHostedService, IDisposable
     {

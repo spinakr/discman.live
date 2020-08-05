@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using Web.Common.Behaviours;
 using Web.Courses;
 using Web.Infrastructure;
+using Web.Leaderboard;
 using Web.Matches;
 
 namespace Web

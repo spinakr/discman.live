@@ -25,18 +25,15 @@ namespace Web.Users
         private readonly ILogger<UsersController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IDocumentSession _documentSession;
-        private readonly UserStatsCache _userStatsCache;
         private readonly IMediator _mediator;
         private static readonly List<DateTime> FailedLoginRequests = new List<DateTime>();
         private readonly string _tokenSecret;
 
-        public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession,
-            UserStatsCache userStatsCache, IMediator mediator)
+        public UsersController(ILogger<UsersController> logger, IConfiguration configuration, IDocumentSession documentSession, IMediator mediator)
         {
             _logger = logger;
             _configuration = configuration;
             _documentSession = documentSession;
-            _userStatsCache = userStatsCache;
             _mediator = mediator;
             _tokenSecret = _configuration.GetValue<string>("TOKEN_SECRET");
         }
@@ -61,28 +58,13 @@ namespace Web.Users
         [HttpPost("authenticate")]
         public async Task<IActionResult> Authenticate([FromBody] AuthenticationRequest request)
         {
-            var requestsLast10Sec = FailedLoginRequests.Count(r => r > DateTime.Now.AddSeconds(-10));
-            FailedLoginRequests.RemoveAll(r => r < DateTime.Now.AddSeconds(-20));
-            if (requestsLast10Sec > 10)
+            var authenticatedUser = await _mediator.Send(new AuthenticateUserCommand
             {
-                return StatusCode(StatusCodes.Status429TooManyRequests);
-            }
+                Username = request.Username, Password = request.Password
+            });
 
-            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == request.Username);
-            if (user is null)
-            {
-                FailedLoginRequests.Add(DateTime.Now);
-                return BadRequest(new {message = "Username or password is incorrect"});
-            }
 
-            var hashedPw = new SaltSeasonedHashedPassword(request.Password, user.Salt);
-            if (!hashedPw.Hash.SequenceEqual(user.Password))
-            {
-                FailedLoginRequests.Add(DateTime.Now);
-                return BadRequest(new {message = "Username or password is incorrect"});
-            }
-
-            var authenticatedUser = user.Authenticated(_tokenSecret);
+            if (authenticatedUser is null) return BadRequest(new {message = "Username or password is incorrect"});
 
             return Ok(authenticatedUser);
         }
@@ -96,8 +78,13 @@ namespace Web.Users
         [HttpGet("{username}/stats")]
         public async Task<IActionResult> GetUserStats(string username, [FromQuery] DateTime since, [FromQuery] int includeMonths)
         {
-            var userStats = await _userStatsCache.GetOrCreate($"{username}{since}{includeMonths}",
-                async () => await CalculateUserStats(username, since, includeMonths));
+            var userStats = await _mediator.Send(new GetUserStatsQuery
+            {
+                Username = username,
+                Since = since,
+                IncludeMonths = includeMonths
+            });
+
 
             return Ok(userStats);
         }
@@ -105,79 +92,22 @@ namespace Web.Users
         [HttpGet("{username}/achievements")]
         public async Task<IActionResult> GetUserAchievements(string username)
         {
-            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == username);
-
-            var userAchievements = user
-                .Achievements
-                .GroupBy(x => x.AchievementName)
-                .Select(x => new
-                {
-                    Achievement = x.OrderByDescending(y => y.AchievedAt).First(),
-                    Count = x.Count()
-                })
-                .ToList();
-
+            var userAchievements = await _mediator.Send(new GetUserAchievementsQuery {Username = username});
             return Ok(userAchievements);
         }
 
-        private async Task<UserStats> CalculateUserStats(string username, DateTime since, int includeMonths)
-        {
-            var rounds = await _documentSession
-                .Query<Round>()
-                .Where(r => !r.Deleted)
-                .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
-                .Where(r => r.StartTime > since)
-                .Where(r => includeMonths == default || r.StartTime > DateTime.Today.AddMonths(-includeMonths))
-                .ToListAsync();
-
-            var holesWithDetails = rounds.PlayerHolesWithDetails(username);
-
-            var roundsPlayed = rounds.Count;
-            var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
-            if (roundsPlayed == 0 || holesWithDetails.Count == 0)
-            {
-                return null;
-            }
-
-            var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == username)).ToList();
-            var totalScore = playerRounds.Sum(r => r.PlayerScore(username));
-
-
-            var totalAverageAllPlayers = playerRounds.Sum(r => r.RoundAverageScore()) / playerRounds.Count;
-            var playerRoundAverage = totalScore / (double) playerRounds.Count;
-            var strokesGained = playerRoundAverage - totalAverageAllPlayers;
-
-            var putsPerHole = holesWithDetails.PutsPerHole();
-            var scrambleRate = holesWithDetails.ScrambleRate();
-            var fairwayHitRate = holesWithDetails.FairwayRate();
-            var onePutRate = holesWithDetails.OnePutRate();
-
-            return new UserStats(roundsPlayed, holesPlayed, putsPerHole, fairwayHitRate, scrambleRate, onePutRate, playerRoundAverage,
-                strokesGained);
-        }
 
         [HttpPost("friends")]
         public async Task<IActionResult> AddFriend([FromBody] AddFriendsRequest req)
         {
-            var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername);
-            var friend = await _documentSession.Query<User>().SingleAsync(u => u.Username == req.Username.ToLower());
-
-            user.AddFriend(friend.Username);
-            friend.AddFriend(user.Username);
-
-            _documentSession.Update(user);
-            _documentSession.Update(friend);
-            await _documentSession.SaveChangesAsync();
+            await _mediator.Send(new AddFriendCommand {Username = req.Username});
             return Ok();
         }
 
         [HttpGet("friends")]
         public async Task<IActionResult> GetFriendsOf()
         {
-            var authenticatedUsername = User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername);
-            return Ok(user.Friends);
+            return Ok(await _mediator.Send(new GetUserFriendsQuery()));
         }
     }
 

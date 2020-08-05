@@ -6,16 +6,16 @@ using Marten;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Web.Leaderboard;
+using Web.Matches;
 using Web.Rounds;
 using Web.Users;
 
-namespace Web.Matches
+namespace Web.Leaderboard
 {
     [Authorize]
     [ApiController]
     [Route("api/leaderboard")]
-    public partial class LeaderboardController : ControllerBase
+    public class LeaderboardController : ControllerBase
     {
         private readonly ILogger<LeaderboardController> _logger;
         private readonly IDocumentSession _documentSession;
