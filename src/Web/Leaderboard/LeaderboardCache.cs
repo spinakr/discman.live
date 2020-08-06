@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Web.Matches;
 
@@ -13,11 +14,11 @@ namespace Web.Leaderboard
             SizeLimit = 100
         });
  
-        public List<PlayerStats> GetOrCreate(object key, Func<List<PlayerStats>> createItem)
+        public async Task<List<PlayerStats>> GetOrCreate(object key, Func<Task<List<PlayerStats>>> createItem)
         {
             if (!_cache.TryGetValue(key, out List<PlayerStats> cacheEntry))
             {
-                cacheEntry = createItem();
+                cacheEntry = await createItem();
  
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
                     .SetSize(1)//Size amount

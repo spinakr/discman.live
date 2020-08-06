@@ -23,13 +23,11 @@ namespace Web.Rounds.Commands
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IHubContext<RoundsHub> _roundsHub;
 
-        public DeleteRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IHubContext<RoundsHub> roundsHub)
+        public DeleteRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
-            _roundsHub = roundsHub;
         }
 
         public async Task<Unit> Handle(DeleteRoundCommand request, CancellationToken cancellationToken)
