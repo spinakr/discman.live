@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Web.Users;
+using Web.Users.Commands;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Web.Common.Behaviours
@@ -28,6 +29,16 @@ namespace Web.Common.Behaviours
             var requestName = typeof(TRequest).Name;
             var username = _httpContextAccessor.HttpContext?.User?.Claims?.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
+            if (request is AuthenticateUserCommand authRequest)
+            {
+                authRequest.Password = string.Empty;
+            }
+            
+            if (request is CreateNewUserCommand newUserRequest)
+            {
+                newUserRequest.Password = string.Empty;
+            }
+            
             Log
                 .ForContext("Request", request, destructureObjects: true)
                 .Information("Discman Request: {RequestName} {Username}", requestName, username);

@@ -6,6 +6,7 @@ import Round from "./components/Round/Round";
 import Courses from "./components/Courses/Courses";
 import User from "./components/User/User";
 import Friends from "./components/User/Friends";
+import Tournament from "./components/Tournaments/Tournament";
 
 export default () => (
   <Layout>
@@ -19,5 +20,6 @@ export default () => (
     <Route exact path="/user" component={User} />
     <Route exact path="/users/:username" component={User} />
     <Route exact path="/friends" component={Friends} />
+    <Route exact path="/tournaments/:tournamentId" component={Tournament} />
   </Layout>
 );

@@ -32,7 +32,7 @@ const UserRounds = (props: Props) => {
 
   return (
     <section className="has-text-centered">
-      <div className="list">
+      <div className="panel">
         {rounds.map((r) => (
           <RoundListItem
             key={r.id}

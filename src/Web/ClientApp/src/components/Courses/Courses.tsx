@@ -29,10 +29,10 @@ const renderCoursesList = (layouts: Course[]) => {
     <>
       <NewCourse currentCourseName={""} />
       <hr />
-      <div className="list">
+      <div className="panel">
         {courseNames &&
           courseNames.map((c) => (
-            <Link key={c} to={`/courses/${c}`} className="list-item">
+            <Link key={c} to={`/courses/${c}`} className="panel-block">
               {c}
             </Link>
           ))}

@@ -15,13 +15,16 @@ const RoundListItem = (props: UserRoundProps) => {
         return total + score.relativeToPar;
       }, 0) || 0;
 
-  let style = "list-item";
+  let style = "panel-block is-link";
   const startTime = new Date(round.startTime);
   const startedAgo = Date.now().valueOf() - startTime.valueOf();
   const startedAgoMins = startedAgo / 1000 / 60;
-  if (startedAgoMins < 10) style += " has-text-primary has-text-weight-bold";
+  if (startedAgoMins < 10) style += " is-active";
   return (
     <a className={style} key={round.id} href={`/rounds/${round.id}`}>
+      <span className="panel-icon">
+        <i className="fas fa-circle-notch"></i>
+      </span>
       {round.courseName || round.roundName} -{" "}
       <i>
         {new Date(round.startTime).toLocaleDateString()}

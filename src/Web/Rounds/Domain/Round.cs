@@ -17,6 +17,7 @@ namespace Web.Rounds
             Id = Guid.NewGuid();
             CourseName = course.Name;
             CourseLayout = course.Layout;
+            CourseId = course.Id;
             StartTime = DateTime.Now;
             PlayerScores = GenerateEmptyScoreCard(course.Holes, players);
             CreatedBy = createdBy;
@@ -49,6 +50,7 @@ namespace Web.Rounds
         public string RoundName { get; set; }
         public string CourseName { get; set; }
         public string CourseLayout { get; set; }
+        public Guid CourseId { get; set; }
         public DateTime StartTime { get; set; }
         public bool IsCompleted { get; set; }
         public DateTime CompletedAt { get; set; }

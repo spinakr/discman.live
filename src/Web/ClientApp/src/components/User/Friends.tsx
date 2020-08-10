@@ -47,10 +47,10 @@ const UserComponent = (props: Props) => {
       </div>
       {active === 1 && (
         <div className="section">
-          <div className="list has-text-centered">
+          <div className="panel has-text-centered">
             {props.user?.friendUsers.map((f) => {
               return (
-                <Link to={`users/${f}`} key={f} className="list-item">
+                <Link to={`users/${f}`} key={f} className="panel-bloc">
                   {f}
                 </Link>
               );

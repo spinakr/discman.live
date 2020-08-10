@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Marten.Util;
 using MediatR;
 using MediatR.Pipeline;
@@ -21,6 +22,7 @@ using Web.Courses;
 using Web.Infrastructure;
 using Web.Leaderboard;
 using Web.Matches;
+using Web.Tournaments;
 
 namespace Web
 {
@@ -46,7 +48,7 @@ namespace Web
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
             
             services.AddControllersWithViews(options => options.Filters.Add(new ApiExceptionFilter()));
             services.AddHttpContextAccessor();
@@ -58,6 +60,7 @@ namespace Web
             services.ConfigureMarten(Configuration, _env);
             services.AddSingleton<LeaderboardCache>();
             services.AddSingleton<UserStatsCache>();
+            services.AddSingleton<TournamentCache>();
 
             var secret = Configuration.GetValue<string>("TOKEN_SECRET");
             services.AddAuthentication(x =>

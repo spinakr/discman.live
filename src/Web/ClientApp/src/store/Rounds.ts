@@ -305,7 +305,7 @@ export const actionCreators = {
     dispatch({ type: "DISCONNECT_TO_HUB" });
   },
   newRound: (
-    course: Course | undefined,
+    courseId: string | undefined,
     players: string[],
     roundName: string,
     scoreMode: ScoreMode
@@ -324,7 +324,7 @@ export const actionCreators = {
         Authorization: `Bearer ${appState.user.user.token}`,
       },
       body: JSON.stringify({
-        courseId: course?.id,
+        courseId: courseId,
         players: players,
         roundName,
         scoreMode,

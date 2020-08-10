@@ -81,7 +81,7 @@ const NewRound = (props: Props) => {
         <div onClick={() => setShowDialog(false)}>
           <div className="modal-background"></div>
         </div>
-        <div className="modal-card">
+        <div className="modal-card has-text-left">
           <header className="modal-card-head">
             <p className="modal-card-title">Start new round</p>
             <InformationDialogue
@@ -95,7 +95,22 @@ After finishing the round, an actuall course can be created from the registered 
           </header>
           <section className="modal-card-body">
             <label className="label">Scoring</label>
-            <div className="field is-grouped">
+            <div className="field">
+              <div className="control">
+                <input
+                  id="switchExample"
+                  type="checkbox"
+                  name="switchExample"
+                  className="switch"
+                  onChange={() => {
+                    setManualReg(!manualReg);
+                    clearRoundInfo();
+                  }}
+                />
+                <label htmlFor="switchExample">On-the-fly</label>
+              </div>
+            </div>
+            <div className="field">
               <div className="control">
                 <div className="select is-primary">
                   <select
@@ -111,17 +126,6 @@ After finishing the round, an actuall course can be created from the registered 
                   </select>
                 </div>
               </div>
-              <input
-                id="switchExample"
-                type="checkbox"
-                name="switchExample"
-                className="switch"
-                onChange={() => {
-                  setManualReg(!manualReg);
-                  clearRoundInfo();
-                }}
-              />
-              <label htmlFor="switchExample">On-the-fly</label>
             </div>
 
             <label className="label">
@@ -170,7 +174,7 @@ After finishing the round, an actuall course can be created from the registered 
               </div>
             )}
             <label className="label">Friends</label>
-            <div className="field is-grouped">
+            <div className="field">
               <div className="control">
                 <div className="select is-primary">
                   <select onChange={(e) => playerAdded(e.target.value)}>
@@ -182,7 +186,6 @@ After finishing the round, an actuall course can be created from the registered 
                 </div>
               </div>
             </div>
-            <br />
             {selectedPlayers.map((p) => (
               <span
                 onClick={() => removePlayer(p)}
@@ -199,7 +202,7 @@ After finishing the round, an actuall course can be created from the registered 
               className="button is-success"
               onClick={() => {
                 props.newRound(
-                  selectedLayout,
+                  selectedLayout?.id,
                   selectedPlayers,
                   roundName,
                   scoreType

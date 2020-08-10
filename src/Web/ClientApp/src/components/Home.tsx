@@ -10,6 +10,8 @@ import { useState } from "react";
 import GlobalLeaderBoard from "./GlobalLeaderBoard";
 import HallOfFame from "./HallOfFame";
 import AddFriends from "./AddFriends";
+import Tournaments from "./Tournaments/Tournaments";
+import NewTournament from "./Tournaments/NewTournament";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -59,15 +61,17 @@ const Home = (props: Props) => {
               <h3 className="title is-3 has-text-centered">Active rounds</h3>
               <UserRounds onlyActive={true} />
               <hr />
-              <div className="columns is-centered is-mobile">
-                <div className="column is-one-third">
-                  <NewRound />
-                </div>
+              <div className="has-text-centered">
+                <NewRound />
+                <br />
+                <br />
+                <AddFriends />
               </div>
-              <div className="columns is-centered is-mobile">
-                <div className="column is-one-third">
-                  <AddFriends />
-                </div>
+              <hr />
+              <Tournaments />
+              <br />
+              <div className="has-text-centered">
+                <NewTournament />
               </div>
             </>
           )}
