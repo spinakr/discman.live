@@ -32,6 +32,7 @@ export interface TournamentInfo {
   end: Date;
   courses: CourseInfo[];
   hasStarted: boolean;
+  isCompleted: boolean;
 }
 
 export interface CourseInfo {
@@ -86,11 +87,14 @@ const initialState: TournamentsState = {
 };
 
 export const actionCreators = {
-  fetchTournaments: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  fetchTournaments: (onlyActive: boolean): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/tournaments`, {
+    fetch(`api/tournaments?onlyActive=${onlyActive}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

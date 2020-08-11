@@ -2,7 +2,6 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from "./";
 import { push, CallHistoryMethodAction } from "connected-react-router";
-import { Course } from "./Courses";
 import { hub } from "./configureStore";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as notificationActions } from "./Notifications";

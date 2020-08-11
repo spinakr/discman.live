@@ -29,20 +29,38 @@ namespace Web.Common.Behaviours
             var requestName = typeof(TRequest).Name;
             var username = _httpContextAccessor.HttpContext?.User?.Claims?.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-            if (request is AuthenticateUserCommand authRequest)
+            switch (request)
             {
-                authRequest.Password = string.Empty;
+                case AuthenticateUserCommand authRequest:
+                {
+                    var password = authRequest.Password;
+                    authRequest.Password = string.Empty;
+                    LogRequest(request, requestName, username);
+                    authRequest.Password = password;
+                    break;
+                }
+                case CreateNewUserCommand newUserRequest:
+                {
+                    var password = newUserRequest.Password;
+                    newUserRequest.Password = string.Empty;
+                    LogRequest(request, requestName, username);
+                    newUserRequest.Password = password;
+                    break;
+                }
+                default:
+                    LogRequest(request, requestName, username);
+                    break;
             }
-            
-            if (request is CreateNewUserCommand newUserRequest)
-            {
-                newUserRequest.Password = string.Empty;
-            }
-            
+
+
+            return Task.CompletedTask;
+        }
+
+        private static void LogRequest(TRequest request, string requestName, string username)
+        {
             Log
                 .ForContext("Request", request, destructureObjects: true)
                 .Information("Discman Request: {RequestName} {Username}", requestName, username);
-            return Task.CompletedTask;
         }
     }
 }

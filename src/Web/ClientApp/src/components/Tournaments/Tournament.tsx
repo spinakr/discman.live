@@ -74,7 +74,7 @@ const Tournament = (props: Props) => {
       <section className="section has-text-centered py-0">
         {active === 1 && (
           <>
-            {!tournament.info.hasStarted &&
+            {!tournament.info.isCompleted &&
               !tournament.info.players.some(
                 (p) => p === props.user?.user?.username
               ) && (
@@ -97,7 +97,7 @@ const Tournament = (props: Props) => {
                 <h5 className="subtitle is-5 has-text-centered">Courses</h5>
               </div>
               <div className="column">
-                {!tournament.info.hasStarted &&
+                {!tournament.info.isCompleted &&
                   tournament.info.admins.some(
                     (a) => a === props.user?.user?.username
                   ) && <AddCourse />}
@@ -123,7 +123,9 @@ const Tournament = (props: Props) => {
                             <i className="fas fa-check-square"></i>
                           </span>
                         ) : (
-                          <NewTournamentRound selectedCourse={c} />
+                          !tournament.info.isCompleted && (
+                            <NewTournamentRound selectedCourse={c} />
+                          )
                         )}
                       </div>
                     </div>

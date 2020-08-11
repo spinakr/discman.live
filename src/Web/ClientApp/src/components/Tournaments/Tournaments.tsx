@@ -14,13 +14,13 @@ const connector = connect(mapState, TournamentsStore.actionCreators);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & { onlyActive?: boolean };
+type Props = PropsFromRedux & { onlyActive: boolean };
 
 const Tournaments = (props: Props) => {
   const { fetchTournaments, tournaments } = props;
   React.useEffect(() => {
-    fetchTournaments();
-  }, [fetchTournaments]);
+    fetchTournaments(props.onlyActive);
+  }, [fetchTournaments, props.onlyActive]);
 
   return (
     <>
@@ -40,8 +40,11 @@ const Tournaments = (props: Props) => {
                 key={t.id}
                 href={`/tournaments/${t.id}`}
               >
-                {t.name} :{" "}
-                <i>
+                <span className="panel-icon">
+                  <i className="fas fa-trophy"></i>
+                </span>
+                {t.name}&nbsp;:&nbsp;
+                <i className="is-size-7">
                   {new Date(t.start).toLocaleDateString()}
                   {"-"}
                   {new Date(t.end).toLocaleDateString()}

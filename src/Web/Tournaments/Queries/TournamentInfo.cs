@@ -18,7 +18,8 @@ namespace Web.Tournaments.Queries
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
 
-        public bool HasStarted => DateTime.Now > Start;
+        public bool HasStarted => DateTime.Now.Date >= Start.Date;
+        public bool IsCompleted => DateTime.Now.Date > End.Date;
 
         public List<CourseNameAndId> Courses { get; set; }
         

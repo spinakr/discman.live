@@ -42,10 +42,10 @@ namespace Web.Tournaments.Queries
             var tournaments = await _documentSession
                 .Query<Tournament>()
                 .Where(t => t.Players.Any(p => p == username))
-                .Where(t => request.OnlyActive && t.End >= DateTime.Now)
+                .Where(t => !request.OnlyActive || t.End >= DateTime.Now.Date)
                 .ToListAsync(token: cancellationToken);
             
-            return tournaments.Select(t => _mapper.Map<TournamentListing>(t));
+            return tournaments.Select(t => _mapper.Map<TournamentListing>(t)).OrderByDescending(s => s.Start);
         }
     }
 }

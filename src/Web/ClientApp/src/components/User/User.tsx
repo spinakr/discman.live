@@ -7,6 +7,7 @@ import UserStats from "./UserStats";
 import UserRounds from "./UserRounds";
 import { useParams } from "react-router";
 import UserAchievements from "./UserAchievements";
+import Tournaments from "../Tournaments/Tournaments";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -38,6 +39,12 @@ const UserComponent = (props: Props) => {
             <a>Rounds</a>
           </li>
           <li
+            className={active === 4 ? "is-active" : ""}
+            onClick={() => setActive(4)}
+          >
+            <a>Tourneys</a>
+          </li>
+          <li
             className={active === 2 ? "is-active" : ""}
             onClick={() => setActive(2)}
           >
@@ -52,12 +59,17 @@ const UserComponent = (props: Props) => {
         </ul>
       </div>
       {active === 1 && (
-        <div className="section">
+        <div className="section py-0">
           <UserRounds />
         </div>
       )}
       {active === 2 && <UserStats />}
       {active === 3 && <UserAchievements />}
+      {active === 4 && (
+        <div className="section py-0">
+          <Tournaments onlyActive={false} />
+        </div>
+      )}
     </div>
   );
 };

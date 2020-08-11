@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import { actionCreators as tournamentsActionCreator } from "../../store/Tournaments";
@@ -26,12 +26,6 @@ const NewTournament = (props: Props) => {
   const [start, setStart] = useState(new Date());
   const [end, setEnd] = useState(new Date());
   const { createTournament } = props;
-
-  const clearRoundInfo = () => {};
-
-  // useEffect(() => {
-  //   showDialog && fetchCourses();
-  // }, [showDialog]);
 
   const toIsoDate = (date: Date) => {
     var year = date.getFullYear();

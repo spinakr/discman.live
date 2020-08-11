@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Web.Common;
+using ValidationException = Web.Common.ValidationException;
 
 namespace Web
 {
@@ -18,6 +19,7 @@ namespace Web
             // Register known exception types and handlers.
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
+                { typeof(ValidationException), HandleValidationException },
                 { typeof(NotFoundException), HandleNotFoundException },
             };
         }
@@ -27,6 +29,20 @@ namespace Web
             HandleException(context);
 
             base.OnException(context);
+        }
+        
+        private void HandleValidationException(ExceptionContext context)
+        {
+            var exception = context.Exception as ValidationException;
+
+            var details = new ValidationProblemDetails(exception.Errors)
+            {
+                Type = "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+            };
+
+            context.Result = new BadRequestObjectResult(details);
+
+            context.ExceptionHandled = true;
         }
 
         private void HandleException(ExceptionContext context)

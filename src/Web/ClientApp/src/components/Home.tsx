@@ -30,7 +30,7 @@ const Home = (props: Props) => {
   const [active, setActive] = useState(1);
 
   return (
-    <div className="section">
+    <div className="section py-0">
       {!user?.loggedIn && <Login />}
       {user?.loggedIn && (
         <>
@@ -68,7 +68,7 @@ const Home = (props: Props) => {
                 <AddFriends />
               </div>
               <hr />
-              <Tournaments />
+              <Tournaments onlyActive={true} />
               <br />
               <div className="has-text-centered">
                 <NewTournament />
