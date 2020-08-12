@@ -19,6 +19,7 @@ namespace Web.Users
 
         public List<Achievement> EvaluatePlayerRound(Guid roundId, string username, Round round)
         {
+            if (round.PlayerScores.Count < 2) return new List<Achievement>();
             var roundAchievements = Assembly.GetCallingAssembly()
                 .GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(RoundAchievement)));
@@ -30,9 +31,7 @@ namespace Web.Users
                 var achievementObj = (RoundAchievement) constructor.Invoke(new object[] {roundId, username});
                 var evaluationMethod = roundAchievement.GetMethod(nameof(RoundAchievement.Evaluate));
                 var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {round, username});
-                if (res && !_achievements.Any(a =>
-                    a.AchievementName == achievementObj.AchievementName &&
-                    a.RoundId == achievementObj.RoundId))
+                if (res && !DuplicateAchievement(achievementObj))
                 {
                     newAchievements.Add(achievementObj);
                 }
@@ -56,9 +55,7 @@ namespace Web.Users
                 var achievementObj = (UserAchievement) constructor.Invoke(new object[] {username});
                 var evaluationMethod = userAchievement.GetMethod(nameof(UserAchievement.Evaluate));
                 var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {userRounds});
-                if (res && !_achievements.Any(a =>
-                    a.AchievementName == achievementObj.AchievementName &&
-                    a.AchievedAt.Month == achievementObj.AchievedAt.Month))
+                if (res && !DuplicateAchievement(achievementObj))
                 {
                     newAchievements.Add(achievementObj);
                 }
@@ -67,6 +64,18 @@ namespace Web.Users
             _achievements.AddRange(newAchievements);
 
             return newAchievements;
+        }
+
+        private bool DuplicateAchievement(Achievement achievementObj)
+        {
+            if (achievementObj.OneTimeOnly)
+            {
+                return _achievements.Any(a => a.AchievementName == achievementObj.AchievementName);
+            }
+
+            return _achievements.Any(a =>
+                a.AchievementName == achievementObj.AchievementName &&
+                a.AchievedAt.Month == achievementObj.AchievedAt.Month);
         }
 
         public IEnumerator<Achievement> GetEnumerator()
@@ -120,12 +129,15 @@ namespace Web.Users
         public Guid RoundId { get; set; }
         public string Username { get; set; }
         public DateTime AchievedAt { get; set; }
+        public abstract bool OneTimeOnly { get; }
         public string AchievementName => GetType().Name;
     }
 
     public abstract class RoundAchievement : Achievement
     {
         public abstract bool Evaluate(Round round, string username);
+        public override bool OneTimeOnly => false;
+
 
         protected RoundAchievement(Guid roundId, string username) : base(roundId, username)
         {
@@ -135,6 +147,7 @@ namespace Web.Users
     public abstract class UserAchievement : Achievement
     {
         public abstract bool Evaluate(List<Round> rounds);
+        public override bool OneTimeOnly => false;
 
         protected UserAchievement(string username) : base(Guid.Empty, username)
         {
@@ -320,12 +333,47 @@ namespace Web.Users
         {
         }
     }
-    
+
+    public class Birdie : RoundAchievement
+    {
+        public Birdie(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+
+        public override bool OneTimeOnly => true;
+
+
+        public override bool Evaluate(Round round, string username)
+        {
+            var playerScores = round.PlayerScores.Single(s => s.PlayerName == Username).Scores;
+            return playerScores.Any(s => s.RelativeToPar == -1);
+        }
+    }
+
+    public class Eagle : RoundAchievement
+    {
+        public Eagle(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+
+        public override bool OneTimeOnly => true;
+
+
+        public override bool Evaluate(Round round, string username)
+        {
+            var playerScores = round.PlayerScores.Single(s => s.PlayerName == Username).Scores;
+            return playerScores.Any(s => s.RelativeToPar == -2 && (s.Hole.Par == 4 || s.Hole.Par == 5));
+        }
+    }
+
     public class TenRoundsInAMonth : UserAchievement
     {
         public TenRoundsInAMonth(string username) : base(username)
         {
         }
+
+        public override bool OneTimeOnly => false;
+
 
         public override bool Evaluate(List<Round> rounds)
         {
@@ -340,6 +388,8 @@ namespace Web.Users
         {
         }
 
+        public override bool OneTimeOnly => false;
+
         public override bool Evaluate(List<Round> rounds)
         {
             var perMonth = rounds.GroupBy(r => r.StartTime.Month);
@@ -353,6 +403,8 @@ namespace Web.Users
         {
         }
 
+        public override bool OneTimeOnly => false;
+
         public override bool Evaluate(List<Round> rounds)
         {
             var perWeek = rounds.GroupBy(r => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
@@ -360,12 +412,28 @@ namespace Web.Users
             return perWeek.Any(w => w.Select(x => x.StartTime.DayOfWeek).Distinct().Count() == 7);
         }
     }
-    
+
+    public class OneHundredRounds : UserAchievement
+    {
+        public OneHundredRounds(string username) : base(username)
+        {
+        }
+
+        public override bool OneTimeOnly => true;
+
+        public override bool Evaluate(List<Round> rounds)
+        {
+            return rounds.Count >= 100;
+        }
+    }
+
     public class FiveRoundsInADay : UserAchievement
     {
         public FiveRoundsInADay(string username) : base(username)
         {
         }
+
+        public override bool OneTimeOnly => false;
 
         public override bool Evaluate(List<Round> rounds)
         {
