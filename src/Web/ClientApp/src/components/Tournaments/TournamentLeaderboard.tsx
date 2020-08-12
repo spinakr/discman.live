@@ -6,24 +6,25 @@ export interface TournamentLeaderboardProps {
 }
 
 export default ({ tournament }: TournamentLeaderboardProps) => (
-  <table className="table is-marginless is-paddingless is-bordered">
+  <table className="table is-marginless is-paddingless is-narrow is-striped is-fullwidth">
     <thead>
       <tr>
+        <th></th>
         <th>Player</th>
         <th>Score</th>
-        <th>Progress</th>
+        <th>Courses</th>
       </tr>
     </thead>
     <tbody>
       {tournament &&
-        tournament.leaderboard.scores.map((s) => {
+        tournament.leaderboard.scores.map((s, i) => {
           return (
             <tr key={s.name}>
+              <th>{i + 1}</th>
               <td>{s.name}</td>
               <td>{s.totalScore}</td>
               <td>
                 {s.coursesPlayed.length} / {tournament.info.courses.length}{" "}
-                courses
               </td>
             </tr>
           );

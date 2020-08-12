@@ -25,7 +25,9 @@ const Tournaments = (props: Props) => {
   return (
     <>
       <section className="has-text-centered">
-        <h4 className="title is-4 has-text-centered">Active Tournaments</h4>
+        <h4 className="title is-4 has-text-centered">
+          {props.onlyActive ? "Active Tournaments" : "Tournaments"}
+        </h4>
         {(!tournaments || tournaments.length === 0) && (
           <>
             <div>No active tournaments</div>
