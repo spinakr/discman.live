@@ -292,6 +292,35 @@ namespace Web.Users
         }
     }
 
+    public class OnePutPerHole : RoundAchievement
+    {
+        public override bool Evaluate(Round round, string username)
+        {
+            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
+            var onePuts = playerScore.Scores
+                .Count(h => h.StrokeSpecs
+                    .Count(s => s.Outcome == StrokeSpec.StrokeOutcome.Circle1 || s.Outcome == StrokeSpec.StrokeOutcome.Circle2) <= 1);
+            return onePuts == playerScore.Scores.Count;
+        }
+
+        public OnePutPerHole(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+    }
+
+    public class OBFree : RoundAchievement
+    {
+        public override bool Evaluate(Round round, string username)
+        {
+            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
+            return playerScore.Scores.All(h => h.StrokeSpecs.All(s => s.Outcome != StrokeSpec.StrokeOutcome.OB));
+        }
+
+        public OBFree(Guid roundId, string username) : base(roundId, username)
+        {
+        }
+    }
+    
     public class TenRoundsInAMonth : UserAchievement
     {
         public TenRoundsInAMonth(string username) : base(username)
@@ -304,7 +333,7 @@ namespace Web.Users
             return perMonth.Any(g => g.Count() > 9);
         }
     }
-    
+
     public class TwentyRoundsInAMonth : UserAchievement
     {
         public TwentyRoundsInAMonth(string username) : base(username)
@@ -317,7 +346,7 @@ namespace Web.Users
             return perMonth.Any(g => g.Count() > 19);
         }
     }
-    
+
     public class PlayEveryDayInAWeek : UserAchievement
     {
         public PlayEveryDayInAWeek(string username) : base(username)

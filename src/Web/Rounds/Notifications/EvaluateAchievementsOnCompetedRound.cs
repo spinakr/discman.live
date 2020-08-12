@@ -56,8 +56,9 @@ namespace Web.Rounds.Notifications
                     .Query<Round>()
                     .Where(r => !r.Deleted)
                     .Where(r => r.PlayerScores.Any(p => p.PlayerName == userInRound.Username))
+                    .Where(r => r.PlayerScores.Count > 1)
                     .Where(r => r.IsCompleted)
-                    .Where(r => r.CompletedAt > new DateTime(now.Year, 1, 1))
+                    // .Where(r => r.CompletedAt > new DateTime(now.Year, 1, 1))
                     .ToList();
 
                 var userRounds = rounds.Concat(new List<Round> {round}).ToList();
