@@ -40,6 +40,7 @@ namespace Web.Courses
                     var roundsOnCourse = documentSession
                         .Query<Round>()
                         .Where(r => r.CourseName == course.Name)
+                        .Where(r => r.CourseLayout == course.Layout)
                         .Where(r => r.StartTime > DateTime.Now.AddYears(-1))
                         .Where(r => r.IsCompleted)
                         .ToList();

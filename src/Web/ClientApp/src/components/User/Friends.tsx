@@ -50,7 +50,7 @@ const UserComponent = (props: Props) => {
           <div className="panel has-text-centered">
             {props.user?.friendUsers.map((f) => {
               return (
-                <Link to={`users/${f}`} key={f} className="panel-bloc">
+                <Link to={`users/${f}`} key={f} className="panel-block">
                   {f}
                 </Link>
               );
