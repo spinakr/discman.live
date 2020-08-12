@@ -208,7 +208,10 @@ The blue line shows your average round progression based on averages on each hol
         </div>
       )}
 
-      <button className="button is-primary" onClick={() => setShowDialog(true)}>
+      <button
+        className="button is-primary is-light is-outlined"
+        onClick={() => setShowDialog(true)}
+      >
         <strong>Status</strong>
       </button>
     </>

@@ -87,7 +87,7 @@ const NewTournament = (props: Props) => {
           </section>
           <footer className="modal-card-foot">
             <button
-              className="button is-success"
+              className="button is-success is-light is-outlined"
               onClick={() => {
                 createTournament(tournamentName, start, end);
                 setShowDialog(false);
@@ -102,7 +102,10 @@ const NewTournament = (props: Props) => {
           </footer>
         </div>
       </div>
-      <button className="button is-primary" onClick={() => setShowDialog(true)}>
+      <button
+        className="button is-primary is-light is-outlined"
+        onClick={() => setShowDialog(true)}
+      >
         <strong>New Tournament</strong>
       </button>
     </>

@@ -61,7 +61,7 @@ const Login = (props: Props) => {
           <div className="control">
             <button
               disabled={isFormValid(login.username, login.password)}
-              className="button is-success"
+              className="button is-success is-light is-outlined"
               onClick={() => props.requestLogin(login.username, login.password)}
             >
               Login
@@ -70,7 +70,7 @@ const Login = (props: Props) => {
           <div className="control">
             <button
               disabled={isFormValid(login.username, login.password)}
-              className="button is-warning"
+              className="button is-warning is-light is-outlined"
               onClick={() => props.createUser(login.username, login.password)}
             >
               Register

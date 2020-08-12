@@ -168,7 +168,10 @@ const Tournament = (props: Props) => {
           </>
         )}
         {active === 2 && tournament.leaderboard && (
-          <TournamentLeaderboard tournament={tournament} />
+          <TournamentLeaderboard
+            tournament={tournament}
+            username={props.user?.user?.username || ""}
+          />
         )}
       </section>
     </>

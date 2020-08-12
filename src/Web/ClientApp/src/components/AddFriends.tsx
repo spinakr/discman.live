@@ -74,7 +74,7 @@ const AddFriends = (props: Props) => {
                   </div>
                   <div className="control">
                     <a
-                      className="button is-info is-primary is-small"
+                      className="button is-info is-primary is-small is-light is-outlined"
                       onClick={() => {
                         props.addFriend(s);
                         searchStringChanged("");

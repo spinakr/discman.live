@@ -179,7 +179,7 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
           </section>
           <footer className="modal-card-foot">
             <button
-              className="button is-success"
+              className="button is-success is-light is-outlined"
               onClick={() => {
                 const nextHole = currentCourse.holes.find(
                   (h) => h.number === (editHole?.number || 0) + 1

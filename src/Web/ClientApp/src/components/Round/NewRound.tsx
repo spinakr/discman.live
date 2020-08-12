@@ -218,7 +218,10 @@ After finishing the round, an actuall course can be created from the registered 
           </footer>
         </div>
       </div>
-      <button className="button is-primary" onClick={() => setShowDialog(true)}>
+      <button
+        className="button is-primary is-light is-outlined"
+        onClick={() => setShowDialog(true)}
+      >
         <strong>New Round</strong>
       </button>
     </>

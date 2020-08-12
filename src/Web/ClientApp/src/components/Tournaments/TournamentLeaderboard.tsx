@@ -3,9 +3,10 @@ import { Tournament } from "../../store/Tournaments";
 
 export interface TournamentLeaderboardProps {
   tournament: Tournament;
+  username: string;
 }
 
-export default ({ tournament }: TournamentLeaderboardProps) => (
+export default ({ tournament, username }: TournamentLeaderboardProps) => (
   <table className="table is-marginless is-paddingless is-narrow is-striped is-fullwidth">
     <thead>
       <tr>
@@ -19,7 +20,10 @@ export default ({ tournament }: TournamentLeaderboardProps) => (
       {tournament &&
         tournament.leaderboard.scores.map((s, i) => {
           return (
-            <tr key={s.name}>
+            <tr
+              key={s.name}
+              className={`${s.name === username ? "is-selected" : ""}`}
+            >
               <th>{i + 1}</th>
               <td>{s.name}</td>
               <td>{s.totalScore}</td>

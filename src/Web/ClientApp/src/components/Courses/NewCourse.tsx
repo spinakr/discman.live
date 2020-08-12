@@ -76,7 +76,7 @@ const NewCourse = (props: Props) => {
           </section>
           <footer className="modal-card-foot">
             <button
-              className="button is-success"
+              className="button is-success is-light is-outlined"
               onClick={() => {
                 createCourse(courseName, layoutName, numberOfHoles);
                 setShowDialog(false);
