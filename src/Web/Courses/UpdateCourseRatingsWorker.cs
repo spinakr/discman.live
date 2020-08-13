@@ -24,7 +24,7 @@ namespace Web.Courses
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(12));
+            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(2));
             return Task.CompletedTask;
         }
 
@@ -44,6 +44,12 @@ namespace Web.Courses
                         .Where(r => r.StartTime > DateTime.Now.AddYears(-1))
                         .Where(r => r.IsCompleted)
                         .ToList();
+
+                    if (!roundsOnCourse.Any())
+                    {
+                        _logger.LogInformation($"No rounds found for course {course.Id} {course.Name} {course.Layout}");
+                        continue;
+                    }
 
                     foreach (var courseHole in course.Holes)
                     {
@@ -66,7 +72,7 @@ namespace Web.Courses
                 }
                 catch (Exception e)
                 {
-                    _logger.LogWarning($"Failed to update ratings of course {course.Id} {course.Name} {e.StackTrace}");
+                    _logger.LogWarning($"Failed to update ratings of course {course.Id} {course.Name} {course.Layout}. {e.StackTrace}");
                 }
             }
 
