@@ -18,9 +18,9 @@ const Banner = (props: Props) => (
     </div>
     <div className="navbar-menu is-active">
       <div className="navbar-end">
-        <a className="navbar-item" href="/user">
+        <Link className="navbar-item" to="/user">
           {props.user ? props.user.username : null}
-        </a>
+        </Link>
         <div className="navbar-item">
           <a
             className="button is-warning is-light"

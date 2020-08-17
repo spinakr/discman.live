@@ -38,5 +38,11 @@ namespace Web
             return hub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
                 JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
         }
+        
+        public static Task NotifyPlayersInRound(this RoundsHub hub, Round round)
+        {
+            return hub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
+                JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
+        }
     }
 }

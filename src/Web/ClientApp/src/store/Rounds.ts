@@ -74,6 +74,7 @@ export interface Round {
   scoreMode: ScoreMode;
   playerScores: PlayerScore[];
   achievements: UserAchievement[];
+  spectators: string[];
 }
 
 export interface RoundsState {

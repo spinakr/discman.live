@@ -7,9 +7,14 @@ import {
   MiddlewareAPI,
   Dispatch,
   Action,
+  AnyAction,
 } from "redux";
 import thunk from "redux-thunk";
-import { connectRouter, routerMiddleware } from "connected-react-router";
+import {
+  connectRouter,
+  routerMiddleware,
+  LOCATION_CHANGE,
+} from "connected-react-router";
 import { History } from "history";
 import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
@@ -33,21 +38,46 @@ const createHub = () => {
 
 export let hub = createHub();
 
+const connectHub = (dispatch: Dispatch<AnyAction>) => {
+  hub.on("roundUpdated", (roundJson: string) => {
+    let round: Round = JSON.parse(roundJson);
+    dispatch(roundsActions.roundWasUpdated(round));
+  });
+
+  hub.start();
+};
+
 const socketsMiddleware: Middleware = ({
   dispatch,
   getState,
 }: MiddlewareAPI) => (next: Dispatch) => <A extends Action>(action: A) => {
   if (
     action.type === "CONNECT_TO_HUB" &&
-    hub.state !== signalR.HubConnectionState.Connected
+    hub.state === signalR.HubConnectionState.Disconnected
   ) {
-    hub.on("roundUpdated", (roundJson: string) => {
-      let round: Round = JSON.parse(roundJson);
-      dispatch(roundsActions.roundWasUpdated(round));
-    });
-
-    hub.start();
+    const state: ApplicationState = getState();
+    if (!state.user?.loggedIn) return;
+    connectHub(dispatch);
   }
+
+  //Handle spectator notifications
+  if (action.type === "SPEC_JOINED") {
+    const a: any = action;
+    if (hub.state === signalR.HubConnectionState.Disconnected) {
+      connectHub(dispatch);
+      setTimeout(() => {}, 500);
+    }
+    hub.invoke("SpectatorJoined", a.roundId);
+  }
+  if (action.type === "SPEC_LEFT") {
+    const a: any = action;
+    if (hub.state === signalR.HubConnectionState.Disconnected) {
+      connectHub(dispatch);
+      setTimeout(() => {}, 500);
+    }
+    hub.invoke("SpectatorLeft", a.roundId);
+  }
+
   return next(action);
 };
 
@@ -92,9 +122,11 @@ export default function configureStore(
     enhancers.push(windowIfDefined.__REDUX_DEVTOOLS_EXTENSION__());
   }
 
-  return createStore(
+  const store = createStore(
     rootReducer,
     initialState,
     compose(applyMiddleware(...middleware), ...enhancers)
   );
+  store.dispatch({ type: "CONNECT_TO_HUB" });
+  return store;
 }

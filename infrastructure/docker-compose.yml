@@ -27,6 +27,7 @@ services:
     image: clkao/postgres-plv8:11-2
     container_name: postgres
     hostname: postgres
+    restart: unless-stopped
     environment:
       - variables.env
     # ports:
@@ -44,6 +45,7 @@ services:
       context: elasticsearch/
       args:
         ELK_VERSION: 7.8.0
+    restart: unless-stopped
     volumes:
       - type: volume
         source: elasticsearch
@@ -63,12 +65,14 @@ services:
       #   - "7000:7000/tcp"
       #   - "7000:7000/udp"
       #   - "9600:9600"
+      restart: unless-stopped
       environment:
         - variables.env
       depends_on:
         - elasticsearch
 
   kibana:
+    restart: unless-stopped
     build:
       context: kibana/
       args:
@@ -79,8 +83,9 @@ services:
       - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.167
+    image: sp1nakr/disclive:0.168
     container_name: discmanweb
+    restart: unless-stopped
     env_file:
       - ./variables.env
 

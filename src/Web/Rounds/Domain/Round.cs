@@ -42,6 +42,8 @@ namespace Web.Rounds
 
         public Guid Id { get; set; }
 
+        public List<string> Spectators { get; set; } = new List<string>();
+
         public ScoreMode ScoreMode { get; set; }
         
         /// <summary>

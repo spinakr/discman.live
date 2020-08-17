@@ -1,5 +1,6 @@
 import React from "react";
 import { Round } from "../../store/Rounds";
+import { Link } from "react-router-dom";
 
 export interface UserRoundProps {
   round: Round;
@@ -21,7 +22,7 @@ const RoundListItem = (props: UserRoundProps) => {
   const startedAgoMins = startedAgo / 1000 / 60;
   if (startedAgoMins < 10) style += " is-active";
   return (
-    <a className={style} key={round.id} href={`/rounds/${round.id}`}>
+    <Link className={style} key={round.id} to={`/rounds/${round.id}`}>
       <span className="panel-icon">
         <i className="fas fa-circle-notch"></i>
       </span>
@@ -32,7 +33,7 @@ const RoundListItem = (props: UserRoundProps) => {
           ? ` | ${userTotal > 0 ? "+" : ""}${userTotal}`
           : ""}{" "}
       </i>
-    </a>
+    </Link>
   );
 };
 

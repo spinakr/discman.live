@@ -40,6 +40,16 @@ export interface UserState {
   searchedUsers: string[];
 }
 
+export interface SpectatorJoindAction {
+  type: "SPEC_JOINED";
+  roundId: string;
+}
+
+export interface SpectatorLeftAction {
+  type: "SPEC_LEFT";
+  roundId: string;
+}
+
 export interface SearchUsersSuccessAction {
   type: "SEARCH_USERS_SUCCESS";
   users: string[];
@@ -98,7 +108,9 @@ export type KnownAction =
   | FetchUserRoundsSuccessAction
   | FetchOtherUserSuccessAction
   | FetchUserAchievementsSuccessAction
-  | SearchUsersSuccessAction;
+  | SearchUsersSuccessAction
+  | SpectatorJoindAction
+  | SpectatorLeftAction;
 
 let user: User | null = null;
 const userString = localStorage.getItem("user");
@@ -133,6 +145,19 @@ const logout = (dispatch: (action: KnownAction) => void) => {
 };
 
 export const actionCreators = {
+  spectatorJoined: (roundId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "SPEC_JOINED", roundId });
+  },
+  spectatorLeft: (roundId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "SPEC_LEFT", roundId });
+  },
+
   createUser: (
     username: string,
     password: string

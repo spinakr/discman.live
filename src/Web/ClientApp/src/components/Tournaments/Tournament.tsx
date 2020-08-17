@@ -8,6 +8,7 @@ import AddCourse from "./AddCourse";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import TournamentLeaderboard from "./TournamentLeaderboard";
 import NewTournamentRound from "./NewTournamentRound";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -109,12 +110,12 @@ const Tournament = (props: Props) => {
                   <span className="panel-block" key={c.id}>
                     <div className="level is-mobile">
                       <div className="level-left">
-                        <a
+                        <Link
                           className="level-item"
-                          href={`/courses/${c.name}/${c.layout}`}
+                          to={`/courses/${c.name}/${c.layout}`}
                         >
                           {c.name} -<i>&nbsp;{c.layout}</i>
-                        </a>
+                        </Link>
                       </div>
                       <div className="level-right">
                         {playerCoursesPlayed &&

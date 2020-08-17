@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Marten;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Remotion.Linq.Clauses;
+using Serilog;
 using Web.Rounds;
 
 namespace Web.Infrastructure
@@ -36,9 +38,74 @@ namespace Web.Infrastructure
             await base.OnConnectedAsync();
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
-            return base.OnDisconnectedAsync(exception);
+            var username = Context.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var rounds = await _documentSession
+                .Query<Round>()
+                .Where(r => !r.IsCompleted)
+                .Where(r => r.Spectators.Any(s => s == username))
+                .ToListAsync();
+
+            if (rounds.Any())
+            {
+                foreach (var round in rounds)
+                {
+                    if (round.Spectators.All(s => s != username)) continue;
+                    round.Spectators = round.Spectators.Where(s => s != username).ToList();
+                    _documentSession.Update(round);
+                    await this.NotifyPlayersInRound(round);
+                }
+
+                await _documentSession.SaveChangesAsync();
+            }
+
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task SpectatorJoined(Guid roundId)
+        {
+            var username = Context.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            Log.Information($"{username} joined as spectator");
+
+            var round = await _documentSession
+                .Query<Round>()
+                .SingleOrDefaultAsync(r => r.Id == roundId);
+
+            if (round is null) return;
+            
+            if (round.Spectators.All(s => s != username))
+            {
+                round.Spectators.Add(username);
+                _documentSession.Update(round);
+                await _documentSession.SaveChangesAsync();
+            }
+
+            await Groups.AddToGroupAsync(Context.ConnectionId, roundId.ToString());
+
+            await this.NotifyPlayersInRound(round);
+        }
+
+        public async Task SpectatorLeft(Guid roundId)
+        {
+            var username = Context.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            Log.Information($"{username} left as spectator");
+
+            var round = await _documentSession
+                .Query<Round>()
+                .SingleOrDefaultAsync(r => r.Id == roundId);
+            
+            if (round is null) return;
+
+            if (round.Spectators.Any(s => s == username))
+            {
+                round.Spectators.Remove(username);
+                _documentSession.Update(round);
+                await _documentSession.SaveChangesAsync();
+            }
+
+            await this.NotifyPlayersInRound(round);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roundId.ToString());
         }
     }
 }

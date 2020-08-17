@@ -2,6 +2,7 @@ import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as TournamentsStore from "../../store/Tournaments";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -37,10 +38,10 @@ const Tournaments = (props: Props) => {
         {tournaments && (
           <div className="panel">
             {tournaments.map((t) => (
-              <a
+              <Link
                 className="panel-block"
                 key={t.id}
-                href={`/tournaments/${t.id}`}
+                to={`/tournaments/${t.id}`}
               >
                 <span className="panel-icon">
                   <i className="fas fa-trophy"></i>
@@ -51,7 +52,7 @@ const Tournaments = (props: Props) => {
                   {"-"}
                   {new Date(t.end).toLocaleDateString()}
                 </i>
-              </a>
+              </Link>
             ))}
           </div>
         )}
