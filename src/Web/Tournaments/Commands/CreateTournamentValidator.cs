@@ -29,8 +29,8 @@ namespace Web.Tournaments.Commands
                 .GreaterThanOrEqualTo(DateTime.Today.Date)
                 .Must((cmd, end) => end.Date >= cmd.Start.Date)
                 .WithMessage("End must be later than start");
-
-        }
+           
+       }
         
         private bool NotExist(string name)
         {

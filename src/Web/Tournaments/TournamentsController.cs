@@ -56,5 +56,13 @@ namespace Web.Tournaments
             await _mediator.Send(new AddPlayerToTournamentCommand {TournamentId = tournamentId});
             return Ok();
         }
+
+
+        [HttpPost("{tournamentId}/calculate")]
+        public async Task<IActionResult> CalculatePrices(Guid tournamentId)
+        {
+            var prices = await _mediator.Send(new CalculatePricesCommand {TournamentId = tournamentId});
+            return Ok(prices);
+        }
     }
 }

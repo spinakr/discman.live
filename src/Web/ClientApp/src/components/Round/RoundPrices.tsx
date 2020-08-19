@@ -28,7 +28,7 @@ export default ({ round, swipeHandlers }: RoundPricesProps) => {
   return (
     <div className="columns section" {...swipeHandlers}>
       {mostBirdies && (
-        <div className="box has-background-success has-text-centered">
+        <div className="box has-background-success-light has-text-centered">
           Most birdies:
           <br />
           {mostBirdies}
@@ -41,7 +41,7 @@ export default ({ round, swipeHandlers }: RoundPricesProps) => {
         </div>
       )}
       {mostBogies && (
-        <div className="box has-background-danger has-text-centered">
+        <div className="box has-background-danger-light has-text-centered">
           Most bogies or worse:
           <br />
           {mostBogies}

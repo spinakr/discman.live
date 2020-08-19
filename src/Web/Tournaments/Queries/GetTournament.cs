@@ -1,15 +1,12 @@
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Marten;
-using Marten.Linq;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Web.Courses;
-using Web.Rounds;
+using Web.Matches;
 using Web.Tournaments.Domain;
 
 namespace Web.Tournaments.Queries
@@ -54,29 +51,20 @@ namespace Web.Tournaments.Queries
                 tournamentVm.Leaderboard = await _tournamentCache.GetOrCreate(tournament.Id, () => CalculateLeaderboard(tournament));
             }
 
+            if (tournament.Prices != null)
+            {
+                tournamentVm.Prices = _mapper.Map<TournamentPricesVm>(tournament.Prices);
+            }
+
             return tournamentVm;
         }
 
         private async Task<TournamentLeaderboard> CalculateLeaderboard(Tournament tournament)
         {
             var leaderboard = new TournamentLeaderboard();
-            var tournamentCourses = tournament.Courses.ToArray();
             foreach (var tournamentPlayer in tournament.Players)
             {
-                var roundsInPeriod = await _documentSession
-                    .Query<Round>()
-                    .Where(r => !r.Deleted)
-                    .Where(r => r.PlayerScores.Any(p => p.PlayerName == tournamentPlayer))
-                    .Where(r => r.StartTime >= tournament.Start.Date && r.StartTime <= tournament.End.Date.AddDays(1))
-                    .Where(r => r.CourseId.IsOneOf(tournamentCourses))
-                    .ToListAsync();
-
-                var tournamentRounds = roundsInPeriod
-                    // .Where(r => r.PlayerScores.Count > 1)
-                    .GroupBy(r => r.CourseId)
-                    .Select(g => g.OrderBy(r => r.StartTime).First())
-                    .ToList();
-
+                var tournamentRounds = await _documentSession.GetTournamentRounds(tournamentPlayer, tournament);
 
                 var totalScore = tournamentRounds.Sum(r => r.PlayerScore(tournamentPlayer));
                 var coursesPlayed = tournamentRounds.Select(r => r.CourseId).Distinct().ToList();

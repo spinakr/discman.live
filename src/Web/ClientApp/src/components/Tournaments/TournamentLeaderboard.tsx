@@ -26,7 +26,10 @@ export default ({ tournament, username }: TournamentLeaderboardProps) => (
             >
               <th>{i + 1}</th>
               <td>{s.name}</td>
-              <td>{s.totalScore}</td>
+              <td>
+                {s.totalScore >= 0 ? "+" : "-"}
+                {Math.abs(s.totalScore)}
+              </td>
               <td>
                 {s.coursesPlayed.length} / {tournament.info.courses.length}{" "}
               </td>

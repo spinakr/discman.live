@@ -11,6 +11,25 @@ export interface TournamentsState {
 export interface Tournament {
   info: TournamentInfo;
   leaderboard: TournamentLeaderboard;
+  prices: Prices;
+}
+
+export interface Prices {
+  scoreboard: FinalScore[];
+  fastestPlayer: Price;
+  slowestPlayer: Price;
+  bestPutter: Price;
+  mostAccurateDriver: Price;
+}
+
+export interface Price {
+  username: string;
+  scoreValue: string;
+}
+
+export interface FinalScore {
+  username: string;
+  score: number;
 }
 
 export interface TournamentLeaderboard {
@@ -47,6 +66,10 @@ export interface TournamentListing {
   start: Date;
   end: Date;
 }
+export interface TournamentCompletedSuccessAction {
+  type: "TOURNAMENT_COMPLETED_SUCCESS";
+  prices: Prices;
+}
 
 export interface PlayerAddedToTournamentSuccessAction {
   type: "PLAYER_ADDED_TO_TOURNAMENT_SUCCESS";
@@ -79,6 +102,7 @@ export type KnownAction =
   | FetchTournamentSuccessAction
   | AddCourseToTournamentsSuccessAction
   | PlayerAddedToTournamentSuccessAction
+  | TournamentCompletedSuccessAction
   | FetchTournamentsSuccessAction;
 
 const initialState: TournamentsState = {
@@ -244,6 +268,35 @@ export const actionCreators = {
         );
       });
   },
+  calculatePrices: (tournamentId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/tournaments/${tournamentId}/calculate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((response) => response.json() as Promise<Prices>)
+      .then((data) => {
+        dispatch({
+          type: "TOURNAMENT_COMPLETED_SUCCESS",
+          prices: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Complete tournament failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
 };
 
 // ----------------
@@ -270,6 +323,16 @@ export const reducer: Reducer<TournamentsState> = (
         ...state,
         selectedTournament: action.tournament,
       };
+    case "TOURNAMENT_COMPLETED_SUCCESS":
+      return !state.selectedTournament
+        ? state
+        : {
+            ...state,
+            selectedTournament: {
+              ...state.selectedTournament,
+              prices: action.prices,
+            },
+          };
 
     case "ADD_COURSE_TO_TOURNAMENTS_SUCCESS":
       return !state.selectedTournament

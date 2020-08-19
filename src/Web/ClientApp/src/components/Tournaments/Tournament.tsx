@@ -9,6 +9,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import TournamentLeaderboard from "./TournamentLeaderboard";
 import NewTournamentRound from "./NewTournamentRound";
 import { Link } from "react-router-dom";
+import TournamentPrices from "./TournamentPrices";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -35,6 +36,9 @@ const Tournament = (props: Props) => {
   useEffect(() => {
     if (tournament?.info.hasStarted) {
       setActive(2);
+    }
+    if (tournament?.prices) {
+      setActive(3);
     }
   }, [tournament]);
 
@@ -69,6 +73,14 @@ const Tournament = (props: Props) => {
           >
             <a>Leaderboard</a>
           </li>
+          {tournament.prices && (
+            <li
+              className={active === 3 ? "is-active" : ""}
+              onClick={() => setActive(3)}
+            >
+              <a>Prices</a>
+            </li>
+          )}
         </ul>
       </div>
 
@@ -92,6 +104,7 @@ const Tournament = (props: Props) => {
                   <hr />
                 </>
               )}
+
             <div className="columns is-mobile">
               <div className="column "></div>
               <div className="column ">
@@ -166,10 +179,41 @@ const Tournament = (props: Props) => {
                 );
               })}
             </div>
+            {tournament.info.admins.some(
+              (a) => a === props.user?.user?.username
+            ) &&
+              !tournament.info.isCompleted && (
+                <>
+                  <br />
+                  <hr />
+                  <br />
+                  <button
+                    className="button is-danger is-light is-outlined"
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Sure you want to calcualte prices early?"
+                        )
+                      ) {
+                        tournamentId && props.calculatePrices(tournamentId);
+                      }
+                    }}
+                    disabled={!tournamentId}
+                  >
+                    <strong>Calculate prices</strong>
+                  </button>
+                </>
+              )}
           </>
         )}
         {active === 2 && tournament.leaderboard && (
           <TournamentLeaderboard
+            tournament={tournament}
+            username={props.user?.user?.username || ""}
+          />
+        )}
+        {active === 3 && tournament.prices && (
+          <TournamentPrices
             tournament={tournament}
             username={props.user?.user?.username || ""}
           />

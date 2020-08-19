@@ -45,5 +45,33 @@ namespace Web.Tournaments.Domain
         public DateTime End { get; set; }
 
         public List<Guid> Courses { get; set; }
+
+        public TournamentPrices Prices { get; set; }
+    }
+
+    public class TournamentPrices
+    {
+        public TournamentPrices()
+        {
+            Scoreboard = new List<FinalScore>();
+        }
+        
+        public List<FinalScore> Scoreboard { get; set; }
+        public TournamentPrice FastestPlayer { get; set; }
+        public TournamentPrice SlowestPlayer { get; set; }
+        public TournamentPrice BestPutter { get; set; }
+        public TournamentPrice MostAccurateDriver { get; set; }
+    }
+
+    public class FinalScore
+    {
+        public string Username { get; set; }
+        public int Score { get; set; }
+    }
+
+    public class TournamentPrice
+    {
+        public string Username { get; set; }
+        public string ScoreValue { get; set; }
     }
 }

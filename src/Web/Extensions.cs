@@ -44,5 +44,12 @@ namespace Web
             return hub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
                 JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
         }
+        
+        public static void MakeLesserOf(ref int self, int other) {
+            self = self > other ? other : self;
+        }
+        public static void MakeGreaterOf(ref int self, int other) {
+            self = self < other ? other : self;
+        }
     }
 }

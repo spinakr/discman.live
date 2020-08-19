@@ -133,11 +133,13 @@ namespace Web.Rounds
             Strokes = strokes;
             RelativeToPar = strokes - Hole.Par;
             StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec {Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome)}).ToList();
+            RegisteredAt = DateTime.Now;
         }
 
         public Hole Hole { get; set; }
         public int Strokes { get; set; }
         public int RelativeToPar { get; set; }
+        public DateTime RegisteredAt { get; set; }
 
         public List<StrokeSpec> StrokeSpecs { get; set; }
     }
