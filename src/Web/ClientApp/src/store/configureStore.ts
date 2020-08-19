@@ -10,15 +10,12 @@ import {
   AnyAction,
 } from "redux";
 import thunk from "redux-thunk";
-import {
-  connectRouter,
-  routerMiddleware,
-  LOCATION_CHANGE,
-} from "connected-react-router";
+import { connectRouter, routerMiddleware } from "connected-react-router";
 import { History } from "history";
 import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as roundsActions, Round } from "./Rounds";
+import { actionCreators as notificationActions } from "./Notifications";
 import logger from "../logger";
 import { User } from "./User";
 
@@ -42,6 +39,18 @@ const connectHub = (dispatch: Dispatch<AnyAction>) => {
   hub.on("roundUpdated", (roundJson: string) => {
     let round: Round = JSON.parse(roundJson);
     dispatch(roundsActions.roundWasUpdated(round));
+  });
+
+  hub.on("spectatorJoined", (roundId: string, username: string) => {
+    dispatch(roundsActions.specJoined(roundId, username));
+    notificationActions.showNotification(
+      `${username} joined as spectator`,
+      "info",
+      dispatch
+    );
+  });
+  hub.on("spectatorLeft", (roundId: string, username: string) => {
+    dispatch(roundsActions.specLeft(roundId, username));
   });
 
   hub.start();

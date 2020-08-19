@@ -158,7 +158,7 @@ const Tournament = (props: Props) => {
                     text={`https://discman.live/tournaments/${tournamentId}`}
                     onCopy={() => setCopied(true)}
                   >
-                    <button className="button is-primary is-small is-light is-outlined">
+                    <button className="button is-info is-small is-light is-outlined">
                       <strong>Copy link</strong>
                     </button>
                   </CopyToClipboard>

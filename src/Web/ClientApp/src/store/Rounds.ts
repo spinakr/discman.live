@@ -111,6 +111,18 @@ export interface ScoreUpdatedSuccessAction {
   round: Round;
 }
 
+export interface SpectatorJoinedAction {
+  type: "SPECTATOR_JOINED";
+  roundId: string;
+  username: string;
+}
+
+export interface SpectatorLeftAction {
+  type: "SPECTATOR_LEFT";
+  roundId: string;
+  username: string;
+}
+
 export interface SetActiveHoleAction {
   type: "SET_ACTIVE_HOLE";
   hole: number;
@@ -154,6 +166,8 @@ export type KnownAction =
   | RoundWasCompletedAction
   | PlayerCourseStatsFethSuceed
   | ToggleScoreCardAction
+  | SpectatorJoinedAction
+  | SpectatorLeftAction
   | CourseWasSavedAction;
 
 const fetchRound = (
@@ -208,6 +222,12 @@ export const actionCreators = {
   },
   roundWasUpdated: (round: Round) => {
     return { type: "ROUND_WAS_UPDATED", round: round };
+  },
+  specJoined: (roundId: string, username: string) => {
+    return { type: "SPECTATOR_JOINED", roundId, username };
+  },
+  specLeft: (roundId: string, username: string) => {
+    return { type: "SPECTATOR_LEFT", roundId, username };
   },
   fetchLastRounds: (numberOfRounds?: number): AppThunkAction<KnownAction> => (
     dispatch,
@@ -661,6 +681,28 @@ export const reducer: Reducer<RoundsState> = (
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
+    case "SPECTATOR_JOINED":
+      return state.round
+        ? {
+            ...state,
+            round: {
+              ...state.round,
+              spectators: [...state.round?.spectators, action.username],
+            },
+          }
+        : state;
+    case "SPECTATOR_LEFT":
+      return state.round
+        ? {
+            ...state,
+            round: {
+              ...state.round,
+              spectators: state.round?.spectators.filter(
+                (s) => s !== action.username
+              ),
+            },
+          }
+        : state;
     case "TOGGLE_SCORECARD":
       return { ...state, scoreCardOpen: action.open };
     case "FETCH_ROUNDS_SUCCEED":

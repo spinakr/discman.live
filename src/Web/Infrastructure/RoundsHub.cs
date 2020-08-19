@@ -73,7 +73,7 @@ namespace Web.Infrastructure
                 .SingleOrDefaultAsync(r => r.Id == roundId);
 
             if (round is null) return;
-            
+
             if (round.Spectators.All(s => s != username))
             {
                 round.Spectators.Add(username);
@@ -83,7 +83,7 @@ namespace Web.Infrastructure
 
             await Groups.AddToGroupAsync(Context.ConnectionId, roundId.ToString());
 
-            await this.NotifyPlayersInRound(round);
+            await Clients.Group(round.Id.ToString()).SendAsync("spectatorJoined", roundId.ToString(), username);
         }
 
         public async Task SpectatorLeft(Guid roundId)
@@ -94,7 +94,7 @@ namespace Web.Infrastructure
             var round = await _documentSession
                 .Query<Round>()
                 .SingleOrDefaultAsync(r => r.Id == roundId);
-            
+
             if (round is null) return;
 
             if (round.Spectators.Any(s => s == username))
@@ -104,7 +104,7 @@ namespace Web.Infrastructure
                 await _documentSession.SaveChangesAsync();
             }
 
-            await this.NotifyPlayersInRound(round);
+            await Clients.Group(round.Id.ToString()).SendAsync("spectatorLeft", roundId.ToString(), username);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roundId.ToString());
         }
     }
