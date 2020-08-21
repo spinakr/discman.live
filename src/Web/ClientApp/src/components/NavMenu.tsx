@@ -68,24 +68,29 @@ const NavMenu = (props: Props) => {
             </>
           )}
 
-          {props.round && props.location.pathname.startsWith("/rounds") && (
-            <>
-              <div className="column">
-                <a
-                  className="button is-white is-small"
-                  onClick={() => props.setScorecardOpen(true)}
-                >
-                  <span className="icon is-small">
-                    <i className="fas fa-lg fa-list-ol" aria-hidden="true"></i>
-                  </span>
-                  <span className="is-size-7">Scores</span>
-                </a>
-              </div>
-              <div className="column">
-                <RoundStatus />
-              </div>
-            </>
-          )}
+          {props.round &&
+            props.location.pathname.startsWith("/rounds") &&
+            !props.round.isCompleted && (
+              <>
+                <div className="column">
+                  <a
+                    className="button is-white is-small"
+                    onClick={() => props.setScorecardOpen(true)}
+                  >
+                    <span className="icon is-small">
+                      <i
+                        className="fas fa-lg fa-list-ol"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+                    <span className="is-size-7">Scores</span>
+                  </a>
+                </div>
+                <div className="column">
+                  <RoundStatus />
+                </div>
+              </>
+            )}
         </div>
 
         <div className="navbar-menu tour-score-mode">
