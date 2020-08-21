@@ -78,7 +78,7 @@ namespace Web.Tournaments.Queries
             }
 
             leaderboard.Scores = leaderboard.Scores
-                .OrderByDescending(s => s.CoursesPlayed)
+                .OrderByDescending(s => s.CoursesPlayed.Count)
                 .ThenBy(s => s.TotalScore)
                 .ToList();
 
