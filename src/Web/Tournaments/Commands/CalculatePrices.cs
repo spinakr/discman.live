@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Baseline;
 using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -54,7 +55,7 @@ namespace Web.Tournaments.Commands
                 var rounds = await _documentSession.GetTournamentRounds(tournamentPlayer, tournament);
                 var totalScore = rounds.Sum(r => r.PlayerScore(tournamentPlayer));
                 var playerScores = rounds.SelectMany(r => r.PlayerScores.Where(s => s.PlayerName == tournamentPlayer)).ToList();
-                if (playerScores.All(s => s.Scores.All(x => x.StrokeSpecs.Count > 0 || x.Strokes == 1)))
+                if (playerScores.Any() && playerScores.All(s => s.Scores.All(x => x.StrokeSpecs.Count > 0 || x.Strokes == 1)))
                 {
                     var averagePutsPerHole = playerScores
                         .Average(s => s.Scores
@@ -124,12 +125,20 @@ namespace Web.Tournaments.Commands
                     }
                 }
 
-                prices.Scoreboard.Add(new FinalScore {Score = totalScore, Username = tournamentPlayer});
+                prices.Scoreboard.Add(new FinalScore {Score = totalScore, Username = tournamentPlayer, RoundsPlayed = playerScores.Count});
             }
 
-            prices.Scoreboard = prices.Scoreboard.OrderBy(s => s.Score).ToList();
+            OrderScoreboard(prices);
 
             return prices;
+        }
+
+        private static void OrderScoreboard(TournamentPrices prices)
+        {
+            prices.Scoreboard = prices.Scoreboard.OrderBy(s => s.Score).ToList();
+            var withoutRounds = prices.Scoreboard.Where(s => s.RoundsPlayed == 0).ToList();
+            prices.Scoreboard = prices.Scoreboard.Except(withoutRounds).ToList();
+            prices.Scoreboard.AddRange(withoutRounds);
         }
     }
 }
