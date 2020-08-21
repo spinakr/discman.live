@@ -77,17 +77,12 @@ namespace Web.Tournaments.Queries
                 });
             }
 
-            OrderLeaderboard(leaderboard);
+            leaderboard.Scores = leaderboard.Scores
+                .OrderByDescending(s => s.CoursesPlayed)
+                .ThenBy(s => s.TotalScore)
+                .ToList();
 
             return leaderboard;
-        }
-
-        private static void OrderLeaderboard(TournamentLeaderboard leaderboard)
-        {
-            leaderboard.Scores = leaderboard.Scores.OrderBy(s => s.TotalScore).ToList();
-            var withoutRounds = leaderboard.Scores.Where(s => s.CoursesPlayed.Count == 0).ToList();
-            leaderboard.Scores = leaderboard.Scores.Except(withoutRounds).ToList();
-            leaderboard.Scores.AddRange(withoutRounds);
         }
     }
 }

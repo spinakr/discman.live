@@ -128,17 +128,12 @@ namespace Web.Tournaments.Commands
                 prices.Scoreboard.Add(new FinalScore {Score = totalScore, Username = tournamentPlayer, RoundsPlayed = playerScores.Count});
             }
 
-            OrderScoreboard(prices);
-
+            prices.Scoreboard = prices.Scoreboard
+                .OrderByDescending(s => s.RoundsPlayed)
+                .ThenBy(s => s.Score)
+                .ToList();
+            
             return prices;
-        }
-
-        private static void OrderScoreboard(TournamentPrices prices)
-        {
-            prices.Scoreboard = prices.Scoreboard.OrderBy(s => s.Score).ToList();
-            var withoutRounds = prices.Scoreboard.Where(s => s.RoundsPlayed == 0).ToList();
-            prices.Scoreboard = prices.Scoreboard.Except(withoutRounds).ToList();
-            prices.Scoreboard.AddRange(withoutRounds);
         }
     }
 }
