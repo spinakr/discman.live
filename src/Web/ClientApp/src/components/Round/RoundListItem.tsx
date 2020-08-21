@@ -24,7 +24,11 @@ const RoundListItem = (props: UserRoundProps) => {
   return (
     <Link className={style} key={round.id} to={`/rounds/${round.id}`}>
       <span className="panel-icon">
-        <i className="fas fa-circle-notch"></i>
+        <i
+          className={`fas ${
+            round.isCompleted ? "fa-check" : "fa-circle-notch"
+          }`}
+        ></i>
       </span>
       {round.courseName || round.roundName} -{" "}
       <i>

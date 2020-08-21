@@ -61,8 +61,11 @@ const SaveCourseFromRound = (props: Props) => {
           </footer>
         </div>
       </div>
-      <a className="navbar-item" onClick={() => setShowDialog(true)}>
-        Save as course
+      <a className="panel-block" onClick={() => setShowDialog(true)}>
+        <span className="panel-icon">
+          <i className="fas fa-lg fa-user-friends"></i>
+        </span>
+        &nbsp;Save as course
       </a>
     </>
   );

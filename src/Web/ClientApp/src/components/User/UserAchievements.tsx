@@ -27,7 +27,7 @@ const UserAchievementsComponent = (props: Props) => {
 
   return (
     <>
-      <div className="section columns is-centered py-0">
+      <div className="section columns is-centered pt-0">
         <div className="column is-one-third">
           {achievements &&
             achievements.map((a) => (

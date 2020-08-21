@@ -6,7 +6,6 @@ import { useParams } from "react-router";
 import RoundScoreCard from "./RoundScoreCard";
 import HoleScoreSelector from "./HoleScoreSelector";
 import WindowFocusHandler from "../WindowFocusHandler";
-import Tour from "../Tour";
 import RoundSummary from "./RoundSummary";
 import { Round } from "../../store/Rounds";
 import HoleScore from "./HoleScore";
@@ -41,7 +40,24 @@ const calculateDurationString = (round: Round) => {
   const hourPart = rhours !== 0 ? `${rhours} h ` : "";
   const minPart = `${rminutes} min`;
 
-  return `(${hourPart}${minPart})`;
+  return `${hourPart}${minPart}`;
+};
+
+const toDateString = (date: Date) => {
+  const dateTimeFormat = new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
+  const [
+    { value: month },
+    ,
+    { value: day },
+    // { value: year },
+    ,
+  ] = dateTimeFormat.formatToParts(date);
+
+  return `${day}. ${month.toLowerCase()}`;
 };
 
 const RoundComponent = (props: Props) => {
@@ -91,28 +107,31 @@ const RoundComponent = (props: Props) => {
       </>
     );
   };
-
-  return (
+  return round ? (
     <>
-      <Tour start={round} />
-      <h1 className="title has-text-centered">
-        {props.round &&
-          (props.round.courseName || (
-            <i className=" has-text-grey-light ">{props.round?.roundName}</i>
-          ))}
-      </h1>
-      <h2 className="subtitle has-text-centered">
-        {props.round && new Date(props.round.startTime).toLocaleDateString()}{" "}
-        <i>{props.round && calculateDurationString(props.round)}</i>
-      </h2>
+      {/* <Tour start={round} /> */}
+      <nav className="navbar is-light level is-mobile mb-0">
+        <div className="level-item has-text-centered">
+          <div className="is-size-7">
+            {toDateString(new Date(round.startTime))} &nbsp;
+          </div>
+        </div>
+        <div className="level-item has-text-centered">
+          <div className="is-size-5">
+            {`${round.courseName} ` || round?.roundName}
+          </div>
+        </div>
+        <div className="level-item has-text-centered">
+          <div className="is-size-7">
+            <i>{calculateDurationString(round)}</i>
+          </div>
+        </div>
+      </nav>
+      <div className="has-text-centered py-0"></div>
 
-      {/* <h6 className="subtitle is-6 has-text-centered">
-        {props.round}
-      </h6> */}
-
-      {round && activeHole && renderRound(round, activeHole)}
+      {activeHole && renderRound(round, activeHole)}
     </>
-  );
+  ) : null;
 };
 
 export default connector(RoundComponent);

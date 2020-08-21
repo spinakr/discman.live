@@ -2,37 +2,32 @@ import * as React from "react";
 import { ApplicationState } from "../store";
 import { actionCreators } from "../store/User";
 import { connect, ConnectedProps } from "react-redux";
-import { Link } from "react-router-dom";
 
-const mapState = (state: ApplicationState) => state.user;
+const mapState = (state: ApplicationState) => {
+  return {
+    user: state.user,
+    round: state.rounds?.round,
+    location: state.router.location,
+  };
+};
 const connector = connect(mapState, actionCreators);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux;
-const Banner = (props: Props) => (
-  <nav className="navbar is-light">
-    <div className="navbar-brand">
-      <div className="navbar-item">
-        <Link to="/">discman.live</Link>
-      </div>
-    </div>
-    <div className="navbar-menu is-active">
-      <div className="navbar-end">
-        <Link className="navbar-item" to="/user">
-          {props.user ? props.user.username : null}
-        </Link>
-        <div className="navbar-item">
-          <a
-            className="button is-warning is-light"
-            onClick={() => props.logout()}
-            href="/"
-          >
-            Logout
-          </a>
-        </div>
-      </div>
-    </div>
-  </nav>
-);
+const Banner = (props: Props) => {
+  return (
+    <>
+      {!props.location.pathname.startsWith("/rounds") && (
+        <nav className="navbar is-light level is-mobile">
+          <div className="level-item has-text-centered">
+            <h5 className="title is-5 has-text-weight-semibold	is-family-monospace">
+              discman.live
+            </h5>
+          </div>
+        </nav>
+      )}
+    </>
+  );
+};
 
 export default connector(Banner);

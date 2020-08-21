@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
@@ -67,7 +68,7 @@ const RoundStatus = (props: Props) => {
     ],
     []
   );
-  if (!playerStats || +playerStats.roundsPlayed < 3) return null;
+  if (!playerStats || +playerStats.roundsPlayed < 1) return null;
 
   var lastScoredHoleIndex = 0;
   playerRoundScores &&
@@ -93,9 +94,6 @@ const RoundStatus = (props: Props) => {
     ];
 
   const versusAverage = Math.ceil((currentScore || 0) - (currentAverage || 0));
-
-  console.log(lastScoredHoleIndex);
-  console.log(currentAverage);
 
   const predictedFinalScore =
     (lastScoredHoleIndex === 0
@@ -208,12 +206,15 @@ The blue line shows your average round progression based on averages on each hol
         </div>
       )}
 
-      <button
-        className="button is-primary is-light is-outlined"
+      <a
+        className="button is-white is-small"
         onClick={() => setShowDialog(true)}
       >
-        <strong>Status</strong>
-      </button>
+        <span className="icon is-small">
+          <i className="fas fa-lg fa-chart-line" aria-hidden="true"></i>
+        </span>
+        <span className="is-size-7">Status</span>
+      </a>
     </>
   );
 };

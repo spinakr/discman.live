@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
+import * as UserStore from "../store/User";
 import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
 import SaveCourseFromRound from "./Round/SaveCourseFromRound";
@@ -16,7 +17,10 @@ const mapState = (state: ApplicationState) => {
   };
 };
 
-const connector = connect(mapState, RoundsStore.actionCreators);
+const connector = connect(mapState, {
+  ...RoundsStore.actionCreators,
+  ...UserStore.actionCreators,
+});
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
@@ -29,141 +33,220 @@ const NavMenu = (props: Props) => {
   const [confirmLeaveRound, setConfirmLeaveRound] = useState(false);
   return (
     <>
-      <nav className="navbar is-fixed-bottom is-light">
-        <div className="navbar-brand">
-          {!props.location.pathname.startsWith("/rounds") &&
-            !props.location.pathname.startsWith("/courses") && (
-              <>
-                <div className="navbar-item"></div>
-              </>
-            )}
+      <nav className="navbar is-fixed-bottom is-light py-0 my-0">
+        <div className="navbar-item columns py-0 my-0">
+          {(!props.location.pathname.startsWith("/rounds") ||
+            props.round?.isCompleted) && (
+            <>
+              <div className="column py-0">
+                <Link to="/" className="button is-white is-small">
+                  <span className="icon is-small">
+                    <i className="fas fa-lg fa-clipboard-list"></i>
+                  </span>
+                  <span className="is-size-7">Rounds</span>
+                </Link>
+              </div>
+              <div className="column py-0">
+                <Link to="/leaders" className="button is-white is-small">
+                  <span className="icon is-small">
+                    <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>
+                  </span>
+                  <span className="is-size-7">Leaders</span>
+                </Link>
+              </div>
+              <div className="column py-0">
+                <Link to="/user" className="button is-white is-small">
+                  <span className="icon is-small">
+                    <i
+                      className="fas fa-lg fa-user-friends"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+                  <span className="is-size-7">Profile</span>
+                </Link>
+              </div>
+            </>
+          )}
+
           {props.round && props.location.pathname.startsWith("/rounds") && (
             <>
-              <div className="navbar-item">
-                <button
-                  className="button is-warning tour-scorecard"
+              <div className="column">
+                <a
+                  className="button is-white is-small"
                   onClick={() => props.setScorecardOpen(true)}
                 >
-                  <strong>Scorecard</strong>
-                </button>
+                  <span className="icon is-small">
+                    <i className="fas fa-lg fa-list-ol" aria-hidden="true"></i>
+                  </span>
+                  <span className="is-size-7">Scores</span>
+                </a>
               </div>
-              <div className="navbar-item">
+              <div className="column">
                 <RoundStatus />
               </div>
             </>
           )}
         </div>
 
-        <div className="navbar-menu tour-score-mode" id="navbarBasicExample">
+        <div className="navbar-menu tour-score-mode">
           <div className="navbar-end">
-            {
-              <div
-                className={`navbar-item has-dropdown has-dropdown-up ${
-                  open ? "is-active" : ""
-                }`}
-              >
-                <a
-                  className="navbar-link tour-change-mode"
-                  onClick={() => setOpen(!open)}
-                >
-                  Menu
-                </a>
-
-                <div className="navbar-dropdown is-right">
-                  {props.round &&
-                    props.location.pathname.startsWith("/rounds") && (
-                      <>
-                        {props.round.isCompleted && !props.round.courseName && (
-                          <SaveCourseFromRound setOpen={setOpen} />
-                        )}
-                        <a
-                          className="navbar-item"
-                          onClick={() => {
-                            setOpen(false);
-                            setConfirmLeaveRound(true);
-                          }}
-                        >
-                          Leave round
-                        </a>
-
-                        {props.user?.user?.username ===
-                          props.round?.createdBy && (
-                          <>
-                            {props.round.scoreMode ===
-                              ScoreMode.DetailedLive && (
-                              <a
-                                className="navbar-item"
-                                onClick={() => {
-                                  setOpen(false);
-                                  props.setScoringMode(ScoreMode.StrokesLive);
-                                }}
-                              >
-                                Simple scoring
-                              </a>
-                            )}
-                            {props.round.scoreMode ===
-                              ScoreMode.StrokesLive && (
-                              <a
-                                className="navbar-item"
-                                onClick={() => {
-                                  setOpen(false);
-                                  props.setScoringMode(ScoreMode.DetailedLive);
-                                }}
-                              >
-                                Detailed scoring
-                              </a>
-                            )}
-
-                            <a
-                              className="navbar-item has-text-danger"
-                              onClick={() => setConfirmDelete(true)}
-                            >
-                              <strong>Delete round</strong>
-                            </a>
-                            <a
-                              className="navbar-item has-text-danger"
-                              onClick={() => setConfirmSkipHole(true)}
-                            >
-                              <strong>Skip hole</strong>
-                            </a>
-                          </>
-                        )}
-                      </>
-                    )}
-                  <hr className="navbar-divider" />
-                  <Link
-                    to="/courses"
-                    className="navbar-item"
-                    onClick={() => setOpen(false)}
+            <div className="navbar-item py-0">
+              <div className={`dropdown is-up is-right ${open && "is-active"}`}>
+                <div className="dropdown-trigger">
+                  <button
+                    className="button is-white is-small py-0"
+                    aria-haspopup="true"
+                    aria-controls="dropdown-menu7"
+                    onClick={() => setOpen(!open)}
                   >
-                    Courses
-                  </Link>
-                  <Link
-                    to="/user"
-                    className="navbar-item"
-                    onClick={() => setOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    to="/friends"
-                    className="navbar-item"
-                    onClick={() => setOpen(false)}
-                  >
-                    Friends
-                  </Link>
+                    <span className="icon is-small">
+                      <i className="fas fa-lg fa-bars" aria-hidden="true"></i>
+                    </span>
+                  </button>
                 </div>
               </div>
-            }
+            </div>
+          </div>
+        </div>
+        <div className={open ? "modal is-active" : "modal"}>
+          <div
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <div className="modal-background"></div>
+          </div>
+          <div className="modal-card">
+            <header className="modal-card-head">
+              <p className="modal-card-title">Menu</p>
+            </header>
+            <section className="modal-card-body">
+              {props.round && props.location.pathname.startsWith("/rounds") && (
+                <>
+                  <article className="panel">
+                    {props.round.isCompleted && !props.round.courseName && (
+                      <SaveCourseFromRound setOpen={setOpen} />
+                    )}
+
+                    <span
+                      className="panel-block has-text-danger"
+                      onClick={() => {
+                        setConfirmLeaveRound(true);
+                      }}
+                    >
+                      <span className="panel-icon">
+                        <i className="fas fa-lg fa-door-open"></i>
+                      </span>
+                      &nbsp; Leave round
+                    </span>
+
+                    {props.user?.user?.username === props.round?.createdBy && (
+                      <>
+                        {props.round.scoreMode === ScoreMode.DetailedLive && (
+                          <span
+                            className="panel-block"
+                            onClick={() => {
+                              setOpen(false);
+                              props.setScoringMode(ScoreMode.StrokesLive);
+                            }}
+                          >
+                            <span className="panel-icon">
+                              <i className="fas fa-lg fa-toggle-off"></i>
+                            </span>
+                            &nbsp; Simple scoring
+                          </span>
+                        )}
+                        {props.round.scoreMode === ScoreMode.StrokesLive && (
+                          <span
+                            className="panel-block"
+                            onClick={() => {
+                              setOpen(false);
+                              props.setScoringMode(ScoreMode.DetailedLive);
+                            }}
+                          >
+                            <span className="panel-icon">
+                              <i className="fas fa-lg fa-toggle-off"></i>
+                            </span>
+                            &nbsp; Detailed scoring
+                          </span>
+                        )}
+                        <span
+                          className="panel-block has-text-danger"
+                          onClick={() => setConfirmSkipHole(true)}
+                        >
+                          <span className="panel-icon">
+                            <i className="fas fa-lg fa-forward"></i>
+                          </span>
+                          &nbsp; Skip hole
+                        </span>
+                        <span
+                          className="panel-block has-text-danger"
+                          onClick={() => setConfirmDelete(true)}
+                        >
+                          <span className="panel-icon">
+                            <i className="fas fa-lg fa-backspace"></i>
+                          </span>
+                          &nbsp; Delete round
+                        </span>
+                      </>
+                    )}
+                  </article>
+                </>
+              )}
+              <article className="panel">
+                <Link
+                  to="/"
+                  className="panel-block"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="panel-icon">
+                    <i className="fas fa-lg fa-home"></i>
+                  </span>
+                  &nbsp; Home
+                </Link>
+                <Link
+                  to="/courses"
+                  className="panel-block"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="panel-icon">
+                    <i className="fas fa-lg fa-cloud-sun"></i>
+                  </span>
+                  &nbsp; Courses
+                </Link>
+                <Link
+                  to="/friends"
+                  className="panel-block"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="panel-icon">
+                    <i className="fas fa-lg fa-user-friends"></i>
+                  </span>
+                  &nbsp; Friends
+                </Link>
+              </article>
+              <article className="panel">
+                <span className="panel-block" onClick={() => props.logout()}>
+                  <span className="panel-icon">
+                    <i className="fas fa-lg fa-sign-out-alt"></i>
+                  </span>
+                  &nbsp; Logout
+                </span>
+              </article>
+            </section>
+            <footer className="modal-card-foot">
+              <button className="button" onClick={() => setOpen(false)}>
+                Close
+              </button>
+            </footer>
           </div>
         </div>
       </nav>
 
       <div className={`modal ${confirmLeaveRound ? "is-active" : ""}`}>
-        <a href="" onClick={() => setConfirmLeaveRound(false)}>
-          {" "}
+        <div onClick={() => setConfirmLeaveRound(false)}>
           <div className="modal-background"></div>{" "}
-        </a>
+        </div>
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Leave round?</p>
@@ -193,10 +276,10 @@ const NavMenu = (props: Props) => {
       </div>
 
       <div className={`modal ${confirmSkipHole ? "is-active" : ""}`}>
-        <a href="" onClick={() => setConfirmSkipHole(false)}>
+        <div onClick={() => setConfirmSkipHole(false)}>
           {" "}
           <div className="modal-background"></div>{" "}
-        </a>
+        </div>
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Skip hole?</p>
@@ -223,10 +306,10 @@ const NavMenu = (props: Props) => {
       </div>
 
       <div className={`modal ${confirmDelete ? "is-active" : ""}`}>
-        <a href="" onClick={() => setConfirmDelete(false)}>
+        <div onClick={() => setConfirmDelete(false)}>
           {" "}
           <div className="modal-background"></div>{" "}
-        </a>
+        </div>
         <div className="modal-card">
           <header className="modal-card-head">
             <p className="modal-card-title">Delete round?</p>

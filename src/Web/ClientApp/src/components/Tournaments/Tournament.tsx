@@ -84,7 +84,7 @@ const Tournament = (props: Props) => {
         </ul>
       </div>
 
-      <section className="section has-text-centered py-0">
+      <section className="section has-text-centered pt-0">
         {active === 1 && (
           <>
             {!tournament.info.isCompleted &&
@@ -200,9 +200,6 @@ const Tournament = (props: Props) => {
                   >
                     <strong>Calculate prices</strong>
                   </button>
-                  <br />
-                  <br />
-                  <br />
                 </>
               )}
           </>

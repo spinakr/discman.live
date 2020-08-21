@@ -52,7 +52,7 @@ const UserStatsComponent = (props: Props) => {
         </div>
       </div>
 
-      <div className="section py-0">
+      <div className="section pt-0">
         {stats && (
           <div className="">
             <div className="columns is-centered is-mobile">

@@ -59,14 +59,14 @@ const UserComponent = (props: Props) => {
         </ul>
       </div>
       {active === 1 && (
-        <div className="section py-0">
+        <div className="section pt-0">
           <UserRounds />
         </div>
       )}
       {active === 2 && <UserStats />}
       {active === 3 && <UserAchievements />}
       {active === 4 && (
-        <div className="section py-0">
+        <div className="section pt-0">
           <Tournaments onlyActive={false} />
         </div>
       )}

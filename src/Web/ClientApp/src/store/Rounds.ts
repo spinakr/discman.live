@@ -65,6 +65,7 @@ export interface HoleScore {
 export interface Round {
   id: string;
   courseName: string;
+  courseLayout: string;
   roundName: string;
   createdBy: string;
   startTime: string;
