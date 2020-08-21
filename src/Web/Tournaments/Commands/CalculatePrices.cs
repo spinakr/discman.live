@@ -60,7 +60,7 @@ namespace Web.Tournaments.Commands
                     var averagePutsPerHole = playerScores
                         .Average(s => s.Scores
                             .Average(h => h.StrokeSpecs
-                                .Count(ss => ss.Outcome == StrokeSpec.StrokeOutcome.Circle1 || ss.Outcome == StrokeSpec.StrokeOutcome.Circle1)));
+                                .Count(ss => ss.Outcome == StrokeSpec.StrokeOutcome.Circle1 || ss.Outcome == StrokeSpec.StrokeOutcome.Circle2)));
 
                     var fairwayHitRatio = playerScores.Sum(s => s.Scores.Count(h =>
                     {
