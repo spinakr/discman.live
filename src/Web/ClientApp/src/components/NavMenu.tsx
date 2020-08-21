@@ -39,24 +39,24 @@ const NavMenu = (props: Props) => {
             props.round?.isCompleted) && (
             <>
               <div className="column py-0">
-                <Link to="/" className="button is-white is-small">
-                  <span className="icon is-small">
+                <Link to="/" className="button is-white pr-1 pl-3">
+                  <span className="icon">
                     <i className="fas fa-lg fa-clipboard-list"></i>
                   </span>
                   <span className="is-size-7">Rounds</span>
                 </Link>
               </div>
               <div className="column py-0">
-                <Link to="/leaders" className="button is-white is-small">
-                  <span className="icon is-small">
+                <Link to="/leaders" className="button is-white pr-1 pl-3">
+                  <span className="icon">
                     <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>
                   </span>
                   <span className="is-size-7">Leaders</span>
                 </Link>
               </div>
               <div className="column py-0">
-                <Link to="/user" className="button is-white is-small">
-                  <span className="icon is-small">
+                <Link to="/user" className="button is-white pr-1 pl-3">
+                  <span className="icon">
                     <i
                       className="fas fa-lg fa-user-friends"
                       aria-hidden="true"
@@ -74,10 +74,10 @@ const NavMenu = (props: Props) => {
               <>
                 <div className="column">
                   <a
-                    className="button is-white is-small"
+                    className="button is-white pr-1 pl-3"
                     onClick={() => props.setScorecardOpen(true)}
                   >
-                    <span className="icon is-small">
+                    <span className="icon">
                       <i
                         className="fas fa-lg fa-list-ol"
                         aria-hidden="true"
@@ -99,12 +99,12 @@ const NavMenu = (props: Props) => {
               <div className={`dropdown is-up is-right ${open && "is-active"}`}>
                 <div className="dropdown-trigger">
                   <button
-                    className="button is-white is-small py-0"
+                    className="button is-white "
                     aria-haspopup="true"
                     aria-controls="dropdown-menu7"
                     onClick={() => setOpen(!open)}
                   >
-                    <span className="icon is-small">
+                    <span className="icon">
                       <i className="fas fa-lg fa-bars" aria-hidden="true"></i>
                     </span>
                   </button>
