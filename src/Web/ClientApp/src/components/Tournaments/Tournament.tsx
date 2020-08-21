@@ -185,10 +185,8 @@ const Tournament = (props: Props) => {
               !tournament.info.isCompleted && (
                 <>
                   <br />
-                  <hr />
-                  <br />
                   <button
-                    className="button is-danger is-light is-outlined"
+                    className="button is-small is-danger is-light is-outlined"
                     onClick={() => {
                       if (
                         window.confirm(

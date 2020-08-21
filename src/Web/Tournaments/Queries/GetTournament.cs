@@ -77,8 +77,11 @@ namespace Web.Tournaments.Queries
                 });
             }
 
-            leaderboard.Scores = leaderboard.Scores.OrderBy(s => s.TotalScore).ToList();
-            
+            leaderboard.Scores = leaderboard.Scores
+                .OrderByDescending(s => s.CoursesPlayed)
+                .ThenBy(s => s.TotalScore)
+                .ToList();
+
             return leaderboard;
         }
     }
