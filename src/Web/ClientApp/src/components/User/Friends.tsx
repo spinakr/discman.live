@@ -46,7 +46,7 @@ const UserComponent = (props: Props) => {
         </ul>
       </div>
       {active === 1 && (
-        <div className="section">
+        <div className="section pt-0">
           <div className="panel has-text-centered">
             {props.user?.friendUsers.map((f) => {
               return (

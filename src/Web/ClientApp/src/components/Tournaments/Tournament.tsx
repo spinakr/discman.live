@@ -24,6 +24,23 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & { onlyActive?: boolean };
 
+const toDateString = (date: Date) => {
+  const dateTimeFormat = new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
+  const [
+    { value: month },
+    ,
+    { value: day },
+    // { value: year },
+    ,
+  ] = dateTimeFormat.formatToParts(date);
+
+  return `${day}. ${month.toLowerCase()}`;
+};
+
 const Tournament = (props: Props) => {
   let { tournamentId } = useParams();
   const { fetchTournament, tournament } = props;
@@ -52,12 +69,18 @@ const Tournament = (props: Props) => {
 
   return (
     <>
-      <h1 className="title has-text-centered">{tournament.info.name}</h1>
-      <h2 className="subtitle has-text-centered">
-        {new Date(tournament.info.start).toLocaleDateString()}
-        {" - "}
-        {new Date(tournament.info.end).toLocaleDateString()}
-      </h2>
+      <nav className="navbar is-light level is-mobile mb-0">
+        <div className="level-item has-text-centered">
+          <div className="is-size-5">{tournament.info.name}</div>
+        </div>
+        <div className="level-item has-text-centered">
+          <div className="is-size-7">
+            {toDateString(new Date(tournament.info.start))}
+            {" - "}
+            {toDateString(new Date(tournament.info.end))}
+          </div>
+        </div>
+      </nav>
 
       <div className="tabs is-centered">
         <ul>
@@ -127,7 +150,7 @@ const Tournament = (props: Props) => {
                           className="level-item"
                           to={`/courses/${c.name}/${c.layout}`}
                         >
-                          {c.name} -<i>&nbsp;{c.layout}</i>
+                          {c.name} <i>&nbsp;{c.layout}</i>
                         </Link>
                       </div>
                       <div className="level-right">
