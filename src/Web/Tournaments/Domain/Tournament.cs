@@ -67,6 +67,7 @@ namespace Web.Tournaments.Domain
     {
         public string Username { get; set; }
         public int Score { get; set; }
+        public int RoundsPlayed { get; set; }
     }
 
     public class TournamentPrice
