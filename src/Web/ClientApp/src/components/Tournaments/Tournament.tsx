@@ -200,6 +200,9 @@ const Tournament = (props: Props) => {
                   >
                     <strong>Calculate prices</strong>
                   </button>
+                  <br />
+                  <br />
+                  <br />
                 </>
               )}
           </>
