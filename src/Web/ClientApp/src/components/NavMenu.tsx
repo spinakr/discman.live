@@ -8,6 +8,7 @@ import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
 import SaveCourseFromRound from "./Round/SaveCourseFromRound";
 import RoundStatus from "./Round/RoundStatus";
+import NewRound from "./Round/NewRound";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -39,7 +40,7 @@ const NavMenu = (props: Props) => {
             props.round?.isCompleted) && (
             <>
               <div className="column py-0">
-                <Link to="/" className="button is-white pr-1 pl-3">
+                <Link to="/" className="button is-light pr-1 pl-3">
                   <span className="icon">
                     <i className="fas fa-lg fa-clipboard-list"></i>
                   </span>
@@ -47,22 +48,14 @@ const NavMenu = (props: Props) => {
                 </Link>
               </div>
               <div className="column py-0">
-                <Link to="/leaders" className="button is-white pr-1 pl-3">
+                <NewRound />
+              </div>
+              <div className="column py-0">
+                <Link to="/leaders" className="button is-light pr-1 pl-3">
                   <span className="icon">
                     <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>
                   </span>
                   <span className="is-size-7">Leaders</span>
-                </Link>
-              </div>
-              <div className="column py-0">
-                <Link to="/user" className="button is-white pr-1 pl-3">
-                  <span className="icon">
-                    <i
-                      className="fas fa-lg fa-user-friends"
-                      aria-hidden="true"
-                    ></i>
-                  </span>
-                  <span className="is-size-7">Profile</span>
                 </Link>
               </div>
             </>
@@ -74,7 +67,7 @@ const NavMenu = (props: Props) => {
               <>
                 <div className="column">
                   <a
-                    className="button is-white pr-1 pl-3"
+                    className="button is-light pr-1 pl-3"
                     onClick={() => props.setScorecardOpen(true)}
                   >
                     <span className="icon">
@@ -99,7 +92,7 @@ const NavMenu = (props: Props) => {
               <div className={`dropdown is-up is-right ${open && "is-active"}`}>
                 <div className="dropdown-trigger">
                   <button
-                    className="button is-white "
+                    className="button is-light "
                     aria-haspopup="true"
                     aria-controls="dropdown-menu7"
                     onClick={() => setOpen(!open)}
@@ -228,6 +221,16 @@ const NavMenu = (props: Props) => {
                     <i className="fas fa-lg fa-user-friends"></i>
                   </span>
                   &nbsp; Friends
+                </Link>
+                <Link
+                  to="/user"
+                  className="panel-block"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="panel-icon">
+                    <i className="fas fa-lg fa-user"></i>
+                  </span>
+                  &nbsp; Profile
                 </Link>
               </article>
               <article className="panel">

@@ -219,10 +219,13 @@ After finishing the round, an actuall course can be created from the registered 
         </div>
       </div>
       <button
-        className="button is-primary is-light is-outlined"
         onClick={() => setShowDialog(true)}
+        className="button is-light pr-1 pl-3"
       >
-        <strong>New Round</strong>
+        <span className="icon">
+          <i className="fas fa-lg fa-play" aria-hidden="true"></i>
+        </span>
+        <span className="is-size-7">Play</span>
       </button>
     </>
   );

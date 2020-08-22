@@ -21,7 +21,7 @@ const HoleScoreComponent = ({
   const holeScore = playerScores.find((s) => s.hole.number === activeHole);
 
   return (
-    <div style={{ margin: "10px" }}>
+    <div className="pt-2">
       <h2 className="subtitle has-text-centered">
         Hole {holeScore?.hole.number}
       </h2>
@@ -48,42 +48,57 @@ const HoleScoreComponent = ({
         </div>
       </div>
       <br />
-      <table className="table is-fullwidth is-bordered tour-holeScores">
-        <thead>
-          <tr>
-            {round.playerScores.map((p) => (
-              <th
-                key={p.playerName}
-                className={
-                  p.playerName === username ? "has-background-light" : ""
-                }
-              >
-                {p.playerName} (
-                {p.scores.reduce((total, score) => {
-                  return total + score.relativeToPar;
-                }, 0)}
-                )
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            {round.playerScores.map((p) => {
-              return (
-                <td
+      <div className="table-container">
+        <table className="table is-fullwidth is-bordered tour-holeScores">
+          <thead>
+            <tr>
+              {round.playerScores.map((p) => (
+                <th
+                  style={{
+                    minWidth: "75px",
+                    maxWidth: "75px",
+                    overflow: "hidden",
+                  }}
                   key={p.playerName}
                   className={
-                    p.playerName === username ? "has-background-light" : ""
+                    p.playerName === username
+                      ? "has-background-light has-text-centered"
+                      : "has-text-centered"
                   }
                 >
-                  {p.scores.find((s) => s.hole.number === activeHole)?.strokes}
-                </td>
-              );
-            })}
-          </tr>
-        </tbody>
-      </table>
+                  {p.playerName}
+                  <br />(
+                  {p.scores.reduce((total, score) => {
+                    return total + score.relativeToPar;
+                  }, 0)}
+                  )
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {round.playerScores.map((p) => {
+                return (
+                  <td
+                    key={p.playerName}
+                    className={
+                      p.playerName === username
+                        ? "has-background-light has-text-centered"
+                        : "has-text-centered"
+                    }
+                  >
+                    {
+                      p.scores.find((s) => s.hole.number === activeHole)
+                        ?.strokes
+                    }
+                  </td>
+                );
+              })}
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

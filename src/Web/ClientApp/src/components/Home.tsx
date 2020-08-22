@@ -4,10 +4,8 @@ import { connect, ConnectedProps } from "react-redux";
 import { RouteComponentProps } from "react-router";
 import { ApplicationState } from "../store";
 import Login from "./Login";
-import NewRound from "./Round/NewRound";
 import UserRounds from "./User/UserRounds";
 import { useState } from "react";
-import AddFriends from "./AddFriends";
 import Tournaments from "./Tournaments/Tournaments";
 import NewTournament from "./Tournaments/NewTournament";
 
@@ -53,13 +51,6 @@ const Home = (props: Props) => {
               <>
                 <h3 className="title is-3 has-text-centered">Active rounds</h3>
                 <UserRounds onlyActive={true} />
-                <hr />
-                <div className="has-text-centered">
-                  <NewRound />
-                  <br />
-                  <br />
-                  <AddFriends />
-                </div>
               </>
             )}
             {active === 2 && (

@@ -2,6 +2,7 @@ import * as React from "react";
 import { ApplicationState } from "../store";
 import { actionCreators } from "../store/User";
 import { connect, ConnectedProps } from "react-redux";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -24,6 +25,19 @@ const Banner = (props: Props) => {
               <h5 className="title is-5 has-text-weight-semibold	is-family-monospace">
                 discman.live
               </h5>
+            </div>
+            <div className="navbar-end">
+              <div className="navbar-item">
+                <Link to="/user" className="button is-light pr-1 pl-3">
+                  <span className="icon">
+                    <i
+                      className="fas fa-lg fa-user-friends"
+                      aria-hidden="true"
+                    ></i>
+                  </span>
+                  <span className="is-size-7"></span>
+                </Link>
+              </div>
             </div>
           </nav>
         )}
