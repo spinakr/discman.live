@@ -16,23 +16,21 @@ const connector = connect(mapState, TournamentsStore.actionCreators);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & { onlyActive: boolean };
+type Props = PropsFromRedux;
 
 const Tournaments = (props: Props) => {
   const { fetchTournaments, tournaments } = props;
   React.useEffect(() => {
-    fetchTournaments(props.onlyActive || true);
-  }, [fetchTournaments, props.onlyActive]);
+    fetchTournaments(false);
+  }, [fetchTournaments]);
 
   return (
     <>
-      <h4 className="title is-4 has-text-centered">
-        {props.onlyActive ? "Active Tournaments" : "Tournaments"}
-      </h4>
+      <h4 className="title is-4 has-text-centered">Tournaments</h4>
       <section className="section pt-0 has-text-centered">
         {(!tournaments || tournaments.length === 0) && (
           <>
-            <div>No active tournaments</div>
+            <div>No tournaments</div>
             <br />
           </>
         )}

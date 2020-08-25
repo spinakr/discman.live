@@ -65,7 +65,7 @@ const UserComponent = (props: Props) => {
       )}
       {active === 2 && <UserStats />}
       {active === 3 && <UserAchievements />}
-      {active === 4 && <Tournaments onlyActive={false} />}
+      {active === 4 && <Tournaments />}
     </div>
   );
 };
