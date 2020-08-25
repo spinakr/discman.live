@@ -23,7 +23,7 @@ namespace Web.Tournaments.Queries
             var tournamentRounds = roundsInPeriod
                 .Where(r => r.PlayerScores.Count > 1)
                 .GroupBy(r => r.CourseId)
-                .Select(g => g.OrderBy(r => r.StartTime).First())
+                .Select(g => g.OrderBy(r => r.PlayerScore(tournamentPlayer)).First())
                 .ToList();
 
             return tournamentRounds;

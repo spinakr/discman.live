@@ -96,14 +96,12 @@ const Tournament = (props: Props) => {
           >
             <a>Leaderboard</a>
           </li>
-          {tournament.prices && (
-            <li
-              className={active === 3 ? "is-active" : ""}
-              onClick={() => setActive(3)}
-            >
-              <a>Prices</a>
-            </li>
-          )}
+          <li
+            className={active === 3 ? "is-active" : ""}
+            onClick={() => setActive(3)}
+          >
+            <a>Prices</a>
+          </li>
         </ul>
       </div>
 
@@ -202,29 +200,6 @@ const Tournament = (props: Props) => {
                 );
               })}
             </div>
-            {tournament.info.admins.some(
-              (a) => a === props.user?.user?.username
-            ) &&
-              !tournament.info.isCompleted && (
-                <>
-                  <br />
-                  <button
-                    className="button is-small is-danger is-light is-outlined"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          "Sure you want to calcualte prices early?"
-                        )
-                      ) {
-                        tournamentId && props.calculatePrices(tournamentId);
-                      }
-                    }}
-                    disabled={!tournamentId}
-                  >
-                    <strong>Calculate prices</strong>
-                  </button>
-                </>
-              )}
           </>
         )}
         {active === 2 && tournament.leaderboard && (
@@ -233,11 +208,33 @@ const Tournament = (props: Props) => {
             username={props.user?.user?.username || ""}
           />
         )}
-        {active === 3 && tournament.prices && (
-          <TournamentPrices
-            tournament={tournament}
-            username={props.user?.user?.username || ""}
-          />
+        {active === 3 && (
+          <>
+            <TournamentPrices
+              tournament={tournament}
+              username={props.user?.user?.username || ""}
+            />
+            {tournament.info.admins.some(
+              (a) => a === props.user?.user?.username
+            ) && (
+              <>
+                <br />
+                <button
+                  className="button is-small is-danger is-light is-outlined"
+                  onClick={() => {
+                    if (
+                      window.confirm("Sure you want to calcualte prices early?")
+                    ) {
+                      tournamentId && props.calculatePrices(tournamentId);
+                    }
+                  }}
+                  disabled={!tournamentId}
+                >
+                  <strong>Calculate prices</strong>
+                </button>
+              </>
+            )}
+          </>
         )}
       </section>
     </>

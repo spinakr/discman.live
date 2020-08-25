@@ -110,7 +110,7 @@ After finishing the round, an actuall course can be created from the registered 
                 <label htmlFor="switchExample">On-the-fly</label>
               </div>
             </div>
-            <div className="field">
+            {/* <div className="field">
               <div className="control">
                 <div className="select is-primary">
                   <select
@@ -126,7 +126,7 @@ After finishing the round, an actuall course can be created from the registered 
                   </select>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <label className="label">
               {manualReg ? "Round Name" : "Course"}
@@ -135,7 +135,7 @@ After finishing the round, an actuall course can be created from the registered 
               <>
                 <div className="field">
                   <div className="control">
-                    <div className="select is-primary">
+                    <div className="select is-grey is-fullwidth">
                       <select onChange={(e) => courseSelected(e.target.value)}>
                         <option></option>
                         {props.courses?.map((c) => (
@@ -149,7 +149,7 @@ After finishing the round, an actuall course can be created from the registered 
                 </div>
                 <div className="field">
                   <div className="control">
-                    <div className="select is-primary">
+                    <div className="select is-grey is-fullwidth">
                       <select onChange={(e) => layoutSelected(e.target.value)}>
                         {availableLayouts?.map((c) => (
                           <option key={c.id} value={c.id}>
@@ -176,7 +176,7 @@ After finishing the round, an actuall course can be created from the registered 
             <label className="label">Friends</label>
             <div className="field">
               <div className="control">
-                <div className="select is-primary">
+                <div className="select is-grey is-fullwidth">
                   <select onChange={(e) => playerAdded(e.target.value)}>
                     <option></option>
                     {props.friends?.map((u) => (
@@ -199,7 +199,7 @@ After finishing the round, an actuall course can be created from the registered 
           </section>
           <footer className="modal-card-foot">
             <button
-              className="button is-success"
+              className="button is-success is-light is-outlined"
               onClick={() => {
                 props.newRound(
                   selectedLayout?.id,
@@ -212,7 +212,10 @@ After finishing the round, an actuall course can be created from the registered 
             >
               Start
             </button>
-            <button className="button" onClick={() => setShowDialog(false)}>
+            <button
+              className="button is-outlined"
+              onClick={() => setShowDialog(false)}
+            >
               Cancel
             </button>
           </footer>
