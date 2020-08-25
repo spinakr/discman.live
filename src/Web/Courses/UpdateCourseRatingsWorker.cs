@@ -6,6 +6,7 @@ using Marten;
 using Marten.Util;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Web.Feeds.Domain;
 using Web.Rounds;
 
 namespace Web.Courses
@@ -33,6 +34,7 @@ namespace Web.Courses
             using var documentSession = _documentStore.OpenSession();
             var courses = documentSession.Query<Course>().ToList();
             _logger.LogInformation($"Updating ratings of all {courses.Count} courses");
+            
             foreach (var course in courses)
             {
                 try

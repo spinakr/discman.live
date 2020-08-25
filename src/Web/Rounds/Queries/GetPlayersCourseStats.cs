@@ -27,7 +27,13 @@ namespace Web.Rounds.Queries
         {
             var activeRound = await _documentSession
                 .Query<Round>()
-                .SingleAsync(r => r.Id == request.RoundId, token: cancellationToken);
+                .SingleOrDefaultAsync(r => r.Id == request.RoundId, token: cancellationToken);
+
+            if (activeRound is null)
+            {
+                return new List<PlayerCourseStats>();
+            }
+            
             var courseName = activeRound.CourseName;
             var layoutName = activeRound.CourseLayout;
             var players = activeRound.PlayerScores.Select(p => p.PlayerName);

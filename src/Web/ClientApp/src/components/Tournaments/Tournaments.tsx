@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as TournamentsStore from "../../store/Tournaments";
 import { Link } from "react-router-dom";
+import NewTournament from "./NewTournament";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -20,15 +21,15 @@ type Props = PropsFromRedux & { onlyActive: boolean };
 const Tournaments = (props: Props) => {
   const { fetchTournaments, tournaments } = props;
   React.useEffect(() => {
-    fetchTournaments(props.onlyActive);
+    fetchTournaments(props.onlyActive || true);
   }, [fetchTournaments, props.onlyActive]);
 
   return (
     <>
-      <section className="has-text-centered">
-        <h3 className="title is-3 has-text-centered">
-          {props.onlyActive ? "Active Tournaments" : "Tournaments"}
-        </h3>
+      <h4 className="title is-4 has-text-centered">
+        {props.onlyActive ? "Active Tournaments" : "Tournaments"}
+      </h4>
+      <section className="section pt-0 has-text-centered">
         {(!tournaments || tournaments.length === 0) && (
           <>
             <div>No active tournaments</div>
@@ -56,6 +57,9 @@ const Tournaments = (props: Props) => {
             ))}
           </div>
         )}
+
+        <hr />
+        <NewTournament />
       </section>
     </>
   );

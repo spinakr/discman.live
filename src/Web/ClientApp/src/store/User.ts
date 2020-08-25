@@ -36,8 +36,34 @@ export interface UserState {
   friendUsers: string[];
   userStats: UserStats | null;
   userRounds: Round[];
+  roundInProgress: Round | null;
   userAchievements: GroupedAchievement[];
   searchedUsers: string[];
+  feed: Feed | null;
+}
+
+export interface Feed {
+  feedItems: FeedItem[];
+  isLastPage: boolean;
+}
+
+export interface FeedItem {
+  id: string;
+  subjects: string[];
+  itemType: string;
+  courseName: string;
+  holeScore: number;
+  holeNumber: number;
+  action: string;
+  registeredAt: string;
+  roundId: string;
+  roundScores: number[];
+  likes: string[];
+}
+
+export interface FetchFeedSuccessAction {
+  type: "FETCH_FEED_SUCCESS";
+  feed: Feed;
 }
 
 export interface SpectatorJoindAction {
@@ -97,6 +123,15 @@ export interface FetchOtherUserSuccessAction {
   username: string;
 }
 
+export interface LikeToggledAction {
+  type: "LIKE_TOGGLED";
+  id: string;
+}
+
+export interface ClearFeedAction {
+  type: "CLEAR_FEED";
+}
+
 export type KnownAction =
   | CallHistoryMethodAction
   | LoginSuccessAction
@@ -110,6 +145,9 @@ export type KnownAction =
   | FetchUserAchievementsSuccessAction
   | SearchUsersSuccessAction
   | SpectatorJoindAction
+  | LikeToggledAction
+  | FetchFeedSuccessAction
+  | ClearFeedAction
   | SpectatorLeftAction;
 
 let user: User | null = null;
@@ -127,6 +165,8 @@ const initialState: UserState = user
       userRounds: [],
       userAchievements: [],
       searchedUsers: [],
+      roundInProgress: null,
+      feed: null,
     }
   : {
       loggedIn: false,
@@ -137,6 +177,8 @@ const initialState: UserState = user
       userRounds: [],
       userAchievements: [],
       searchedUsers: [],
+      roundInProgress: null,
+      feed: null,
     };
 
 const logout = (dispatch: (action: KnownAction) => void) => {
@@ -245,6 +287,79 @@ export const actionCreators = {
           type: "FETCH_FRIEND_USERS_SUCCEED",
           friends: data,
         });
+      });
+  },
+  toggleLike: (itemId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/feeds/feedItems/${itemId}/like`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then(() => {
+        dispatch({
+          type: "LIKE_TOGGLED",
+          id: itemId,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch feed failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
+  fetchFeed: (itemType: string, page: number): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+
+    if (
+      appState.user.feed?.feedItems &&
+      appState.user.feed.feedItems.length > 9 &&
+      page === 1
+    ) {
+      dispatch({ type: "CLEAR_FEED" });
+    }
+    fetch(`api/feeds?itemType=${itemType}&pageNumber=${page}&pageSize=${10}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => response.json() as Promise<Feed>)
+      .then((data) => {
+        dispatch({
+          type: "FETCH_FEED_SUCCESS",
+          feed: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch feed failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   fetchUserRounds: (
@@ -458,6 +573,42 @@ export const reducer: Reducer<UserState> = (
         ...state,
         friendUsers: action.friends,
       };
+    case "CLEAR_FEED":
+      return {
+        ...state,
+        feed: null,
+      };
+    case "FETCH_FEED_SUCCESS":
+      return {
+        ...state,
+        feed: state.feed
+          ? {
+              ...state.feed,
+              feedItems: [...state.feed.feedItems, ...action.feed.feedItems],
+              isLastPage: action.feed.isLastPage,
+            }
+          : action.feed,
+      };
+    case "LIKE_TOGGLED":
+      const item =
+        state.feed && state.feed.feedItems.find((i) => i.id === action.id);
+      const username = state.user?.username;
+      if (!item || !state.feed || !item.likes || !username) return state;
+      return {
+        ...state,
+        feed: {
+          ...state.feed,
+          feedItems: state.feed.feedItems.map((f) => {
+            if (f.id !== action.id) return f;
+            return {
+              ...f,
+              likes: item.likes.some((l) => l === username)
+                ? item.likes.filter((l) => l !== username)
+                : [...item.likes, username],
+            };
+          }),
+        },
+      };
     case "FRIEND_ADDED":
       return {
         ...state,
@@ -472,6 +623,7 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         userRounds: action.rounds,
+        roundInProgress: action.rounds.find((r) => !r.isCompleted) || null,
       };
     case "FETCH_USER_ACHIEVEMENTS_SUCCESS":
       return {

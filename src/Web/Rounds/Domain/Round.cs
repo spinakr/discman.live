@@ -77,11 +77,6 @@ namespace Web.Rounds
 
         public void AddHole(int holeNumber, int par, int length)
         {
-            // if (PlayerScores.First().Scores.Any(s => s.Hole.Number == holeNumber))
-            // {
-            //     throw new ArgumentException($"Hole number {holeNumber} is already part of the round");
-            // }
-
             foreach (var playerScore in PlayerScores)
             {
                 playerScore.Scores.Add(new HoleScore {Hole = new Hole(holeNumber, par, length)});
@@ -128,12 +123,14 @@ namespace Web.Rounds
 
     public class HoleScore
     {
-        public void UpdateScore(int strokes, string[] strokeOutcomes)
+        public int UpdateScore(int strokes, string[] strokeOutcomes)
         {
             Strokes = strokes;
-            RelativeToPar = strokes - Hole.Par;
+            var relativeToPar = strokes - Hole.Par;
+            RelativeToPar = relativeToPar;
             StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec {Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome)}).ToList();
             RegisteredAt = DateTime.Now;
+            return relativeToPar;
         }
 
         public Hole Hole { get; set; }

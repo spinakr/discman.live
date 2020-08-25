@@ -19,7 +19,10 @@ const Banner = (props: Props) => {
   return (
     <>
       {!props.location.pathname.startsWith("/rounds") &&
-        !props.location.pathname.startsWith("/tournaments") && (
+        !(
+          props.location.pathname.startsWith("/tournaments") &&
+          props.location.pathname.length > 12
+        ) && (
           <nav className="navbar is-light level is-mobile">
             <div className="level-item has-text-centered">
               <h5 className="title is-5 has-text-weight-semibold	is-family-monospace">

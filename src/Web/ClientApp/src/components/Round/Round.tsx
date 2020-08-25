@@ -75,13 +75,15 @@ const RoundComponent = (props: Props) => {
     return (
       <>
         {props.activeHole === 100 ? (
-          <RoundScoreCard
-            username={props.user?.user?.username || ""}
-            round={round}
-            activeHole={activeHole}
-            setActiveHole={props.setActiveHole}
-            closeDialog={() => props.setScorecardOpen(false)}
-          />
+          <div className="has-text-centered pt-6">
+            <RoundScoreCard
+              username={props.user?.user?.username || ""}
+              round={round}
+              activeHole={activeHole}
+              setActiveHole={props.setActiveHole}
+              closeDialog={() => props.setScorecardOpen(false)}
+            />
+          </div>
         ) : (
           <HoleScore
             username={props.user?.user?.username || ""}

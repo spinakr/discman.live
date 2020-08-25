@@ -41,6 +41,7 @@ const Spectators = (props: Props) => {
       }
     };
   }, [partOfRound, roundId, spectatorJoined, spectatorLeft, username]);
+
   const [showDialog, setShowDialog] = useState(false);
   return (
     <>
@@ -83,7 +84,7 @@ const Spectators = (props: Props) => {
         <span
           style={{
             position: "absolute",
-            top: 5,
+            top: 50,
             left: 5,
           }}
           className="icon is-large waggle"
@@ -94,29 +95,6 @@ const Spectators = (props: Props) => {
       )}
     </>
   );
-
-  //   return (
-  //     <div
-  //       style={{
-  //         position: "absolute",
-  //         top: 0,
-  //         left: 0,
-  //         maxWidth: "80px",
-  //         whiteSpace: "nowrap",
-  //         overflow: "hidden",
-  //         textOverflow: "ellipsis",
-  //       }}
-  //     >
-  //       {props.spectators.map((s) => (
-  //         <div key={s} className="is-size-7 is-family-monospace">
-  //           <span className="icon is-small">
-  //             <i className="fas fa-glasses"></i>
-  //           </span>
-  //           {s}
-  //         </div>
-  //       ))}
-  //     </div>
-  //   );
 };
 
 export default connector(Spectators);

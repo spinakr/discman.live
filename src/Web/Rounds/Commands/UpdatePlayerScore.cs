@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Web.Infrastructure;
 using Web.Rounds;
+using Web.Rounds.Notifications;
 
 namespace Web.Rounds.Commands
 {
@@ -29,12 +30,14 @@ namespace Web.Rounds.Commands
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHubContext<RoundsHub> _roundsHub;
+        private readonly IMediator _mediator;
 
-        public UpdatePlayerScoreCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IHubContext<RoundsHub> roundsHub)
+        public UpdatePlayerScoreCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IHubContext<RoundsHub> roundsHub, IMediator mediator)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
             _roundsHub = roundsHub;
+            _mediator = mediator;
         }
 
         public async Task<Round> Handle(UpdatePlayerScoreCommand request, CancellationToken cancellationToken)
@@ -47,7 +50,7 @@ namespace Web.Rounds.Commands
             if (!round.IsPartOfRound(authenticatedUsername)) throw new UnauthorizedAccessException($"Cannot update round you are not part of");
             if (request.Username != authenticatedUsername) throw new UnauthorizedAccessException($"You can only update scores for yourself");
 
-            round.PlayerScores
+            var relativeScore = round.PlayerScores
                 .Single(p => p.PlayerName == authenticatedUsername).Scores
                 .Single(s => s.Hole.Number == request.Hole)
                 .UpdateScore(request.Strokes, request.StrokeOutcomes);
@@ -55,6 +58,15 @@ namespace Web.Rounds.Commands
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
             await _roundsHub.NotifyPlayersInRound(round);
+
+            await _mediator.Publish(new ScoreWasUpdated
+            {
+                RoundId = round.Id,
+                Username = authenticatedUsername,
+                CourseName = round.CourseName,
+                HoleNumber = request.Hole,
+                RelativeScore = relativeScore
+            }, cancellationToken);
 
             return round;
         }

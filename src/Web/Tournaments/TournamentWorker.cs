@@ -6,6 +6,7 @@ using Marten;
 using MediatR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Web.Feeds.Domain;
 using Web.Rounds;
 using Web.Tournaments.Commands;
 using Web.Tournaments.Domain;
@@ -35,6 +36,7 @@ namespace Web.Leaderboard
         private void DoWork(object state)
         {
             using var documentSession = _documentStore.OpenSession();
+
             var tournaments = documentSession
                 .Query<Tournament>()
                 .Where(t => t.Prices == null)

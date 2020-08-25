@@ -32,7 +32,7 @@ namespace Web.Users
                 var achievementObj = (RoundAchievement) constructor.Invoke(new object[] {roundId, username});
                 var evaluationMethod = roundAchievement.GetMethod(nameof(RoundAchievement.Evaluate));
                 var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {round, username});
-                if (res && !DuplicateAchievement(achievementObj))
+                if (res && _achievements.All(a => a.AchievementName != achievementObj.AchievementName))
                 {
                     newAchievements.Add(achievementObj);
                 }
@@ -56,7 +56,7 @@ namespace Web.Users
                 var achievementObj = (UserAchievement) constructor.Invoke(new object[] {username});
                 var evaluationMethod = userAchievement.GetMethod(nameof(UserAchievement.Evaluate));
                 var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {userRounds});
-                if (res && !DuplicateAchievement(achievementObj))
+                if (res && _achievements.All(a => a.AchievementName != achievementObj.AchievementName))
                 {
                     newAchievements.Add(achievementObj);
                 }
@@ -65,18 +65,6 @@ namespace Web.Users
             _achievements.AddRange(newAchievements);
 
             return newAchievements;
-        }
-
-        private bool DuplicateAchievement(Achievement achievementObj)
-        {
-            if (achievementObj.OneTimeOnly)
-            {
-                return _achievements.Any(a => a.AchievementName == achievementObj.AchievementName);
-            }
-
-            return _achievements.Any(a =>
-                a.AchievementName == achievementObj.AchievementName &&
-                a.AchievedAt.Month == achievementObj.AchievedAt.Month);
         }
 
         public IEnumerator<Achievement> GetEnumerator()
@@ -130,14 +118,12 @@ namespace Web.Users
         public Guid RoundId { get; set; }
         public string Username { get; set; }
         public DateTime AchievedAt { get; set; }
-        public abstract bool OneTimeOnly { get; }
         public string AchievementName => GetType().Name;
     }
 
     public abstract class RoundAchievement : Achievement
     {
         public abstract bool Evaluate(Round round, string username);
-        public override bool OneTimeOnly => false;
 
 
         protected RoundAchievement(Guid roundId, string username) : base(roundId, username)
@@ -148,7 +134,6 @@ namespace Web.Users
     public abstract class UserAchievement : Achievement
     {
         public abstract bool Evaluate(List<Round> rounds);
-        public override bool OneTimeOnly => false;
 
         protected UserAchievement(string username) : base(Guid.Empty, username)
         {
@@ -341,8 +326,6 @@ namespace Web.Users
         {
         }
 
-        public override bool OneTimeOnly => true;
-
 
         public override bool Evaluate(Round round, string username)
         {
@@ -357,8 +340,6 @@ namespace Web.Users
         {
         }
 
-        public override bool OneTimeOnly => true;
-
 
         public override bool Evaluate(Round round, string username)
         {
@@ -372,8 +353,6 @@ namespace Web.Users
         public TenRoundsInAMonth(string username) : base(username)
         {
         }
-
-        public override bool OneTimeOnly => false;
 
 
         public override bool Evaluate(List<Round> rounds)
@@ -393,7 +372,6 @@ namespace Web.Users
         {
         }
 
-        public override bool OneTimeOnly => false;
 
         public override bool Evaluate(List<Round> rounds)
         {
@@ -412,7 +390,6 @@ namespace Web.Users
         {
         }
 
-        public override bool OneTimeOnly => true;
 
         public override bool Evaluate(List<Round> rounds)
         {
@@ -432,7 +409,6 @@ namespace Web.Users
         {
         }
 
-        public override bool OneTimeOnly => true;
 
         public override bool Evaluate(List<Round> rounds)
         {
@@ -446,7 +422,6 @@ namespace Web.Users
         {
         }
 
-        public override bool OneTimeOnly => false;
 
         public override bool Evaluate(List<Round> rounds)
         {

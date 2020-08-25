@@ -14,6 +14,7 @@ const mapState = (state: ApplicationState) => {
   return {
     user: state.user,
     round: state.rounds?.round,
+    roundInProgress: state.user?.roundInProgress,
     location: state.router.location,
   };
 };
@@ -44,11 +45,26 @@ const NavMenu = (props: Props) => {
                   <span className="icon">
                     <i className="fas fa-lg fa-clipboard-list"></i>
                   </span>
-                  <span className="is-size-7">Rounds</span>
+                  <span className="is-size-7">Feed</span>
                 </Link>
               </div>
               <div className="column py-0">
-                <NewRound />
+                {props.roundInProgress ? (
+                  <Link
+                    to={`/rounds/${props.roundInProgress.id}`}
+                    className="button is-primary waggle pr-1 pl-3"
+                  >
+                    <span className="icon">
+                      <i
+                        className="fas fa-lg fa-spinner"
+                        aria-hidden="true"
+                      ></i>
+                    </span>
+                    <span className="is-size-7">Live</span>
+                  </Link>
+                ) : (
+                  <NewRound />
+                )}
               </div>
               <div className="column py-0">
                 <Link to="/leaders" className="button is-light pr-1 pl-3">
@@ -211,6 +227,16 @@ const NavMenu = (props: Props) => {
                     <i className="fas fa-lg fa-cloud-sun"></i>
                   </span>
                   &nbsp; Courses
+                </Link>
+                <Link
+                  to="/tournaments"
+                  className="panel-block"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="panel-icon">
+                    <i className="fas fa-lg fa-trophy"></i>
+                  </span>
+                  &nbsp; Tournaments
                 </Link>
                 <Link
                   to="/friends"

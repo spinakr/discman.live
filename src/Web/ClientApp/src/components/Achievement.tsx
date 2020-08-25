@@ -26,7 +26,6 @@ const getImage = (achievement: string) => {
 
 export default ({ achievement, count }: AchievementsProps) => (
   <div className="box" style={{ maxWidth: "350px", padding: "10px" }}>
-    {count && <span className="badge is-top-right is-dark">{count}</span>}
     <Link to={`/rounds/${achievement.roundId}`}>
       <article className="media">
         <div className="media-left">

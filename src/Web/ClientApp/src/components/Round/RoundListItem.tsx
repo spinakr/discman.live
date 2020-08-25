@@ -25,9 +25,7 @@ const RoundListItem = (props: UserRoundProps) => {
     <Link className={style} key={round.id} to={`/rounds/${round.id}`}>
       <span className="panel-icon">
         <i
-          className={`fas ${
-            round.isCompleted ? "fa-check" : "fa-circle-notch"
-          }`}
+          className={`fas ${round.isCompleted ? "fa-check" : "fa-spinner"}`}
         ></i>
       </span>
       {round.courseName || round.roundName} -{" "}

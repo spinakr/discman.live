@@ -1,4 +1,5 @@
 using Marten;
+using Marten.Schema.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,6 +23,7 @@ namespace Web.Infrastructure
                         .WithEncoding("UTF-8")
                         .ConnectionLimit(-1);
                 });
+                _.DefaultIdStrategy = (mapping, storeOptions) => new CombGuidIdGeneration();
 
                 _.AutoCreateSchemaObjects = AutoCreate.All;
 

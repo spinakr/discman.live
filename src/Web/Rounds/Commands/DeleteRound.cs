@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
+using Marten.Linq.SoftDeletes;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
@@ -11,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Web.Infrastructure;
 using Web.Rounds;
+using Web.Rounds.Notifications;
 
 namespace Web.Rounds.Commands
 {
@@ -23,11 +25,13 @@ namespace Web.Rounds.Commands
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMediator _mediator;
 
-        public DeleteRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
+        public DeleteRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMediator mediator)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
+            _mediator = mediator;
         }
 
         public async Task<Unit> Handle(DeleteRoundCommand request, CancellationToken cancellationToken)
@@ -40,6 +44,8 @@ namespace Web.Rounds.Commands
 
             _documentSession.Delete(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
+
+            await _mediator.Publish(new RoundWasDeleted {RoundId = round.Id}, cancellationToken);
 
             return new Unit();
         }

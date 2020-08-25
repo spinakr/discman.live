@@ -108,23 +108,23 @@ const renderDetailedSelector = (
       <div className="field is-grouped tour-scores">
         <div className="control">
           <button
-            className="button is-medium tour-score-fairway"
-            title="Fairway"
-            onClick={() => setStrokes([...strokes, "Fairway"])}
-          >
-            <span className="icon is-large">
-              <i className="has-text-weight-bold is-family-code">F</i>
-            </span>
-          </button>
-        </div>
-        <div className="control">
-          <button
             className="button is-medium tour-score-rough"
             title="Rough"
             onClick={() => setStrokes([...strokes, "Rough"])}
           >
             <span className="icon is-large">
               <i className="has-text-weight-bold is-family-code">R</i>
+            </span>
+          </button>
+        </div>
+        <div className="control">
+          <button
+            className="button is-medium tour-score-fairway"
+            title="Fairway"
+            onClick={() => setStrokes([...strokes, "Fairway"])}
+          >
+            <span className="icon is-large">
+              <i className="has-text-weight-bold is-family-code">F</i>
             </span>
           </button>
         </div>

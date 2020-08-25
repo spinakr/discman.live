@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Web.Courses;
 using Web.Rounds;
+using Web.Rounds.Notifications;
 
 namespace Web.Rounds.Commands
 {
@@ -19,22 +20,24 @@ namespace Web.Rounds.Commands
         public List<string> Players { get; set; }
         public ScoreMode ScoreMode { get; set; }
     }
-    
+
     public class StartNewRoundCommandHandler : IRequestHandler<StartNewRoundCommand, Round>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMediator _mediator;
 
-        public StartNewRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
+        public StartNewRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMediator mediator)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
+            _mediator = mediator;
         }
-        
+
         public async Task<Round> Handle(StartNewRoundCommand request, CancellationToken cancellationToken)
         {
             var username = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            
+
             var players = request.Players.Select(p => p.ToLower()).ToList();
             if (!players.Any()) players.Add(username);
 
@@ -48,7 +51,7 @@ namespace Web.Rounds.Commands
                 .Where(r => !r.IsCompleted)
                 .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
                 .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10), token: cancellationToken);
-            
+
             if (justStartedRound is object) return justStartedRound;
 
             var round = course != null
@@ -56,8 +59,9 @@ namespace Web.Rounds.Commands
                 : new Round(players, username, request.RoundName, request.ScoreMode);
             _documentSession.Store(round);
             _documentSession.SaveChanges();
-            
-            
+
+            await _mediator.Publish(new RoundWasStarted {RoundId = round.Id}, cancellationToken);
+
             return await Task.FromResult(round);
         }
     }

@@ -107,7 +107,7 @@ export default ({ round }: RoundSummaryProps) => {
   });
 
   return (
-    <div>
+    <div className="has-text-centered">
       <div className="tabs is-centered">
         <ul>
           <li
