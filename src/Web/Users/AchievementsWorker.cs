@@ -48,31 +48,6 @@ namespace Web.Courses
             documentSession.Update(featureToggles);
             _logger.LogInformation("Cleaning achievements");
 
-            var users = documentSession
-                .Query<User>()
-                .ToList();
-
-            foreach (var user in users)
-            {
-                if(user.Achievements is null) continue;
-                user.Achievements.RemoveDuplicates();
-                
-                
-                var achs = user.Achievements
-                    .Where(a => a.AchievementName == "OBFree" || a.AchievementName == "Birdie" || a.AchievementName == "BogeyRound").ToList();
-
-                foreach (var ach in achs)
-                {
-                    user.Achievements.Remove(ach);
-                }
- 
-                
-
-                documentSession.Update(user);
-            }
-
-
-            documentSession.SaveChanges();
         }
 
         public Task StopAsync(CancellationToken stoppingToken)

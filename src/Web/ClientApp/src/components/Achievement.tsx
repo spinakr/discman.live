@@ -10,11 +10,20 @@ export interface AchievementsProps {
 const imageUrls: any = {
   UnderPar: "paulmcb.jpg",
   StarFrame: "starframe.jpg",
-  BogeyRound: "fish.jpg",
   TenUnderPar: "paulmcb10.jpg",
   Turkey: "turkey.jpg",
   ACE: "ace.jpg",
-  TenRoundsInAMonth: "month.jpg",
+  TenRoundsInAMonth: "tenmonth.jpg",
+  TwentyRoundsInAMonth: "20month.jpg",
+  BogeyFreeRound: "nobogey.jpg",
+  FiveUnderPar: "paulmcb5.jpg",
+  FiveBirdieRound: "5birdie.jpg",
+  // AllPar: "",
+  // OnePutPerHole: "",
+  // Eagle: "",
+  // PlayEveryDayInAWeek: "",
+  // OneHundredRounds: "",
+  // FiveRoundsInADay: "",
 };
 
 const getImage = (achievement: string) => {

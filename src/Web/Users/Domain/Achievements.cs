@@ -32,7 +32,7 @@ namespace Web.Users
                 var achievementObj = (RoundAchievement) constructor.Invoke(new object[] {roundId, username});
                 var evaluationMethod = roundAchievement.GetMethod(nameof(RoundAchievement.Evaluate));
                 var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {round, username});
-                if (res && _achievements.All(a => a.AchievementName != achievementObj.AchievementName))
+                if (res)
                 {
                     newAchievements.Add(achievementObj);
                 }
@@ -77,11 +77,6 @@ namespace Web.Users
             return GetEnumerator();
         }
 
-        public void RemoveDuplicates()
-        {
-            _achievements = _achievements.GroupBy(a => $"{a.Username}{a.AchievementName}").Select(x => x.First()).ToList();
-        }
-        
         public void Add(Achievement item)
         {
             _achievements.Add(item);
@@ -131,10 +126,9 @@ namespace Web.Users
         public int HoleNumber { get; set; }
 
 
-        protected RoundAchievement(Guid roundId, int holeNumber, string username) : base(username)
+        protected RoundAchievement(Guid roundId, string username) : base(username)
         {
             RoundId = roundId;
-            HoleNumber = holeNumber;
         }
     }
 
@@ -155,7 +149,7 @@ namespace Web.Users
             return !playerScore.Scores.Any(s => s.RelativeToPar > 0);
         }
 
-        public BogeyFreeRound(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public BogeyFreeRound(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -168,7 +162,7 @@ namespace Web.Users
             return playerScore.Scores.All(s => s.RelativeToPar == 0);
         }
 
-        public AllPar(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public AllPar(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -181,7 +175,7 @@ namespace Web.Users
             return playerScore.Scores.Sum(s => s.RelativeToPar) < 0;
         }
 
-        public UnderPar(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public UnderPar(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -194,7 +188,7 @@ namespace Web.Users
             return playerScore.Scores.Sum(s => s.RelativeToPar) < -4;
         }
 
-        public FiveUnderPar(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public FiveUnderPar(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -207,20 +201,7 @@ namespace Web.Users
             return playerScore.Scores.Sum(s => s.RelativeToPar) < -9;
         }
 
-        public TenUnderPar(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
-        {
-        }
-    }
-
-    public class BogeyRound : RoundAchievement
-    {
-        public override bool Evaluate(Round round, string username)
-        {
-            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
-            return playerScore.Scores.All(s => s.RelativeToPar > 0);
-        }
-
-        public BogeyRound(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public TenUnderPar(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -244,10 +225,13 @@ namespace Web.Users
                 }
             }
 
+            var starframe = perHole.FirstOrDefault(h => h.Value);
+            HoleNumber = starframe.Key;
+
             return perHole.Any(h => h.Value);
         }
 
-        public StarFrame(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public StarFrame(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -260,7 +244,7 @@ namespace Web.Users
             return playerScore.Scores.Count(s => s.RelativeToPar < 0) > 4;
         }
 
-        public FiveBirdieRound(Guid roundId,int holeNumber, string username) : base(roundId, holeNumber, username)
+        public FiveBirdieRound(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -270,10 +254,13 @@ namespace Web.Users
         public override bool Evaluate(Round round, string username)
         {
             var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
-            return playerScore.Scores.Any(s => s.Strokes == 1);
+            var ace = playerScore.Scores.FirstOrDefault(s => s.Strokes == 1);
+            HoleNumber = ace?.Hole?.Number ?? 0;
+
+            return ace != null;
         }
 
-        public ACE(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public ACE(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -287,13 +274,15 @@ namespace Web.Users
             for (var i = 0; i < playerScore.Scores.Count - 3; i++)
             {
                 var sub = playerScore.Scores.GetRange(i, 3);
-                if (sub.All(s => s.RelativeToPar < 0)) return true;
+                if (!sub.All(s => s.RelativeToPar < 0)) continue;
+                HoleNumber = sub.First().Hole.Number;
+                return true;
             }
 
             return false;
         }
 
-        public Turkey(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public Turkey(Guid roundId, string username) : base(roundId, username)
         {
         }
     }
@@ -309,41 +298,14 @@ namespace Web.Users
             return onePuts == playerScore.Scores.Count;
         }
 
-        public OnePutPerHole(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public OnePutPerHole(Guid roundId, string username) : base(roundId, username)
         {
-        }
-    }
-
-    public class OBFree : RoundAchievement
-    {
-        public override bool Evaluate(Round round, string username)
-        {
-            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
-            return playerScore.Scores.All(h => h.StrokeSpecs.All(s => s.Outcome != StrokeSpec.StrokeOutcome.OB));
-        }
-
-        public OBFree(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
-        {
-        }
-    }
-
-    public class Birdie : RoundAchievement
-    {
-        public Birdie(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
-        {
-        }
-
-
-        public override bool Evaluate(Round round, string username)
-        {
-            var playerScores = round.PlayerScores.Single(s => s.PlayerName == Username).Scores;
-            return playerScores.Any(s => s.RelativeToPar == -1);
         }
     }
 
     public class Eagle : RoundAchievement
     {
-        public Eagle(Guid roundId, int holeNumber, string username) : base(roundId, holeNumber, username)
+        public Eagle(Guid roundId, string username) : base(roundId, username)
         {
         }
 
@@ -351,7 +313,9 @@ namespace Web.Users
         public override bool Evaluate(Round round, string username)
         {
             var playerScores = round.PlayerScores.Single(s => s.PlayerName == Username).Scores;
-            return playerScores.Any(s => s.RelativeToPar == -2 && (s.Hole.Par == 4 || s.Hole.Par == 5));
+            var eagle = playerScores.FirstOrDefault(s => s.RelativeToPar == -2 && (s.Hole.Par == 4 || s.Hole.Par == 5));
+            HoleNumber = eagle?.Hole?.Number ?? 0;
+            return eagle != null;
         }
     }
 
