@@ -48,24 +48,6 @@ namespace Web.Courses
             documentSession.Update(featureToggles);
             _logger.LogInformation("Cleaning achievements 2");
 
-            var rounds = documentSession
-                .Query<Round>()
-                .ToList();
-
-            foreach (var round in rounds)
-            {
-                if(round.Achievements is null) continue;
-                
-                
-                round.Achievements = round.Achievements
-                    .Where(a => a.AchievementName != "OBFree" && a.AchievementName != "Birdie" && a.AchievementName != "BogeyRound").ToList();
-
-
-                documentSession.Update(round);
-            }
-
-
-            documentSession.SaveChanges();
         }
 
         public Task StopAsync(CancellationToken stoppingToken)
