@@ -329,11 +329,7 @@ export const actionCreators = {
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
 
-    if (
-      appState.user.feed?.feedItems &&
-      appState.user.feed.feedItems.length > 9 &&
-      page === 1
-    ) {
+    if (appState.user.feed?.feedItems && page === 1) {
       dispatch({ type: "CLEAR_FEED" });
     }
     fetch(`api/feeds?itemType=${itemType}&pageNumber=${page}&pageSize=${10}`, {

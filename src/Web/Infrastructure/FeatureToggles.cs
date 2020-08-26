@@ -6,5 +6,6 @@ namespace Web.Infrastructure
     {
         public Guid Id { get; set; }
         public bool ReEvaluateAchievementsDone { get; set; }
+        public bool CleanAchievements { get; set; }
     }
 }
