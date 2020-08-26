@@ -43,32 +43,25 @@ namespace Web.Courses
                 documentSession.Store(featureToggles);
             }
 
-            if (featureToggles.CleanAchievements) return;
-            featureToggles.CleanAchievements = true;
+            if (featureToggles.CleanAchievements2) return;
+            featureToggles.CleanAchievements2 = true;
             documentSession.Update(featureToggles);
-            _logger.LogInformation("Cleaning achievements");
+            _logger.LogInformation("Cleaning achievements 2");
 
-            var users = documentSession
-                .Query<User>()
+            var rounds = documentSession
+                .Query<Round>()
                 .ToList();
 
-            foreach (var user in users)
+            foreach (var round in rounds)
             {
-                if(user.Achievements is null) continue;
-                user.Achievements.RemoveDuplicates();
+                if(round.Achievements is null) continue;
                 
                 
-                var achs = user.Achievements
-                    .Where(a => a.AchievementName == "OBFree" || a.AchievementName == "Birdie" || a.AchievementName == "BogeyRound").ToList();
+                round.Achievements = round.Achievements
+                    .Where(a => a.AchievementName != "OBFree" && a.AchievementName != "Birdie" && a.AchievementName != "BogeyRound").ToList();
 
-                foreach (var ach in achs)
-                {
-                    user.Achievements.Remove(ach);
-                }
- 
-                
 
-                documentSession.Update(user);
+                documentSession.Update(round);
             }
 
 
