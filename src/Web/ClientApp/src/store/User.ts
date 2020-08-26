@@ -59,6 +59,7 @@ export interface FeedItem {
   roundId: string;
   roundScores: number[];
   likes: string[];
+  achievementName: string;
 }
 
 export interface FetchFeedSuccessAction {

@@ -25,6 +25,7 @@ namespace Web.Feeds.Queries
         public List<string> Likes { get; set; }
         public string Action { get; set; }
         public Guid RoundId { get; set; }
+        public string AchievementName { get; set; }
 
         public void Mapping(Profile profile)
         {

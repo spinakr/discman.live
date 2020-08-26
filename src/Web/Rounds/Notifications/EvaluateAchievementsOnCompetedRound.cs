@@ -16,33 +16,36 @@ namespace Web.Rounds.Notifications
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHubContext<RoundsHub> _roundsHub;
+        private readonly IMediator _mediator;
 
-        public EvaluateAchievementsOnCompetedRound(IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub)
+        public EvaluateAchievementsOnCompetedRound(IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub, IMediator mediator)
         {
             _documentSession = documentSession;
             _roundsHub = roundsHub;
+            _mediator = mediator;
         }
 
         public async Task Handle(RoundWasCompleted notification, CancellationToken cancellationToken)
         {
             var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == notification.RoundId, token: cancellationToken);
-            
-            var newUserAchievements = EvaluateAchievements(round);
+
+            var newUserAchievements = await EvaluateAchievements(round);
             if (round.Achievements is null) round.Achievements = new List<Achievement>();
             round.Achievements.AddRange(newUserAchievements);
-            
+
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
             await _roundsHub.NotifyPlayersInRound(round);
         }
-        
-        private IEnumerable<Achievement> EvaluateAchievements(Round round)
+
+        private async Task<IEnumerable<Achievement>> EvaluateAchievements(Round round)
         {
             var userNames = round.PlayerScores.Select(s => s.PlayerName).ToArray();
 
-            var users = _documentSession
+            var users = await _documentSession
                 .Query<User>()
-                .Where(u => u.Username.IsOneOf(userNames));
+                .Where(u => u.Username.IsOneOf(userNames))
+                .ToListAsync();
 
 
             var newUserAchievements = new List<Achievement>();
@@ -52,14 +55,14 @@ namespace Web.Rounds.Notifications
                 var roundAchievements = userInRound.Achievements.EvaluatePlayerRound(round.Id, userInRound.Username, round);
 
                 var now = DateTime.Now;
-                var rounds = _documentSession
+                var rounds = await _documentSession
                     .Query<Round>()
                     .Where(r => !r.Deleted)
                     .Where(r => r.PlayerScores.Any(p => p.PlayerName == userInRound.Username))
                     .Where(r => r.PlayerScores.Count > 1)
                     .Where(r => r.IsCompleted)
                     // .Where(r => r.CompletedAt > new DateTime(now.Year, 1, 1))
-                    .ToList();
+                    .ToListAsync();
 
                 var userRounds = rounds.Concat(new List<Round> {round}).ToList();
 
@@ -70,6 +73,18 @@ namespace Web.Rounds.Notifications
                 if (!newAchievements.Any()) continue;
                 _documentSession.Update(userInRound);
                 newUserAchievements.AddRange(newAchievements);
+            }
+
+            foreach (var achievement in newUserAchievements)
+            {
+                await _mediator.Publish(new UserEarnedAchievement
+                    {
+                        RoundId = achievement.RoundId,
+                        Username = achievement.Username,
+                        AchievementName = achievement.AchievementName,
+                        AchievedAt = achievement.AchievedAt
+                    }
+                );
             }
 
             return newUserAchievements;

@@ -10,6 +10,7 @@ namespace Web.Feeds.Domain
 
         public ItemType ItemType { get; set; }
 
+        public string AchievementName { get; set; }
         public DateTime RegisteredAt { get; set; }
         public List<string> Subjects { get; set; }
         public string CourseName { get; set; }

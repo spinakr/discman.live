@@ -52,6 +52,8 @@ const getIcon = (item: UserStore.FeedItem) => {
       );
     case "Hole":
       return <i className="fas fa-lg fa-crow" aria-hidden="true"></i>;
+    case "Achievement":
+      return <i className="fas fa-lg fa-star" aria-hidden="true"></i>;
   }
 };
 
@@ -83,6 +85,14 @@ const getText = (item: UserStore.FeedItem) => {
           <p className="is-size-7">
             {getScoreName(item.holeScore)} on {item.courseName} hole{" "}
             {item.holeNumber}
+          </p>
+        </span>
+      );
+    case "Achievement":
+      return (
+        <span>
+          <p className="is-size-7">
+            Earned achievement {item.achievementName}!
           </p>
         </span>
       );
@@ -123,12 +133,8 @@ const getExtra = (item: UserStore.FeedItem) => {
 
 const getUri = (item: UserStore.FeedItem) => {
   switch (item.itemType) {
-    case "Round":
-      return `/rounds/${item.roundId}`;
-    case "Hole":
-      return `/rounds/${item.roundId}`;
     default:
-      return "";
+      return `/rounds/${item.roundId}`;
   }
 };
 

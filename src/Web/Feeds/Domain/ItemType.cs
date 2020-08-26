@@ -6,6 +6,7 @@ namespace Web.Feeds.Domain
     public enum ItemType
     {
         Round,
-        Hole
+        Hole,
+        Achievement
     }
 }
