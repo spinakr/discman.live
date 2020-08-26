@@ -108,11 +108,14 @@ namespace Web.Users
 
     public abstract class Achievement
     {
-        public Achievement(string username)
+        public Achievement(string username, Guid roundId)
         {
             Username = username;
             AchievedAt = DateTime.Now;
         }
+
+        public Guid RoundId { get; set; }
+        public int HoleNumber { get; set; }
 
         public string Username { get; set; }
         public DateTime AchievedAt { get; set; }
@@ -122,11 +125,9 @@ namespace Web.Users
     public abstract class RoundAchievement : Achievement
     {
         public abstract bool Evaluate(Round round, string username);
-        public Guid RoundId { get; set; }
-        public int HoleNumber { get; set; }
 
 
-        protected RoundAchievement(Guid roundId, string username) : base(username)
+        protected RoundAchievement(Guid roundId, string username) : base(username, roundId)
         {
             RoundId = roundId;
         }
@@ -136,7 +137,7 @@ namespace Web.Users
     {
         public abstract bool Evaluate(List<Round> rounds);
 
-        protected UserAchievement(string username) : base(username)
+        protected UserAchievement(string username) : base(username, Guid.Empty)
         {
         }
     }
