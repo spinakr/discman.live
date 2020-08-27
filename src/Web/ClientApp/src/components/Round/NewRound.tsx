@@ -35,6 +35,8 @@ const NewRound = (props: Props) => {
   const [selectedLayout, setSelectedLayout] = useState<Course | undefined>(
     undefined
   );
+  const [selectedCourse, setSelectedCourse] = useState<string>();
+
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
   const [manualReg, setManualReg] = useState<boolean>(false);
   const [roundName, setRoundName] = useState<string>("");
@@ -44,7 +46,9 @@ const NewRound = (props: Props) => {
   const { fetchCourses, fetchUsers } = props;
   const courseSelected = (courseName: string) => {
     if (!props.courses) return;
+    setSelectedCourse(courseName);
     const layouts = props.courses.find((c) => c[0] === courseName);
+    if (!layouts || layouts[1].length === 0) return;
     layouts && setAvailableLayouts(layouts[1]);
     layouts && setSelectedLayout(layouts[1][0]);
   };
@@ -71,7 +75,7 @@ const NewRound = (props: Props) => {
   const [scoreType, setScoreType] = useState<number>(ScoreMode.DetailedLive);
 
   useEffect(() => {
-    showDialog && fetchCourses();
+    showDialog && fetchCourses("");
     showDialog && fetchUsers();
   }, [fetchCourses, fetchUsers, showDialog]);
 
@@ -84,18 +88,10 @@ const NewRound = (props: Props) => {
         <div className="modal-card has-text-left">
           <header className="modal-card-head">
             <p className="modal-card-title">Start new round</p>
-            <InformationDialogue
-              title="Start Round"
-              text={`Select course and layout.
-
-On-the-fly mode allows adding new holes by reading par and distance of information signs on the actual course while playing.
-
-After finishing the round, an actuall course can be created from the registered holes.`}
-            />
           </header>
           <section className="modal-card-body">
             <label className="label">Scoring</label>
-            <div className="field">
+            <div className="field is-grouped">
               <div className="control">
                 <input
                   id="switchExample"
@@ -108,6 +104,14 @@ After finishing the round, an actuall course can be created from the registered 
                   }}
                 />
                 <label htmlFor="switchExample">On-the-fly</label>
+                <InformationDialogue
+                  title="Start Round"
+                  text={`Select course and layout.
+
+On-the-fly mode allows adding new holes by reading par and distance of information signs on the actual course while playing.
+
+After finishing the round, an actuall course can be created from the registered holes.`}
+                />
               </div>
             </div>
             {/* <div className="field">
@@ -131,11 +135,43 @@ After finishing the round, an actuall course can be created from the registered 
             <label className="label">
               {manualReg ? "Round Name" : "Course"}
             </label>
-            {manualReg === false ? (
+            {!manualReg ? (
               <>
                 <div className="field">
+                  <div className="control has-icons-left">
+                    <input
+                      className="input"
+                      type="text"
+                      placeholder="Search"
+                      onChange={(e) => {
+                        const filter = e.target.value;
+                        filter.length > 2 && fetchCourses(filter);
+                      }}
+                    />
+                    <span className="icon is-left">
+                      <i className="fas fa-search" aria-hidden="true"></i>
+                    </span>
+                  </div>
+                </div>
+                <div className="panel">
+                  {props.courses?.slice(0, 5).map((c) => (
+                    <span
+                      onClick={() => courseSelected(c[0])}
+                      key={c[0]}
+                      className={`panel-block ${
+                        selectedCourse === c[0] && "is-active"
+                      }`}
+                    >
+                      <span className="panel-icon">
+                        <i className="fas fa-cloud-sun" aria-hidden="true"></i>
+                      </span>
+                      {c[0]}
+                    </span>
+                  ))}
+                </div>
+                {/* <div className="field">
                   <div className="control">
-                    <div className="select is-grey is-fullwidth">
+                    <div className="select is-grey is-fullwidth is-open">
                       <select onChange={(e) => courseSelected(e.target.value)}>
                         <option></option>
                         {props.courses?.map((c) => (
@@ -146,20 +182,26 @@ After finishing the round, an actuall course can be created from the registered 
                       </select>
                     </div>
                   </div>
-                </div>
-                <div className="field">
-                  <div className="control">
-                    <div className="select is-grey is-fullwidth">
-                      <select onChange={(e) => layoutSelected(e.target.value)}>
-                        {availableLayouts?.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.layout}
-                          </option>
-                        ))}
-                      </select>
+                </div> */}
+                {availableLayouts &&
+                  availableLayouts.length > 0 &&
+                  availableLayouts[1] && (
+                    <div className="field">
+                      <div className="control">
+                        <div className="select is-grey is-fullwidth">
+                          <select
+                            onChange={(e) => layoutSelected(e.target.value)}
+                          >
+                            {availableLayouts?.map((c) => (
+                              <option key={c.id} value={c.id}>
+                                {c.layout}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  )}
               </>
             ) : (
               <div className="field">

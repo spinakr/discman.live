@@ -40,11 +40,14 @@ export type KnownAction =
 const initialState: CoursesState = { courses: [] };
 
 export const actionCreators = {
-  fetchCourses: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  fetchCourses: (filter: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/courses`, {
+    fetch(`api/courses?filter=${filter}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

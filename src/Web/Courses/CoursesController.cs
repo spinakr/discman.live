@@ -23,9 +23,9 @@ namespace Web.Courses
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCourses()
+        public async Task<IActionResult> GetCourses([FromQuery] string filter)
         {
-            return Ok(await _mediator.Send(new GetCoursesQuery()));
+            return Ok(await _mediator.Send(new GetCoursesQuery {Filter = filter}));
         }
 
         [HttpPost]

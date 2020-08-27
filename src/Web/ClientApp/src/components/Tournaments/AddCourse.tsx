@@ -47,7 +47,7 @@ const AddCourse = (props: Props) => {
   };
 
   useEffect(() => {
-    showDialog && fetchCourses();
+    showDialog && fetchCourses("");
   }, [fetchCourses, showDialog]);
 
   return (

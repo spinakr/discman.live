@@ -20,7 +20,10 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-const renderCoursesList = (layouts: Course[]) => {
+const renderCoursesList = (
+  layouts: Course[],
+  fetchCourses: (filter: string) => void
+) => {
   const onlyUnique = (value: any, index: any, self: any) => {
     return self.indexOf(value) === index;
   };
@@ -28,6 +31,25 @@ const renderCoursesList = (layouts: Course[]) => {
   return (
     <>
       <NewCourse currentCourseName={""} />
+      <br />
+      <br />
+      <div className="field">
+        <div className="control has-icons-left">
+          <input
+            className="input"
+            type="text"
+            placeholder="Search"
+            onChange={(e) => {
+              const filter = e.target.value;
+              (filter.length > 2 || filter.length === 0) &&
+                fetchCourses(filter);
+            }}
+          />
+          <span className="icon is-left">
+            <i className="fas fa-search" aria-hidden="true"></i>
+          </span>
+        </div>
+      </div>
       <hr />
       <div className="panel">
         {courseNames &&
@@ -45,7 +67,7 @@ const CoursesComponent = (props: Props) => {
   const { fetchCourses } = props;
   let { courseName } = useParams();
   useEffect(() => {
-    fetchCourses();
+    fetchCourses("");
   }, [fetchCourses]);
 
   const layouts = props.courses.find((c) => c[0] === courseName);
@@ -53,14 +75,15 @@ const CoursesComponent = (props: Props) => {
 
   return (
     <>
-      <section className="section has-text-centered">
+      <section className="section has-text-centered pt-0">
         {layouts && (
           <CourseComponent
             layouts={layouts[1]}
             updateCourse={props.updateCourse}
           />
         )}
-        {!courseName && renderCoursesList(([] as Course[]).concat(...courses))}
+        {!courseName &&
+          renderCoursesList(([] as Course[]).concat(...courses), fetchCourses)}
       </section>
     </>
   );

@@ -260,7 +260,13 @@ const NavMenu = (props: Props) => {
                 </Link>
               </article>
               <article className="panel">
-                <span className="panel-block" onClick={() => props.logout()}>
+                <span
+                  className="panel-block"
+                  onClick={() => {
+                    props.logout();
+                    setOpen(false);
+                  }}
+                >
                   <span className="panel-icon">
                     <i className="fas fa-lg fa-sign-out-alt"></i>
                   </span>
