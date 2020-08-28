@@ -35,11 +35,18 @@ export interface UserState {
   failedLoginMessage: string | null;
   friendUsers: string[];
   userStats: UserStats | null;
-  userRounds: Round[];
+  userRounds: PagedRounds | null;
   roundInProgress: Round | null;
   userAchievements: GroupedAchievement[];
   searchedUsers: string[];
   feed: Feed | null;
+}
+
+export interface PagedRounds {
+  rounds: Round[];
+  totalItemCount: number;
+  pageNumber: number;
+  pages: number;
 }
 
 export interface Feed {
@@ -94,7 +101,7 @@ export interface FetchFriendUsersSuccessAction {
 
 export interface FetchUserRoundsSuccessAction {
   type: "FETCH_USER_ROUNDS_SUCCEED";
-  rounds: Round[];
+  pagedRounds: PagedRounds;
 }
 
 export interface LoginSuccessAction {
@@ -163,7 +170,7 @@ const initialState: UserState = user
       failedLoginMessage: null,
       friendUsers: [],
       userStats: null,
-      userRounds: [],
+      userRounds: null,
       userAchievements: [],
       searchedUsers: [],
       roundInProgress: null,
@@ -175,7 +182,7 @@ const initialState: UserState = user
       failedLoginMessage: null,
       friendUsers: [],
       userStats: null,
-      userRounds: [],
+      userRounds: null,
       userAchievements: [],
       searchedUsers: [],
       roundInProgress: null,
@@ -360,15 +367,14 @@ export const actionCreators = {
       });
   },
   fetchUserRounds: (
-    count: number,
-    usernameToFetch?: string,
-    start?: number
+    page: number,
+    usernameToFetch?: string
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
     const username = usernameToFetch || appState.user.user.username;
-    fetch(`api/rounds?username=${username}&count=${count}`, {
+    fetch(`api/rounds?username=${username}&page=${page}&pageSize=8`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -379,11 +385,11 @@ export const actionCreators = {
         if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
         return res;
       })
-      .then((response) => response.json() as Promise<Round[]>)
+      .then((response) => response.json() as Promise<PagedRounds>)
       .then((data) => {
         dispatch({
           type: "FETCH_USER_ROUNDS_SUCCEED",
-          rounds: data,
+          pagedRounds: data,
         });
       })
       .catch((err: Error) => {
@@ -619,8 +625,9 @@ export const reducer: Reducer<UserState> = (
     case "FETCH_USER_ROUNDS_SUCCEED":
       return {
         ...state,
-        userRounds: action.rounds,
-        roundInProgress: action.rounds.find((r) => !r.isCompleted) || null,
+        userRounds: action.pagedRounds,
+        roundInProgress:
+          action.pagedRounds.rounds.find((r) => !r.isCompleted) || null,
       };
     case "FETCH_USER_ACHIEVEMENTS_SUCCESS":
       return {

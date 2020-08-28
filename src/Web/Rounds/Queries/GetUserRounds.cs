@@ -4,18 +4,19 @@ using System.Threading.Tasks;
 using Marten;
 using MediatR;
 using System.Linq;
+using Marten.Pagination;
 using Web.Rounds;
 
 namespace Web.Rounds.Queries
 {
-    public class GetUserRoundsQuery : IRequest<List<Round>>
+    public class GetUserRoundsQuery : IRequest<RoundsVm>
     {
         public string Username { get; set; }
-        public int Start { get; set; }
-        public int Count { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
     }
     
-    public class GetUserRoundsQueryHandler : IRequestHandler<GetUserRoundsQuery, List<Round>>
+    public class GetUserRoundsQueryHandler : IRequestHandler<GetUserRoundsQuery, RoundsVm>
     {
         private readonly IDocumentSession _documentSession;
 
@@ -24,18 +25,22 @@ namespace Web.Rounds.Queries
             _documentSession = documentSession;
         }
         
-        public async Task<List<Round>> Handle(GetUserRoundsQuery request, CancellationToken cancellationToken)
+        public async Task<RoundsVm> Handle(GetUserRoundsQuery request, CancellationToken cancellationToken)
         {
-            var rounds = _documentSession
+            var rounds = await _documentSession
                 .Query<Round>()
                 .Where(r => !r.Deleted)
                 .Where(r => r.PlayerScores.Any(p => p.PlayerName == request.Username))
                 .OrderByDescending(x => x.StartTime)
-                .Skip(request.Start)
-                .Take(request.Count)
-                .ToList();
+                .ToPagedListAsync(request.Page, request.PageSize, token: cancellationToken);
             
-            return await Task.FromResult(rounds);
+            return new RoundsVm
+            {
+                Rounds = rounds.ToList(),
+                Pages = rounds.PageCount,
+                PageNumber= rounds.PageNumber,
+                TotalItemCount = rounds.TotalItemCount
+            };
         }
     }
 }

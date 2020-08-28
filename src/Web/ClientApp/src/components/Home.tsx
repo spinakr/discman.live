@@ -22,9 +22,10 @@ type Props = PropsFromRedux & RouteComponentProps & {};
 const Home = (props: Props) => {
   const { user, fetchUserRounds } = props;
   const username = user?.user?.username;
+  const loggedId = user?.loggedIn;
   React.useEffect(() => {
-    fetchUserRounds(10, username);
-  }, [fetchUserRounds, username]);
+    loggedId && fetchUserRounds(1, username);
+  }, [fetchUserRounds, loggedId, username]);
   return (
     <div>
       <div className="section pt-0">

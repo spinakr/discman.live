@@ -32,9 +32,9 @@ namespace Web.Rounds
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserRounds([FromQuery] string username, [FromQuery] int start = 0, [FromQuery] int count = 5)
+        public async Task<IActionResult> GetUserRounds([FromQuery] string username, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var rounds = await _mediator.Send(new GetUserRoundsQuery {Username = username, Start = start, Count = count});
+            var rounds = await _mediator.Send(new GetUserRoundsQuery {Username = username, Page = page, PageSize = pageSize});
             return Ok(rounds);
         }
 

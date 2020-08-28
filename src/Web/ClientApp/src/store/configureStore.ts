@@ -43,11 +43,6 @@ const connectHub = (dispatch: Dispatch<AnyAction>) => {
 
   hub.on("spectatorJoined", (roundId: string, username: string) => {
     dispatch(roundsActions.specJoined(roundId, username));
-    notificationActions.showNotification(
-      `${username} joined as spectator`,
-      "info",
-      dispatch
-    );
   });
   hub.on("spectatorLeft", (roundId: string, username: string) => {
     dispatch(roundsActions.specLeft(roundId, username));
@@ -74,7 +69,7 @@ const socketsMiddleware: Middleware = ({
     const a: any = action;
     if (hub.state === signalR.HubConnectionState.Disconnected) {
       connectHub(dispatch);
-      setTimeout(() => {}, 500);
+      setTimeout(() => {}, 1000);
     }
     hub.invoke("SpectatorJoined", a.roundId);
   }
@@ -82,7 +77,7 @@ const socketsMiddleware: Middleware = ({
     const a: any = action;
     if (hub.state === signalR.HubConnectionState.Disconnected) {
       connectHub(dispatch);
-      setTimeout(() => {}, 500);
+      setTimeout(() => {}, 1000);
     }
     hub.invoke("SpectatorLeft", a.roundId);
   }
