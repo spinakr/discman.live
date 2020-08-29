@@ -5,6 +5,7 @@ import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
+import LongPress from "react-long";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -142,6 +143,7 @@ const Feed = (props: Props) => {
   const { fetchFeed, feed } = props;
   const [itemType, setItemType] = useState<string>("");
   const [page, setPage] = useState<number>(1);
+  const [activeLike, setActiveLike] = useState("");
   React.useEffect(() => {
     fetchFeed(itemType, page);
   }, [fetchFeed, itemType, page]);
@@ -152,7 +154,7 @@ const Feed = (props: Props) => {
   if (!feed) return null;
 
   return (
-    <section className="">
+    <section className="" onClick={() => setActiveLike("")}>
       <div className="columns is-mobile">
         <div className="column"> </div>
         <div className="column">
@@ -220,25 +222,47 @@ const Feed = (props: Props) => {
                       {getExtra(f)}
                     </div>
                   </div>
-
                   <div
-                    className="media-left mr-1 mt-3 pl-3"
-                    style={{ position: "relative" }}
-                    onClick={() => props.toggleLike(f.id)}
+                    className={`dropdown is-right ${
+                      f.id === activeLike && "is-active"
+                    }`}
                   >
-                    {f.likes.length > 0 && (
-                      <span className="badge is-bottom-right is-light">
-                        {f.likes.length}
-                      </span>
-                    )}
-                    <span
-                      className={`icon is-small ${
-                        f.likes.some((l) => l === props.user?.user?.username) &&
-                        "is-primary"
-                      }`}
+                    <LongPress
+                      time={500}
+                      onLongPress={() => setActiveLike(f.id)}
+                      onPress={() => props.toggleLike(f.id)}
                     >
-                      <i className="fas fa-thumbs-up"></i>
-                    </span>
+                      <div
+                        className="media-left mr-1 mt-3 pl-3"
+                        style={{ position: "relative" }}
+                      >
+                        {f.likes.length > 0 && (
+                          <span className="badge is-bottom-right is-light">
+                            {f.likes.length}
+                          </span>
+                        )}
+                        <span
+                          className={`icon is-small ${
+                            f.likes.some(
+                              (l) => l === props.user?.user?.username
+                            ) && "is-primary"
+                          }`}
+                        >
+                          <i className="fas fa-thumbs-up"></i>
+                        </span>
+                      </div>
+                    </LongPress>
+                    <div
+                      className="dropdown-menu"
+                      id="dropdown-menu6"
+                      role="menu"
+                    >
+                      <div className="dropdown-content">
+                        <div className="dropdown-item">
+                          {f.likes.join("&#9252;")}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </article>
               </div>

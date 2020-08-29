@@ -41,6 +41,8 @@ namespace Web.Rounds.Commands
             var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == request.RoundId, token: cancellationToken);
             if (!round.IsPartOfRound(authenticatedUsername)) throw new UnauthorizedAccessException("You can only complete rounds you are part of");
+            if (round.IsCompleted) return new Unit();
+            
 
             round.CompleteRound();
 
