@@ -10,22 +10,64 @@ import Tournament from "./components/Tournaments/Tournament";
 import Leaders from "./components/Leaders";
 import Tournaments from "./components/Tournaments/Tournaments";
 
-export default () => (
-  <>
-    <Layout>
-      <Route exact path="/" component={Home} />
-      <Route exact path="/rounds/:roundId" component={Round} />
-      <Route
-        exact
-        path="/courses/:courseName?/:courseLayout?"
-        component={Courses}
-      />
-      <Route exact path="/user" component={User} />
-      <Route exact path="/leaders" component={Leaders} />
-      <Route exact path="/users/:username" component={User} />
-      <Route exact path="/friends" component={Friends} />
-      <Route exact path="/tournaments/:tournamentId" component={Tournament} />
-      <Route exact path="/tournaments" component={Tournaments} />
-    </Layout>
-  </>
-);
+export interface AppCompProps {
+  token: string | undefined;
+}
+export interface AppCompState {
+  hasError: boolean;
+}
+
+export class App extends React.PureComponent<AppCompProps, AppCompState> {
+  constructor(props: AppCompProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  componentDidCatch(error: any, errorInfo: any) {
+    if (this.props.token) {
+      fetch(`api/logger/render`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.props.token}`,
+        },
+        body: JSON.stringify({
+          exception: error,
+          info: JSON.stringify(errorInfo),
+        }),
+      });
+    }
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div>Error</div>;
+    }
+    return (
+      <>
+        <Layout>
+          <Route exact path="/" component={Home} />
+          <Route exact path="/rounds/:roundId" component={Round} />
+          <Route
+            exact
+            path="/courses/:courseName?/:courseLayout?"
+            component={Courses}
+          />
+          <Route exact path="/user" component={User} />
+          <Route exact path="/leaders" component={Leaders} />
+          <Route exact path="/users/:username" component={User} />
+          <Route exact path="/friends" component={Friends} />
+          <Route
+            exact
+            path="/tournaments/:tournamentId"
+            component={Tournament}
+          />
+          <Route exact path="/tournaments" component={Tournaments} />
+        </Layout>
+      </>
+    );
+  }
+}
+export default App;

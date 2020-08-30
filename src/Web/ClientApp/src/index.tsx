@@ -24,7 +24,7 @@ const store = configureStore(history);
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <App />
+      <App token={store.getState().user.user?.token} />
     </ConnectedRouter>
   </Provider>,
   document.getElementById("root")

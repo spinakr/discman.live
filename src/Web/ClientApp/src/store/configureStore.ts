@@ -15,8 +15,6 @@ import { History } from "history";
 import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as roundsActions, Round } from "./Rounds";
-import { actionCreators as notificationActions } from "./Notifications";
-import logger from "../logger";
 import { User } from "./User";
 
 const createHub = () => {
@@ -92,12 +90,20 @@ const crashReporter: Middleware = ({ dispatch, getState }: MiddlewareAPI) => (
     return next(action);
   } catch (err) {
     console.error("Caught an exception!", err);
-    logger.push({
-      tag: "redux",
-      application: "discman-client",
-      reduxState: getState(),
-      action: action,
-      exception: err,
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/logger/redux`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({
+        reduxState: appState,
+        reduxAction: action,
+        exception: err,
+      }),
     });
     throw err;
   }
