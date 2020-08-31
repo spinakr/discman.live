@@ -83,7 +83,7 @@ services:
       - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.193
+    image: sp1nakr/disclive:0.195
     container_name: discmanweb
     restart: unless-stopped
     env_file:

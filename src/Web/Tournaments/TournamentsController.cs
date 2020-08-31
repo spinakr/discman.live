@@ -22,9 +22,9 @@ namespace Web.Tournaments
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetUserTournaments([FromQuery] bool onlyActive = true)
+        public async Task<IActionResult> GetUserTournaments([FromQuery] bool onlyActive = true, [FromQuery]string username = null)
         {
-            var tournament = await _mediator.Send(new GetTournamentsCommand {OnlyActive = onlyActive});
+            var tournament = await _mediator.Send(new GetTournamentsCommand {OnlyActive = onlyActive, Username = username});
             return Ok(tournament);
         }
 

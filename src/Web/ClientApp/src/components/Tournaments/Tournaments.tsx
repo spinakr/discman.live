@@ -16,13 +16,13 @@ const connector = connect(mapState, TournamentsStore.actionCreators);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux;
+type Props = PropsFromRedux & { username?: string };
 
 const Tournaments = (props: Props) => {
   const { fetchTournaments, tournaments } = props;
   React.useEffect(() => {
-    fetchTournaments(false);
-  }, [fetchTournaments]);
+    fetchTournaments(false, props.username);
+  }, [fetchTournaments, props.username]);
 
   return (
     <>

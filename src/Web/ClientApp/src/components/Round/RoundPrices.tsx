@@ -26,27 +26,29 @@ export default ({ round, swipeHandlers }: RoundPricesProps) => {
   const mostPars = mostBetterThan(round, (s) => s.relativeToPar === 0);
   const mostBogies = mostBetterThan(round, (s) => s.relativeToPar > 0);
   return (
-    <div className="columns section" {...swipeHandlers}>
-      {mostBirdies && (
-        <div className="box has-background-success-light has-text-centered">
-          Most birdies:
-          <br />
-          {mostBirdies}
-        </div>
-      )}
-      {mostPars && (
-        <div className="box has-text-centered">
-          Most pars: <br />
-          {mostPars}
-        </div>
-      )}
-      {mostBogies && (
-        <div className="box has-background-danger-light has-text-centered">
-          Most bogies or worse:
-          <br />
-          {mostBogies}
-        </div>
-      )}
+    <div className="columns is-centered" {...swipeHandlers}>
+      <div className="column is-10 px-5">
+        {mostBirdies && (
+          <div className="box column has-background-success-light has-text-centered">
+            Most birdies:
+            <br />
+            {mostBirdies}
+          </div>
+        )}
+        {mostPars && (
+          <div className="box column has-text-centered">
+            Most pars: <br />
+            {mostPars}
+          </div>
+        )}
+        {mostBogies && (
+          <div className="box column has-background-danger-light has-text-centered">
+            Most bogies or worse:
+            <br />
+            {mostBogies}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

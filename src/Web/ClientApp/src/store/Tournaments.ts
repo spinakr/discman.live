@@ -111,20 +111,23 @@ const initialState: TournamentsState = {
 };
 
 export const actionCreators = {
-  fetchTournaments: (onlyActive: boolean): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
+  fetchTournaments: (
+    onlyActive: boolean,
+    username?: string
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/tournaments?onlyActive=${onlyActive}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
+    fetch(
+      `api/tournaments?onlyActive=${onlyActive}&username=${username || ""}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
+      }
+    )
       .then((response) => response.json() as Promise<TournamentListing[]>)
       .then((data) => {
         dispatch({

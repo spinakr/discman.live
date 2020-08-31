@@ -25,7 +25,7 @@ namespace Web.Courses
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(2));
+            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromHours(12));
             return Task.CompletedTask;
         }
 

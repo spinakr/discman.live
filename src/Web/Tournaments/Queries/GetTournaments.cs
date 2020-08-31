@@ -18,6 +18,7 @@ namespace Web.Tournaments.Queries
     {
         public Guid TournamentId { get; set; }
         public bool OnlyActive { get; set; }
+        public string Username { get; set; }
     }
 
     public class GetTournamentsCommandHandler : IRequestHandler<GetTournamentsCommand, IEnumerable<TournamentListing>>
@@ -38,13 +39,13 @@ namespace Web.Tournaments.Queries
 
         public async Task<IEnumerable<TournamentListing>> Handle(GetTournamentsCommand request, CancellationToken cancellationToken)
         {
-            var username = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var username = request.Username ?? _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var tournaments = await _documentSession
                 .Query<Tournament>()
                 .Where(t => t.Players.Any(p => p == username))
                 .Where(t => !request.OnlyActive || t.End >= DateTime.Now.Date)
                 .ToListAsync(token: cancellationToken);
-            
+
             return tournaments.Select(t => _mapper.Map<TournamentListing>(t)).OrderByDescending(s => s.Start);
         }
     }
