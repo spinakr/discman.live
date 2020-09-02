@@ -9,6 +9,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Web.Courses;
 using Web.Tournaments.Domain;
+using Web.Tournaments.Notifications;
 using Web.Tournaments.Queries;
 
 namespace Web.Tournaments.Commands
@@ -22,11 +23,13 @@ namespace Web.Tournaments.Commands
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly IMediator _mediator;
 
-        public AddPlayerToTournamentCommandHandler(IDocumentSession documentSession, IHttpContextAccessor contextAccessor)
+        public AddPlayerToTournamentCommandHandler(IDocumentSession documentSession, IHttpContextAccessor contextAccessor, IMediator mediator)
         {
             _documentSession = documentSession;
             _contextAccessor = contextAccessor;
+            _mediator = mediator;
         }
 
         public async Task<Unit> Handle(AddPlayerToTournamentCommand request, CancellationToken cancellationToken)
@@ -37,6 +40,14 @@ namespace Web.Tournaments.Commands
 
             _documentSession.Update(tournament);
             await _documentSession.SaveChangesAsync(cancellationToken);
+
+            await _mediator.Publish(new PlayerJoinedTournament
+            {
+                TournamentId = tournament.Id,
+                TournamentName = tournament.Name,
+                Username = username
+            }, cancellationToken);
+
             return Unit.Value;
         }
     }

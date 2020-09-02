@@ -26,6 +26,9 @@ namespace Web.Feeds.Queries
         public string Action { get; set; }
         public Guid RoundId { get; set; }
         public string AchievementName { get; set; }
+        public Guid TournamentId { get; set; }
+        public string TournamentName { get; set; }
+        public string FriendName { get; set; }
 
         public void Mapping(Profile profile)
         {

@@ -67,6 +67,9 @@ export interface FeedItem {
   roundScores: number[];
   likes: string[];
   achievementName: string;
+  friendName: string;
+  tournamentName: string;
+  tournamentId: string;
 }
 
 export interface FetchFeedSuccessAction {

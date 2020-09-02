@@ -54,6 +54,10 @@ const getIcon = (item: UserStore.FeedItem) => {
       return <i className="fas fa-lg fa-crow" aria-hidden="true"></i>;
     case "Achievement":
       return <i className="fas fa-lg fa-star" aria-hidden="true"></i>;
+    case "Tournament":
+      return <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>;
+    case "Friend":
+      return <i className="fas fa-lg fa-user-friends" aria-hidden="true"></i>;
   }
 };
 
@@ -96,6 +100,21 @@ const getText = (item: UserStore.FeedItem) => {
           </p>
         </span>
       );
+    case "Tournament":
+      return (
+        <span>
+          <p className="is-size-7">
+            {item.action === "Joined" && "Signed up for tournament"}{" "}
+            {item.tournamentName}!
+          </p>
+        </span>
+      );
+    case "Friend":
+      return (
+        <span>
+          <p className="is-size-7">Added {item.friendName} as friend</p>
+        </span>
+      );
   }
 };
 
@@ -133,6 +152,10 @@ const getExtra = (item: UserStore.FeedItem) => {
 
 const getUri = (item: UserStore.FeedItem) => {
   switch (item.itemType) {
+    case "Tournament":
+      return `/tournaments/${item.tournamentId}`;
+    case "Friend":
+      return `/users/${item.friendName}`;
     default:
       return `/rounds/${item.roundId}`;
   }

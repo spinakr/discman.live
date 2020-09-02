@@ -22,6 +22,9 @@ namespace Web.Feeds.Domain
 
         public List<string> Likes { get; set; } = new List<string>();
         public Guid RoundId { get; set; }
+        public Guid TournamentId { get; set; }
+        public string TournamentName { get; set; }
+        public string FriendName { get; set; }
     }
 
 
@@ -29,6 +32,8 @@ namespace Web.Feeds.Domain
     public enum Action
     {
         Completed,
-        Started
+        Started,
+        Joined,
+        Added
     }
 }

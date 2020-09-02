@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Web.Users.Notifications;
 
 namespace Web.Users.Commands
 {
@@ -17,11 +18,13 @@ namespace Web.Users.Commands
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMediator _mediator;
 
-        public AddFriendCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
+        public AddFriendCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMediator mediator)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
+            _mediator = mediator;
         }
 
         public async Task<Unit> Handle(AddFriendCommand request, CancellationToken cancellationToken)
@@ -36,6 +39,12 @@ namespace Web.Users.Commands
             _documentSession.Update(user);
             _documentSession.Update(friend);
             await _documentSession.SaveChangesAsync(cancellationToken);
+
+            await _mediator.Publish(new FriendWasAdded
+            {
+                Username = user.Username,
+                FriendName = friend.Username
+            }, cancellationToken);
 
             return new Unit();
         }

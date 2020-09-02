@@ -7,6 +7,8 @@ namespace Web.Feeds.Domain
     {
         Round,
         Hole,
-        Achievement
+        Achievement,
+        Tournament,
+        Friend
     }
 }
