@@ -5,6 +5,7 @@ import { ApplicationState } from "../store";
 import * as UserStore from "../store/User";
 import Login from "./Login";
 import Feed from "./Feed/Feed";
+import NewsMessages from "./NewsMessages";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -32,6 +33,7 @@ const Home = (props: Props) => {
         {!user?.loggedIn && <Login />}
         {user?.loggedIn && <Feed />}
       </div>
+      <NewsMessages />
     </div>
   );
 };

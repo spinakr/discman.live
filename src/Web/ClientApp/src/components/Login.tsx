@@ -13,7 +13,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const Login = (props: Props) => {
-  const [login, setLogin] = useState({ username: "", password: "" });
+  const [login, setLogin] = useState({ username: "", password: "", email: "" });
   const isFormValid = (username: string, password: string) => {
     if (username.length < 3 || password.length < 5) return true;
     return false;

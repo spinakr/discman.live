@@ -28,6 +28,7 @@ namespace Web.Users
         public byte[] Salt { get; set; }
         public List<string> Friends { get; set; }
         public Achievements Achievements { get; set; }
+        public string Email { get; set; }
 
         public AuthenticatedUser Authenticated(string secret)
         {
@@ -44,7 +45,7 @@ namespace Web.Users
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new AuthenticatedUser(Username, tokenHandler.WriteToken(token));
+            return new AuthenticatedUser(Username, tokenHandler.WriteToken(token), Email);
         }
 
         public void AddFriend(string username)
@@ -53,6 +54,17 @@ namespace Web.Users
             Friends = Friends.Distinct().ToList();
             if (Friends.Any(f => f == username)) return;
             Friends.Add(username);
+        }
+
+        public void ChangePassword(SaltSeasonedHashedPassword hashedPw)
+        {
+            Salt = hashedPw.Salt;
+            Password = hashedPw.Hash;
+        }
+
+        public void ChangeEmail(string requestNewEmail)
+        {
+            Email = requestNewEmail;
         }
     }
 }

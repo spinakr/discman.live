@@ -95,6 +95,20 @@ namespace Web.Users
             var userAchievements = await _mediator.Send(new GetUserAchievementsQuery {Username = username});
             return Ok(userAchievements);
         }
+        
+        [HttpPut("{username}/password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand req)
+        {
+            await _mediator.Send(req);
+            return Ok();
+        }
+        
+        [HttpPut("{username}/email")]
+        public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailCommand req)
+        {
+            var user = await _mediator.Send(req);
+            return Ok(user);
+        }
 
 
         [HttpPost("friends")]

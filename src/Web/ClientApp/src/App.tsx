@@ -9,6 +9,7 @@ import Friends from "./components/User/Friends";
 import Tournament from "./components/Tournaments/Tournament";
 import Leaders from "./components/Leaders";
 import Tournaments from "./components/Tournaments/Tournaments";
+import UserSettings from "./components/User/UserSettings";
 
 export interface AppCompProps {
   token: string | undefined;
@@ -56,6 +57,7 @@ export class App extends React.PureComponent<AppCompProps, AppCompState> {
             component={Courses}
           />
           <Route exact path="/user" component={User} />
+          <Route exact path="/settings" component={UserSettings} />
           <Route exact path="/leaders" component={Leaders} />
           <Route exact path="/users/:username" component={User} />
           <Route exact path="/friends" component={Friends} />

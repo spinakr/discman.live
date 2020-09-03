@@ -1,12 +1,13 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from ".";
-import { CallHistoryMethodAction } from "connected-react-router";
+import { CallHistoryMethodAction, push } from "connected-react-router";
 import { actionCreators as notificationActions } from "./Notifications";
 import { Round } from "./Rounds";
 
 export interface User {
   username: string;
   token: string;
+  email: string;
 }
 export interface UserStats {
   roundsPlayed: number;
@@ -120,6 +121,15 @@ export interface LogUserOutAction {
   type: "LOG_USER_OUT";
 }
 
+export interface ChangePasswordSuccessAction {
+  type: "CHANGE_PASSWORD_SUCCESS";
+}
+
+export interface ChangeEmailSuccessAction {
+  type: "CHANGE_EMAIL_SUCCESS";
+  user: User;
+}
+
 export interface FetchUserStatsSuccessAction {
   type: "FETCH_USERSTATS_SUCCESS";
   stats: UserStats;
@@ -154,8 +164,10 @@ export type KnownAction =
   | FetchUserRoundsSuccessAction
   | FetchOtherUserSuccessAction
   | FetchUserAchievementsSuccessAction
+  | ChangeEmailSuccessAction
   | SearchUsersSuccessAction
   | SpectatorJoindAction
+  | ChangePasswordSuccessAction
   | LikeToggledAction
   | FetchFeedSuccessAction
   | ClearFeedAction
@@ -195,6 +207,7 @@ const initialState: UserState = user
 const logout = (dispatch: (action: KnownAction) => void) => {
   localStorage.removeItem("user");
   dispatch({ type: "LOG_USER_OUT" });
+  dispatch(push("/"));
 };
 
 export const actionCreators = {
@@ -234,6 +247,7 @@ export const actionCreators = {
           user: data,
         });
         localStorage.setItem("user", JSON.stringify(data));
+        dispatch(push("/settings"));
       })
       .catch((err: Error) => {
         dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });
@@ -275,6 +289,64 @@ export const actionCreators = {
   },
   logout: () => (dispatch: (action: any) => void) => {
     logout(dispatch);
+  },
+  changePassword: (password: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/${appState.user.user.username}/password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({
+        newPassword: password,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((data) => {
+        if (!data) return;
+        dispatch({
+          type: "CHANGE_PASSWORD_SUCCESS",
+        });
+      });
+  },
+  changeEmail: (email: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/${appState.user.user.username}/email`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({
+        newEmail: email,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res.json() as Promise<User>;
+      })
+      .then((data) => {
+        if (!data) return;
+        dispatch({
+          type: "CHANGE_EMAIL_SUCCESS",
+          user: data,
+        });
+        localStorage.setItem("user", JSON.stringify(data));
+      });
   },
   fetchUsers: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
@@ -583,6 +655,11 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         feed: null,
+      };
+    case "CHANGE_EMAIL_SUCCESS":
+      return {
+        ...state,
+        user: state.user && { ...state.user, email: action.user.email },
       };
     case "FETCH_FEED_SUCCESS":
       return {
