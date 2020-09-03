@@ -15,6 +15,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
+const emailValid = (email: string) => {
+  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) return true;
+  return false;
+};
+
 const UserSettings = (props: Props) => {
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
@@ -83,6 +88,7 @@ const UserSettings = (props: Props) => {
                 <input
                   className="input is-static"
                   type="email"
+                  onChange={() => {}}
                   value={props.user?.user?.email || "Email not present"}
                 />
               </p>
@@ -95,7 +101,7 @@ const UserSettings = (props: Props) => {
             <div className="field">
               <p className="control">
                 <input
-                  className="input"
+                  className={`input ${!emailValid(email) && "is-danger"}`}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
@@ -108,7 +114,7 @@ const UserSettings = (props: Props) => {
         <div className="field ">
           <div className="control">
             <button
-              disabled={email === "" || !email}
+              disabled={email === "" || !email || !emailValid(email)}
               className="button is-success is-light is-outlined"
               onClick={() => {
                 props.changeEmail(email);
