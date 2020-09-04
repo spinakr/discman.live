@@ -68,6 +68,22 @@ namespace Web.Users
 
             return Ok(authenticatedUser);
         }
+        
+        [AllowAnonymous]
+        [HttpPost("resetpassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] InitiatePasswordResetCommand req)
+        {
+            await _mediator.Send(req);
+            return Ok();
+        }
+        
+        [AllowAnonymous]
+        [HttpPost("setpassword")]
+        public async Task<IActionResult> SetPassword([FromBody] ResetPasswordCommand req)
+        {
+            await _mediator.Send(req);
+            return Ok();
+        }
 
         [HttpGet]
         public async Task<IActionResult> SearchUsers([FromQuery] string searchString)
@@ -109,7 +125,6 @@ namespace Web.Users
             var user = await _mediator.Send(req);
             return Ok(user);
         }
-
 
         [HttpPost("friends")]
         public async Task<IActionResult> AddFriend([FromBody] AddFriendsRequest req)

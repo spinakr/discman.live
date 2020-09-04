@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -18,12 +19,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid.Extensions.DependencyInjection;
+using Serilog;
 using Web.Common.Behaviours;
 using Web.Courses;
 using Web.Infrastructure;
 using Web.Leaderboard;
 using Web.Matches;
 using Web.Tournaments;
+using Web.Users;
 
 namespace Web
 {
@@ -45,6 +49,7 @@ namespace Web
             services.AddHostedService<UpdateInActiveRoundsWorker>();
             services.AddHostedService<LeaderboardWorker>();
             services.AddHostedService<AchievementsWorker>();
+            services.AddHostedService<ResetPasswordWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
             
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
@@ -55,6 +60,11 @@ namespace Web
             
             services.AddControllersWithViews(options => options.Filters.Add(new ApiExceptionFilter()));
             services.AddHttpContextAccessor();
+            
+            services.AddSendGrid(options =>
+            {
+                options.ApiKey = Configuration.GetValue<string>("SENDGRID_APIKEY");
+            });
 
 
             // In production, the React files will be served from this directory

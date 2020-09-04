@@ -38,6 +38,7 @@ namespace Web.Users.Commands
             user.ChangePassword(hashedPw);
 
             _documentSession.Update(user);
+            
             await _documentSession.SaveChangesAsync(cancellationToken);
             return Unit.Value;
         }

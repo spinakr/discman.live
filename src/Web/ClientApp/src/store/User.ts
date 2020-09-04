@@ -287,6 +287,61 @@ export const actionCreators = {
         }, 2000);
       });
   },
+  forgotPassword: (email: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    fetch(`api/users/resetpassword`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<User>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {})
+      .catch((err: Error) => {
+        setTimeout(() => {
+          dispatch({ type: "LOG_USER_OUT" });
+        }, 2000);
+      });
+  },
+  setPassword: (
+    newPassword: string,
+    resetId: string
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    fetch(`api/users/setpassword`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ resetId, newPassword }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        notificationActions.showNotification(
+          "Your password was successfully set",
+          "info",
+          dispatch
+        );
+        dispatch(push("/"));
+      })
+      .catch((err: Error) => {
+        setTimeout(() => {
+          dispatch({ type: "LOG_USER_OUT" });
+        }, 2000);
+      });
+  },
   logout: () => (dispatch: (action: any) => void) => {
     logout(dispatch);
   },
