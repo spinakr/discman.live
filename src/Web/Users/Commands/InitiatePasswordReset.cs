@@ -17,7 +17,13 @@ namespace Web.Users.Commands
 {
     public class InitiatePasswordResetCommand : IRequest
     {
-        public string Email { get; set; }
+        private string _email;
+
+        public string Email
+        {
+            get => _email.Trim().ToLowerInvariant();
+            set => _email = value;
+        }
     }
 
     public class InitiatePasswordResetCommandHandler : IRequestHandler<InitiatePasswordResetCommand>

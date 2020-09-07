@@ -11,6 +11,7 @@ import Leaders from "./components/Leaders";
 import Tournaments from "./components/Tournaments/Tournaments";
 import UserSettings from "./components/User/UserSettings";
 import ResetPassword from "./components/User/ResetPassword";
+import About from "./components/About";
 
 export interface AppCompProps {
   token: string | undefined;
@@ -68,6 +69,7 @@ export class App extends React.PureComponent<AppCompProps, AppCompState> {
             component={Tournament}
           />
           <Route exact path="/tournaments" component={Tournaments} />
+          <Route exact path="/about" component={About} />
           <Route exact path="/resetpassword" component={ResetPassword} />
         </Layout>
       </>

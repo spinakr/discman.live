@@ -268,6 +268,16 @@ const NavMenu = (props: Props) => {
                   </span>
                   &nbsp; Settings
                 </Link>
+                <Link
+                  to="/about"
+                  className="panel-block"
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="panel-icon">
+                    <i className="fas fa-lg fa-question-circle"></i>
+                  </span>
+                  &nbsp; About
+                </Link>
               </article>
               <article className="panel">
                 <span

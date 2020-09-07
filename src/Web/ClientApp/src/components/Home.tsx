@@ -6,6 +6,7 @@ import * as UserStore from "../store/User";
 import Login from "./Login";
 import Feed from "./Feed/Feed";
 import NewsMessages from "./NewsMessages";
+import About from "./About";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -30,7 +31,15 @@ const Home = (props: Props) => {
   return (
     <div>
       <div className="section pt-0">
-        {!user?.loggedIn && <Login />}
+        {!user?.loggedIn && (
+          <>
+            <Login />
+            <br />
+            <hr />
+            <br />
+            <About />
+          </>
+        )}
         {user?.loggedIn && <Feed />}
       </div>
       <NewsMessages />

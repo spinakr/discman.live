@@ -64,7 +64,7 @@ namespace Web.Users
 
         public void ChangeEmail(string requestNewEmail)
         {
-            Email = requestNewEmail;
+            Email = requestNewEmail.Trim().ToLowerInvariant();
         }
     }
 }

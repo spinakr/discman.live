@@ -26,6 +26,7 @@ const toDateString = (date: Date) => {
     day: "2-digit",
     hour: "numeric",
     minute: "numeric",
+    hour12: false,
   });
   const [
     { value: month },
