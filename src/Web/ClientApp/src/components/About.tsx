@@ -11,7 +11,7 @@ const About = () => {
         to replace the other more "professional" apps often used at PDGA
         tournaments, but more as an alternative when playing and practicing with
         friends. discman makes playing casual rounds with friends more fun, and
-        introduces some competion aspects as well.
+        introduces some interesting competition aspects.
         <br />
         <br />
         <div className="columns is-mobile">
@@ -20,14 +20,14 @@ const About = () => {
           </div>
           <div className="column is-half">
             Scores are registered on each player's own phone, and synced live to
-            all players in the round.
+            players in the round.
           </div>
         </div>
         <br />
         <div className="columns is-mobile">
           <div className="column is-half">
             discman is also a social platform. Rounds and scores are shared with
-            your friends in each user's live feed.
+            your friends in each user's feed.
           </div>
           <div className="column is-half">
             <img width="128" height="260" src="screenshot2.png" />
@@ -38,14 +38,18 @@ const About = () => {
             <img width="128" height="260" src="screenshot6.png" />
           </div>
           <div className="column is-half">
-            As scores are registered with details (fairway, rough, green),
-            players get detailed stats about their game
+            Scores are registered with details (fairway, rough, green), allowing
+            for detailed stats about a players game. Simple statistics are used
+            to give your a live update on how your round is going - including
+            predicted final score and scoring average (requires multiple rounds
+            on the same course).
           </div>
         </div>
         <div className="columns is-mobile">
           <div className="column is-half">
-            Leader boards both among friends and globally, as well as
-            achievements makes playing practice rounds more fun.
+            Leaderboards both among friends and globally, as well as
+            achievements makes playing practice rounds more fun. Your ace or
+            turkey will appear in your friends feed!
           </div>
           <div className="column is-half">
             <img width="128" height="260" src="screenshot3.png" />

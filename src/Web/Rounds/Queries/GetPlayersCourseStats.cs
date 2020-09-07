@@ -52,6 +52,9 @@ namespace Web.Rounds.Queries
                     .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
                     .ToList();
 
+                var playerHoleScores = playerRounds.SelectMany(r => r.PlayerScores.Single(p => p.PlayerName == player).Scores);
+                var bestSCores = playerHoleScores.GroupBy(x => x.Hole.Number).Select(x => x.Min(y => y.RelativeToPar));
+
                 var playerCourseRecord = playerRounds.Any() ? playerRounds.Select(r => r.PlayerScore(player)).Min() : (int?) null;
 
                 var fivePreviousRounds = playerRounds
