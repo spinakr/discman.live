@@ -38,7 +38,7 @@ const toDateString = (date: Date) => {
     ,
   ] = dateTimeFormat.formatToParts(date);
 
-  return `${day}. ${month.toLowerCase()}`;
+  return `${day}. ${month.toLowerCase().substr(0, 3)}`;
 };
 
 const Tournament = (props: Props) => {
@@ -54,9 +54,6 @@ const Tournament = (props: Props) => {
     if (tournament?.info.hasStarted) {
       setActive(2);
     }
-    if (tournament?.prices) {
-      setActive(3);
-    }
   }, [tournament]);
 
   if (!tournament) return null;
@@ -70,15 +67,8 @@ const Tournament = (props: Props) => {
   return (
     <>
       <nav className="navbar is-light level is-mobile mb-0">
-        <div className="level-item has-text-centered">
+        <div className="ml-1 navbar-item has-text-centered">
           <div className="is-size-5">{tournament.info.name}</div>
-        </div>
-        <div className="level-item has-text-centered">
-          <div className="is-size-7">
-            {toDateString(new Date(tournament.info.start))}
-            {" - "}
-            {toDateString(new Date(tournament.info.end))}
-          </div>
         </div>
       </nav>
 
@@ -125,6 +115,11 @@ const Tournament = (props: Props) => {
                   <hr />
                 </>
               )}
+            <h2 className="subtitle">
+              {toDateString(new Date(tournament.info.start))}
+              {" - "}
+              {toDateString(new Date(tournament.info.end))}
+            </h2>
 
             <div className="columns is-mobile">
               <div className="column "></div>

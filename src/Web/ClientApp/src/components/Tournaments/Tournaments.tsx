@@ -18,6 +18,23 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & { username?: string };
 
+const toDateString = (date: Date) => {
+  const dateTimeFormat = new Intl.DateTimeFormat("en", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  });
+  const [
+    { value: month },
+    ,
+    { value: day },
+    // { value: year },
+    ,
+  ] = dateTimeFormat.formatToParts(date);
+
+  return `${day}. ${month.toLowerCase().substr(0, 3)}`;
+};
+
 const Tournaments = (props: Props) => {
   const { fetchTournaments, tournaments } = props;
   React.useEffect(() => {
@@ -45,12 +62,16 @@ const Tournaments = (props: Props) => {
                 <span className="panel-icon">
                   <i className="fas fa-trophy"></i>
                 </span>
-                {t.name}&nbsp;:&nbsp;
-                <i className="is-size-7">
-                  {new Date(t.start).toLocaleDateString()}
-                  {"-"}
-                  {new Date(t.end).toLocaleDateString()}
-                </i>
+                <div className="columns is-mobile is-gapless columns-full">
+                  <div className="column is-two-thirds">{t.name}</div>
+                  <div className="column is-one-third">
+                    <i className="is-size-7">
+                      {toDateString(new Date(t.start)).substr(0, 2)}
+                      {"-"}
+                      {toDateString(new Date(t.end))}
+                    </i>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
