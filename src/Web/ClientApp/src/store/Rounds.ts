@@ -137,6 +137,10 @@ export interface RoundWasCompletedAction {
   type: "ROUND_WAS_COMPLETED";
 }
 
+export interface RoundWasDeletedAction {
+  type: "ROUND_WAS_DELETED";
+}
+
 export interface ConnectToHubAction {
   type: "CONNECT_TO_HUB";
 }
@@ -168,6 +172,7 @@ export type KnownAction =
   | PlayerCourseStatsFethSuceed
   | ToggleScoreCardAction
   | SpectatorJoinedAction
+  | RoundWasDeletedAction
   | SpectatorLeftAction
   | CourseWasSavedAction;
 
@@ -433,6 +438,7 @@ export const actionCreators = {
         return res;
       })
       .then((response) => {
+        dispatch({ type: "ROUND_WAS_DELETED" });
         dispatch(push("/"));
       })
       .catch((err: Error) => {
@@ -735,6 +741,8 @@ export const reducer: Reducer<RoundsState> = (
         ...state,
         round: { ...state.round, isCompleted: true },
       };
+    case "ROUND_WAS_DELETED":
+      return initialState;
     case "SET_ACTIVE_HOLE":
       const nextHole = state.round ? getActiveHolde(state.round) : 100;
       if (action.hole > nextHole) return state;

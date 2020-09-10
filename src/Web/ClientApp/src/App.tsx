@@ -25,6 +25,9 @@ export class App extends React.PureComponent<AppCompProps, AppCompState> {
     super(props);
     this.state = { hasError: false };
   }
+
+  componentDidMount() {}
+
   componentDidCatch(error: any, errorInfo: any) {
     if (this.props.token) {
       fetch(`api/logger/render`, {
