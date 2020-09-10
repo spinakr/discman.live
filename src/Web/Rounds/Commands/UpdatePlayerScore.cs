@@ -50,9 +50,13 @@ namespace Web.Rounds.Commands
             if (!round.IsPartOfRound(authenticatedUsername)) throw new UnauthorizedAccessException($"Cannot update round you are not part of");
             if (request.Username != authenticatedUsername) throw new UnauthorizedAccessException($"You can only update scores for yourself");
 
-            var relativeScore = round.PlayerScores
+            var holeScore = round.PlayerScores
                 .Single(p => p.PlayerName == authenticatedUsername).Scores
-                .Single(s => s.Hole.Number == request.Hole)
+                .Single(s => s.Hole.Number == request.Hole);
+
+            var holeAlreadyRegistered = holeScore.Strokes != 0;
+            
+            var relativeScore = holeScore
                 .UpdateScore(request.Strokes, request.StrokeOutcomes);
 
             _documentSession.Update(round);
@@ -65,7 +69,8 @@ namespace Web.Rounds.Commands
                 Username = authenticatedUsername,
                 CourseName = round.CourseName,
                 HoleNumber = request.Hole,
-                RelativeScore = relativeScore
+                RelativeScore = relativeScore,
+                ScoreWasChanged = holeAlreadyRegistered
             }, cancellationToken);
 
             return round;

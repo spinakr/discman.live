@@ -3,6 +3,7 @@ using Marten.Schema.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Web.Feeds.Domain;
 
 namespace Web.Infrastructure
 {
@@ -26,6 +27,9 @@ namespace Web.Infrastructure
                 _.DefaultIdStrategy = (mapping, storeOptions) => new CombGuidIdGeneration();
 
                 _.AutoCreateSchemaObjects = AutoCreate.All;
+
+                _.Schema.For<UserFeedItem>().Index(x => x.Username);
+                _.Schema.For<GlobalFeedItem>().Index(x => x.Id);
 
             });
 

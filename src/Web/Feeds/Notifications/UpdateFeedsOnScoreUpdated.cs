@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Baseline;
 using Marten;
+using Marten.Linq;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using Web.Feeds.Domain;
@@ -28,6 +29,7 @@ namespace Web.Feeds.Notifications
 
         public async Task Handle(ScoreWasUpdated notification, CancellationToken cancellationToken)
         {
+            await CleanupFeedsIfScoreWasChanged(notification);
             if (notification.RelativeScore > -1) return;
 
             var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == notification.Username, token: cancellationToken);
@@ -48,8 +50,36 @@ namespace Web.Feeds.Notifications
             _documentSession.Store(feedItem);
 
             _documentSession.UpdateFriendsFeeds(friends, feedItem);
-            
+
             await _documentSession.SaveChangesAsync(cancellationToken);
+        }
+
+        private async Task CleanupFeedsIfScoreWasChanged(ScoreWasUpdated notification)
+        {
+            if (!notification.ScoreWasChanged) return;
+
+            var globalItem = await _documentSession
+                .Query<GlobalFeedItem>()
+                .Where(i =>
+                    i.RoundId == notification.RoundId &&
+                    i.HoleNumber == notification.HoleNumber &&
+                    i.Subjects.Any(s => s == notification.Username))
+                .SingleOrDefaultAsync();
+            
+            if (globalItem is null) return;
+            
+            var userItems = await _documentSession
+                .Query<UserFeedItem>()
+                .Where(i => i.FeedItemId == globalItem.Id)
+                .ToListAsync();
+
+            foreach (var userItem in userItems)
+            {
+                _documentSession.Delete(userItem);
+            }
+
+            _documentSession.Delete(globalItem);
+            await _documentSession.SaveChangesAsync();
         }
     }
 }

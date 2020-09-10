@@ -10,5 +10,6 @@ namespace Web.Rounds.Notifications
         public int HoleNumber { get; set; }
         public string CourseName { get; set; }
         public int RelativeScore { get; set; }
+        public bool ScoreWasChanged { get; set; }
     }
 }
