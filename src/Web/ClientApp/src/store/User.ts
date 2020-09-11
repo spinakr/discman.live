@@ -118,6 +118,11 @@ export interface LoginFailedAction {
   errorMessage: string;
 }
 
+export interface SimpleScoringUpdatedSuccessACtion {
+  type: "SIMPLE_SCORING_UPDATED_SUCCESS";
+  simpleScoring: boolean;
+}
+
 export interface LogUserOutAction {
   type: "LOG_USER_OUT";
 }
@@ -166,6 +171,7 @@ export interface ClearFeedAction {
 
 export type KnownAction =
   | CallHistoryMethodAction
+  | SimpleScoringUpdatedSuccessACtion
   | LoginSuccessAction
   | LoginFailedAction
   | LogUserOutAction
@@ -321,6 +327,36 @@ export const actionCreators = {
         setTimeout(() => {
           dispatch({ type: "LOG_USER_OUT" });
         }, 2000);
+      });
+  },
+  setSimpleScoring: (simpleScoring: boolean): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/simpleScoring`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({ simpleScoring }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((data) => {
+        dispatch({ type: "SIMPLE_SCORING_UPDATED_SUCCESS", simpleScoring });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Set news seen failed: ${err.message}`,
+          "error",
+          dispatch
+        );
       });
   },
   setNewsSeen: (newsId: string): AppThunkAction<KnownAction> => (
@@ -761,6 +797,14 @@ export const reducer: Reducer<UserState> = (
         userDetails: state.userDetails && {
           ...state.userDetails,
           email: action.email,
+        },
+      };
+    case "SIMPLE_SCORING_UPDATED_SUCCESS":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          simpleScoring: action.simpleScoring,
         },
       };
     case "NEWS_SEEN_SUCCESS":

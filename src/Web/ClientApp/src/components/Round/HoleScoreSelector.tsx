@@ -9,6 +9,7 @@ const mapState = (state: ApplicationState) => {
   return {
     round: state.rounds && state.rounds.round,
     username: state.user?.user?.username || "",
+    simpleScoring: state.user?.userDetails?.simpleScoring,
     activeHole: state.rounds && state.rounds.activeHole,
   };
 };
@@ -48,6 +49,12 @@ const renderSimpleSelector = (
             <option>7</option>
             <option>8</option>
             <option>9</option>
+            <option>10</option>
+            <option>11</option>
+            <option>12</option>
+            <option>13</option>
+            <option>14</option>
+            <option>15</option>
           </select>
         </div>
       </div>
@@ -217,10 +224,9 @@ const HoleScoreSelector = (props: Props) => {
 
   return round && isPartOfRound ? (
     <>
-      {round.scoreMode === ScoreMode.DetailedLive &&
-        renderDetailedSelector(setScore, strokes, setStrokes)}
-      {round.scoreMode === ScoreMode.StrokesLive &&
-        renderSimpleSelector(setScore)}
+      {props.simpleScoring
+        ? renderSimpleSelector(setScore)
+        : renderDetailedSelector(setScore, strokes, setStrokes)}
       <hr />
     </>
   ) : null;

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
+import InformationDialogue from "../InformationDialogue";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -32,6 +33,67 @@ const UserSettings = (props: Props) => {
       </h2>
 
       <div className="section pt-1">
+        <h4 className="subtitle is-4 has-text-centered">Settings</h4>
+        <div className="field">
+          <div className="control">
+            <input
+              id="simpleScoring"
+              type="checkbox"
+              name="switchExample"
+              className="switch"
+              checked={!props.user?.userDetails?.simpleScoring}
+              onChange={() => {
+                props.setSimpleScoring(!props.user?.userDetails?.simpleScoring);
+              }}
+            />
+            <label htmlFor="simpleScoring">Detailed Scoring</label>
+          </div>
+        </div>
+        <br />
+
+        <div className="field is-horizontal is-mobile">
+          <div className="field-label is-normal">
+            <label className="label">Email</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <p className="control">
+                <input
+                  className="input is-static"
+                  type="email"
+                  onChange={() => {}}
+                  value={props.user?.userDetails?.email || "Email not present"}
+                />
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="field is-grouped">
+          <div className="control is-expanded">
+            <input
+              className={`input ${!emailValid(email) && "is-danger"}`}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              placeholder="New email"
+            />
+          </div>
+          <div className="control">
+            <button
+              disabled={email === "" || !email || !emailValid(email)}
+              className="button is-success is-light is-outlined"
+              onClick={() => {
+                props.changeEmail(email);
+                setEmail("");
+              }}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        <br />
         <h4 className="subtitle is-4 has-text-centered">Change password</h4>
         <div className="field">
           <p className="control has-icons-left">
@@ -77,54 +139,6 @@ const UserSettings = (props: Props) => {
           </div>
         </div>
         <hr />
-
-        <div className="field is-horizontal">
-          <div className="field-label is-normal">
-            <label className="label">Email</label>
-          </div>
-          <div className="field-body">
-            <div className="field">
-              <p className="control">
-                <input
-                  className="input is-static"
-                  type="email"
-                  onChange={() => {}}
-                  value={props.user?.userDetails?.email || "Email not present"}
-                />
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="field is-horizontal">
-          <div className="field-body">
-            <div className="field">
-              <p className="control">
-                <input
-                  className={`input ${!emailValid(email) && "is-danger"}`}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  type="email"
-                  placeholder="New email"
-                />
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="field ">
-          <div className="control">
-            <button
-              disabled={email === "" || !email || !emailValid(email)}
-              className="button is-success is-light is-outlined"
-              onClick={() => {
-                props.changeEmail(email);
-                setEmail("");
-              }}
-            >
-              Save
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

@@ -26,8 +26,12 @@ const news: News[] = [
     id: "5",
     body: (setSeen: (id: string) => void) => (
       <div>
-        You can configure an email address if you lose your password and would
-        like to change it. Go to the settings page to change your email.
+        In the settings page you can configure your email address to be used if
+        you loose your password.
+        <br />
+        You also have the choice between two scoring modes, detailed and simple.
+        It is recomended to turn on detailed scoring to get the most out of
+        discman.live
         <br />
         <Link to="/settings" onClick={() => setSeen("5")}>
           {" "}

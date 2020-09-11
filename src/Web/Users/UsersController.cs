@@ -132,6 +132,13 @@ namespace Web.Users
             var user = await _mediator.Send(req);
             return Ok(user);
         }
+        
+        [HttpPost("simpleScoring")]
+        public async Task<IActionResult> SetSimpleScoring([FromBody] SetSimpleScoringCommand req)
+        {
+            var user = await _mediator.Send(req);
+            return Ok(user);
+        }
 
         [HttpPost("friends")]
         public async Task<IActionResult> AddFriend([FromBody] AddFriendsRequest req)
