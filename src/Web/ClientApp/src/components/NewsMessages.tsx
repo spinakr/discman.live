@@ -23,7 +23,7 @@ type Props = PropsFromRedux & {};
 
 const news: News[] = [
   {
-    id: "5",
+    id: "10",
     body: (setSeen: (id: string) => void) => (
       <div>
         In the settings page you can configure your email address to be used if
