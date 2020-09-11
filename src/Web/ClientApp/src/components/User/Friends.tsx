@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect } from "react";
+import React from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
@@ -19,10 +19,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserComponent = (props: Props) => {
-  const { fetchUsers } = props;
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
   return (
     <div>
       <h2 className="title is-2 has-text-centered">Friends</h2>
@@ -33,7 +29,7 @@ const UserComponent = (props: Props) => {
           <hr />
         </div>
         <div className="panel has-text-centered">
-          {props.user?.friendUsers.map((f) => {
+          {props.user?.userDetails?.friends.map((f) => {
             return (
               <Link to={`users/${f}`} key={f} className="panel-block">
                 {f}

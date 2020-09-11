@@ -89,7 +89,7 @@ const UserSettings = (props: Props) => {
                   className="input is-static"
                   type="email"
                   onChange={() => {}}
-                  value={props.user?.user?.email || "Email not present"}
+                  value={props.user?.userDetails?.email || "Email not present"}
                 />
               </p>
             </div>

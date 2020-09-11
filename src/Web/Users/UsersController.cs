@@ -119,8 +119,15 @@ namespace Web.Users
             return Ok();
         }
         
-        [HttpPut("{username}/email")]
+        [HttpPut("email")]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailCommand req)
+        {
+            var user = await _mediator.Send(req);
+            return Ok(user);
+        }
+        
+        [HttpPost("newsSeen")]
+        public async Task<IActionResult> SetNewsSeen([FromBody] SetNewsSeenCommand req)
         {
             var user = await _mediator.Send(req);
             return Ok(user);
@@ -132,11 +139,11 @@ namespace Web.Users
             await _mediator.Send(new AddFriendCommand {Username = req.Username});
             return Ok();
         }
-
-        [HttpGet("friends")]
-        public async Task<IActionResult> GetFriendsOf()
+        
+        [HttpGet("details")]
+        public async Task<IActionResult> GetUserDetails()
         {
-            return Ok(await _mediator.Send(new GetUserFriendsQuery()));
+            return Ok(await _mediator.Send(new GetUserDetailsQuery()));
         }
     }
 

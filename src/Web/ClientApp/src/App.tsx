@@ -12,21 +12,41 @@ import Tournaments from "./components/Tournaments/Tournaments";
 import UserSettings from "./components/User/UserSettings";
 import ResetPassword from "./components/User/ResetPassword";
 import About from "./components/About";
+import { ApplicationState } from "./store";
+import { actionCreators as usersActionCreators } from "./store/User";
+import { connect, ConnectedProps } from "react-redux";
 
 export interface AppCompProps {
   token: string | undefined;
 }
 export interface AppCompState {
   hasError: boolean;
+  detailsFetched: Date | null;
 }
 
-export class App extends React.PureComponent<AppCompProps, AppCompState> {
-  constructor(props: AppCompProps) {
+const mapState = (state: ApplicationState) => {
+  return {
+    user: state.user,
+  };
+};
+
+const connector = connect(mapState, usersActionCreators);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & AppCompProps;
+
+export class App extends React.PureComponent<Props, AppCompState> {
+  constructor(props: Props) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, detailsFetched: null };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    if (this.props.user?.loggedIn) {
+      this.props.fetchUserDetails();
+    }
+  }
 
   componentDidCatch(error: any, errorInfo: any) {
     if (this.props.token) {
@@ -79,4 +99,4 @@ export class App extends React.PureComponent<AppCompProps, AppCompState> {
     );
   }
 }
-export default App;
+export default connector(App);

@@ -7,7 +7,7 @@ import { actionCreators as tournamentsActionCreator } from "../../store/Tourname
 const mapState = (state: ApplicationState) => {
   return {
     courses: state.courses?.courses,
-    friends: state.user?.friendUsers,
+    friends: state.user?.userDetails?.friends,
     username: state.user?.user?.username || "",
   };
 };

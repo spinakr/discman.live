@@ -1,37 +1,36 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Web.Matches;
-using Web.Rounds;
 
 namespace Web.Users.Queries
 {
-    public class GetUserFriendsQuery : IRequest<List<string>>
+    public class GetUserDetailsQuery : IRequest<UserDetails>
     {
     }
-    
-    public class GetUserFriendsQueryHandler: IRequestHandler<GetUserFriendsQuery, List<string>>
+
+    public class GetUserDetailsQueryHandler: IRequestHandler<GetUserDetailsQuery, UserDetails>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
-        public GetUserFriendsQueryHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
+        public GetUserDetailsQueryHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
         
-        public async Task<List<string>> Handle(GetUserFriendsQuery request, CancellationToken cancellationToken)
+        public async Task<UserDetails> Handle(GetUserDetailsQuery request, CancellationToken cancellationToken)
         {
             var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername, token: cancellationToken);
-            return user.Friends;
+            return _mapper.Map<UserDetails>(user);
         }
     }
 }

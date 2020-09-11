@@ -7,7 +7,6 @@ import { Round } from "./Rounds";
 export interface User {
   username: string;
   token: string;
-  email: string;
 }
 export interface UserStats {
   roundsPlayed: number;
@@ -18,6 +17,13 @@ export interface UserStats {
   onePutRate: number;
   averageScore: number;
   strokesGained: number;
+}
+
+export interface UserDetails {
+  email: string;
+  simpleScoring: boolean;
+  newsIdsSeen: string[];
+  friends: string[];
 }
 
 export interface UserAchievement {
@@ -33,8 +39,8 @@ export interface GroupedAchievement {
 export interface UserState {
   loggedIn: boolean;
   user: User | null;
+  userDetails: UserDetails | null;
   failedLoginMessage: string | null;
-  friendUsers: string[];
   userStats: UserStats | null;
   userRounds: PagedRounds | null;
   roundInProgress: Round | null;
@@ -98,11 +104,6 @@ export interface FetchUserAchievementsSuccessAction {
   achievements: GroupedAchievement[];
 }
 
-export interface FetchFriendUsersSuccessAction {
-  type: "FETCH_FRIEND_USERS_SUCCEED";
-  friends: string[];
-}
-
 export interface FetchUserRoundsSuccessAction {
   type: "FETCH_USER_ROUNDS_SUCCEED";
   pagedRounds: PagedRounds;
@@ -127,7 +128,7 @@ export interface ChangePasswordSuccessAction {
 
 export interface ChangeEmailSuccessAction {
   type: "CHANGE_EMAIL_SUCCESS";
-  user: User;
+  email: string;
 }
 
 export interface FetchUserStatsSuccessAction {
@@ -144,6 +145,16 @@ export interface FetchOtherUserSuccessAction {
   username: string;
 }
 
+export interface SetNewsSeenSuccessAction {
+  type: "NEWS_SEEN_SUCCESS";
+  newsId: string;
+}
+
+export interface FetchUserDetailsSuccessAction {
+  type: "FETCH_USER_DETAILS_SUCCESS";
+  userDetails: UserDetails;
+}
+
 export interface LikeToggledAction {
   type: "LIKE_TOGGLED";
   id: string;
@@ -157,8 +168,8 @@ export type KnownAction =
   | CallHistoryMethodAction
   | LoginSuccessAction
   | LoginFailedAction
-  | FetchFriendUsersSuccessAction
   | LogUserOutAction
+  | SetNewsSeenSuccessAction
   | FriendAddedSuccessAction
   | FetchUserStatsSuccessAction
   | FetchUserRoundsSuccessAction
@@ -167,6 +178,7 @@ export type KnownAction =
   | ChangeEmailSuccessAction
   | SearchUsersSuccessAction
   | SpectatorJoindAction
+  | FetchUserDetailsSuccessAction
   | ChangePasswordSuccessAction
   | LikeToggledAction
   | FetchFeedSuccessAction
@@ -180,10 +192,10 @@ if (userString) {
 }
 const initialState: UserState = user
   ? {
+      userDetails: null,
       loggedIn: true,
       user,
       failedLoginMessage: null,
-      friendUsers: [],
       userStats: null,
       userRounds: null,
       userAchievements: [],
@@ -193,9 +205,9 @@ const initialState: UserState = user
     }
   : {
       loggedIn: false,
+      userDetails: null,
       user: null,
       failedLoginMessage: null,
-      friendUsers: [],
       userStats: null,
       userRounds: null,
       userAchievements: [],
@@ -311,6 +323,36 @@ export const actionCreators = {
         }, 2000);
       });
   },
+  setNewsSeen: (newsId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/newsSeen`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({ newsId }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((data) => {
+        dispatch({ type: "NEWS_SEEN_SUCCESS", newsId: newsId });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Set news seen failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   setPassword: (
     newPassword: string,
     resetId: string
@@ -380,7 +422,7 @@ export const actionCreators = {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/users/${appState.user.user.username}/email`, {
+    fetch(`api/users/email`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -392,38 +434,13 @@ export const actionCreators = {
     })
       .then((res) => {
         if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res.json() as Promise<User>;
+        return res.text() as Promise<string>;
       })
       .then((data) => {
         if (!data) return;
         dispatch({
           type: "CHANGE_EMAIL_SUCCESS",
-          user: data,
-        });
-        localStorage.setItem("user", JSON.stringify(data));
-      });
-  },
-  fetchUsers: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
-    fetch(`api/users/friends`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
-      .then((response) => {
-        if (response.ok && response.status !== 204) {
-          return response.json() as Promise<string[]>;
-        }
-      })
-      .then((data) => {
-        if (!data) return;
-        dispatch({
-          type: "FETCH_FRIEND_USERS_SUCCEED",
-          friends: data,
+          email: data,
         });
       });
   },
@@ -632,6 +649,38 @@ export const actionCreators = {
         );
       });
   },
+  fetchUserDetails: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    const user = appState.user.user.username;
+    fetch(`api/users/details`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<UserDetails>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        dispatch({
+          type: "FETCH_USER_DETAILS_SUCCESS",
+          userDetails: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch user details failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   fetchUserAchievements: (username?: string): AppThunkAction<KnownAction> => (
     dispatch,
     getState
@@ -701,11 +750,6 @@ export const reducer: Reducer<UserState> = (
         loggedIn: false,
         failedLoginMessage: null,
       };
-    case "FETCH_FRIEND_USERS_SUCCEED":
-      return {
-        ...state,
-        friendUsers: action.friends,
-      };
     case "CLEAR_FEED":
       return {
         ...state,
@@ -714,7 +758,18 @@ export const reducer: Reducer<UserState> = (
     case "CHANGE_EMAIL_SUCCESS":
       return {
         ...state,
-        user: state.user && { ...state.user, email: action.user.email },
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          email: action.email,
+        },
+      };
+    case "NEWS_SEEN_SUCCESS":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          newsIdsSeen: [...state.userDetails.newsIdsSeen, action.newsId],
+        },
       };
     case "FETCH_FEED_SUCCESS":
       return {
@@ -750,7 +805,12 @@ export const reducer: Reducer<UserState> = (
     case "FRIEND_ADDED":
       return {
         ...state,
-        friendUsers: [...state.friendUsers, action.friend],
+        userDetails: state.userDetails
+          ? {
+              ...state.userDetails,
+              friends: [...state.userDetails.friends, action.friend],
+            }
+          : null,
       };
     case "FETCH_USERSTATS_SUCCESS":
       return {
@@ -763,6 +823,11 @@ export const reducer: Reducer<UserState> = (
         userRounds: action.pagedRounds,
         roundInProgress:
           action.pagedRounds.rounds.find((r) => !r.isCompleted) || null,
+      };
+    case "FETCH_USER_DETAILS_SUCCESS":
+      return {
+        ...state,
+        userDetails: action.userDetails,
       };
     case "FETCH_USER_ACHIEVEMENTS_SUCCESS":
       return {

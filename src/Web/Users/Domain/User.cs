@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Web.Rounds;
 
 namespace Web.Users
 {
@@ -20,6 +21,8 @@ namespace Web.Users
             Username = requestUsername;
             Password = hashedPw.Hash;
             Salt = hashedPw.Salt;
+            SimpleScoring = true;
+            NewsIdsSeen = new List<string>();
         }
 
         public Guid Id { get; set; }
@@ -29,6 +32,9 @@ namespace Web.Users
         public List<string> Friends { get; set; }
         public Achievements Achievements { get; set; }
         public string Email { get; set; }
+
+        public bool SimpleScoring { get; set; } = false;
+        public List<string> NewsIdsSeen { get; set; } = new List<string>();
 
         public AuthenticatedUser Authenticated(string secret)
         {
@@ -65,6 +71,12 @@ namespace Web.Users
         public void ChangeEmail(string requestNewEmail)
         {
             Email = requestNewEmail.Trim().ToLowerInvariant();
+        }
+
+        public void SetNewsSeen(string requestNewsId)
+        {
+            if(NewsIdsSeen is null) NewsIdsSeen = new List<string>();
+            NewsIdsSeen.Add(requestNewsId);
         }
     }
 }

@@ -10,7 +10,7 @@ import { actionCreators as userActionCreator } from "../store/User";
 const mapState = (state: ApplicationState) => {
   return {
     courses: state.courses?.courses,
-    friends: state.user?.friendUsers,
+    friends: state.user?.userDetails?.friends,
     username: state.user?.user?.username || "",
     searchedUsers: state.user?.searchedUsers || [],
   };

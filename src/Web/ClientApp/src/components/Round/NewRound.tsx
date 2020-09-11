@@ -15,7 +15,7 @@ import InformationDialogue from "../InformationDialogue";
 const mapState = (state: ApplicationState) => {
   return {
     courses: state.courses?.courses,
-    friends: state.user?.friendUsers,
+    friends: state.user?.userDetails?.friends,
     username: state.user?.user?.username || "",
   };
 };
@@ -43,7 +43,7 @@ const NewRound = (props: Props) => {
   const [availableLayouts, setAvailableLayouts] = useState<
     Course[] | undefined
   >(undefined);
-  const { fetchCourses, fetchUsers } = props;
+  const { fetchCourses } = props;
   const courseSelected = (courseName: string) => {
     if (!props.courses) return;
     setSelectedCourse(courseName);
@@ -76,8 +76,7 @@ const NewRound = (props: Props) => {
 
   useEffect(() => {
     showDialog && fetchCourses("");
-    showDialog && fetchUsers();
-  }, [fetchCourses, fetchUsers, showDialog]);
+  }, [fetchCourses, showDialog]);
 
   return (
     <>
@@ -114,23 +113,6 @@ After finishing the round, an actuall course can be created from the registered 
                 />
               </div>
             </div>
-            {/* <div className="field">
-              <div className="control">
-                <div className="select is-primary">
-                  <select
-                    value={scoreType}
-                    onChange={(e) => {
-                      setScoreType(+e.target.value);
-                    }}
-                  >
-                    <option value={ScoreMode.DetailedLive}>
-                      Detailed live
-                    </option>
-                    <option value={ScoreMode.StrokesLive}>Simple live</option>
-                  </select>
-                </div>
-              </div>
-            </div> */}
 
             <label className="label">
               {manualReg ? "Round Name" : "Course"}
@@ -169,20 +151,6 @@ After finishing the round, an actuall course can be created from the registered 
                     </span>
                   ))}
                 </div>
-                {/* <div className="field">
-                  <div className="control">
-                    <div className="select is-grey is-fullwidth is-open">
-                      <select onChange={(e) => courseSelected(e.target.value)}>
-                        <option></option>
-                        {props.courses?.map((c) => (
-                          <option key={c[0]} value={c[0]}>
-                            {c[0]}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div> */}
                 {availableLayouts &&
                   availableLayouts.length > 0 &&
                   availableLayouts[1] && (

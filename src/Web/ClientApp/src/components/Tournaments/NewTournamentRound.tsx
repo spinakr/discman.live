@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import { actionCreators as loginActionCreator } from "../../store/User";
@@ -10,7 +10,7 @@ import { CourseInfo } from "../../store/Tournaments";
 
 const mapState = (state: ApplicationState) => {
   return {
-    friends: state.user?.friendUsers,
+    friends: state.user?.userDetails?.friends,
     username: state.user?.user?.username || "",
   };
 };
@@ -27,7 +27,6 @@ type Props = PropsFromRedux & { selectedCourse: CourseInfo };
 const NewTournamentRound = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
-  const { fetchUsers } = props;
   const playerAdded = (playerName: string) => {
     if (selectedPlayers.some((p) => p === playerName)) return;
     setSelectedPlayers([...selectedPlayers, playerName]);
@@ -35,10 +34,6 @@ const NewTournamentRound = (props: Props) => {
   const removePlayer = (playerName: string) => {
     setSelectedPlayers(selectedPlayers.filter((p) => p !== playerName));
   };
-
-  useEffect(() => {
-    showDialog && fetchUsers();
-  }, [fetchUsers, showDialog]);
 
   return (
     <>

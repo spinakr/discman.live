@@ -10,32 +10,32 @@ using Microsoft.Extensions.Configuration;
 
 namespace Web.Users.Commands
 {
-    public class ChangeEmailCommand : IRequest<string>
+    public class SetNewsSeenCommand : IRequest
     {
-        public string NewEmail { get; set; }
+        public string NewsId { get; set; }
     }
     
-    public class ChangeEmailCommandHandler : IRequestHandler<ChangeEmailCommand, string>
+    public class SetNewsSeenCommandHandler : IRequestHandler<SetNewsSeenCommand>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ChangeEmailCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
+        public SetNewsSeenCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
         }
         
-        public async Task<string> Handle(ChangeEmailCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(SetNewsSeenCommand request, CancellationToken cancellationToken)
         {
             var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername, token: cancellationToken);
-            
-            user.ChangeEmail(request.NewEmail);
+
+            user.SetNewsSeen(request.NewsId);
 
             _documentSession.Update(user);
             await _documentSession.SaveChangesAsync(cancellationToken);
-            return user.Email;
+            return Unit.Value;
         }
     }
 }
