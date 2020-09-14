@@ -23,13 +23,15 @@ namespace Web.Users
             Salt = hashedPw.Salt;
             SimpleScoring = true;
             NewsIdsSeen = new List<string>();
+            Friends = new List<string>();
+            Achievements = new Achievements();
         }
 
         public Guid Id { get; set; }
         public string Username { get; set; }
         public byte[] Password { get; set; }
         public byte[] Salt { get; set; }
-        public List<string> Friends { get; set; }
+        public List<string> Friends { get; set; } 
         public Achievements Achievements { get; set; }
         public string Email { get; set; }
 

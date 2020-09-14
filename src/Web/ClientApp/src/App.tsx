@@ -15,6 +15,7 @@ import About from "./components/About";
 import { ApplicationState } from "./store";
 import { actionCreators as usersActionCreators } from "./store/User";
 import { connect, ConnectedProps } from "react-redux";
+import NewsMessages from "./components/NewsMessages";
 
 export interface AppCompProps {
   token: string | undefined;

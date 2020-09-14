@@ -257,7 +257,7 @@ export const actionCreators = {
         if (response.ok) {
           return response.json() as Promise<User>;
         }
-        throw new Error("No joy!");
+        throw new Error("Error creating user");
       })
       .then((data) => {
         dispatch({
@@ -265,7 +265,7 @@ export const actionCreators = {
           user: data,
         });
         localStorage.setItem("user", JSON.stringify(data));
-        dispatch(push("/settings"));
+        actionCreators.fetchUserDetails()(dispatch, getState);
       })
       .catch((err: Error) => {
         dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });

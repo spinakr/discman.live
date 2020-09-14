@@ -9,6 +9,7 @@ namespace Web.Feeds.Domain
         Hole,
         Achievement,
         Tournament,
-        Friend
+        Friend,
+        User
     }
 }

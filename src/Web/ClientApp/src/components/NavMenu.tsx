@@ -156,34 +156,6 @@ const NavMenu = (props: Props) => {
 
                     {props.user?.user?.username === props.round?.createdBy && (
                       <>
-                        {props.round.scoreMode === ScoreMode.DetailedLive && (
-                          <span
-                            className="panel-block"
-                            onClick={() => {
-                              setOpen(false);
-                              props.setScoringMode(ScoreMode.StrokesLive);
-                            }}
-                          >
-                            <span className="panel-icon">
-                              <i className="fas fa-lg fa-toggle-off"></i>
-                            </span>
-                            &nbsp; Simple scoring
-                          </span>
-                        )}
-                        {props.round.scoreMode === ScoreMode.StrokesLive && (
-                          <span
-                            className="panel-block"
-                            onClick={() => {
-                              setOpen(false);
-                              props.setScoringMode(ScoreMode.DetailedLive);
-                            }}
-                          >
-                            <span className="panel-icon">
-                              <i className="fas fa-lg fa-toggle-off"></i>
-                            </span>
-                            &nbsp; Detailed scoring
-                          </span>
-                        )}
                         <span
                           className="panel-block has-text-danger"
                           onClick={() => setConfirmSkipHole(true)}

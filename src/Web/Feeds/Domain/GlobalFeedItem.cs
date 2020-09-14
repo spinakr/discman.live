@@ -34,6 +34,7 @@ namespace Web.Feeds.Domain
         Completed,
         Started,
         Joined,
-        Added
+        Added,
+        Created
     }
 }

@@ -52,7 +52,7 @@ namespace Web.Users.Queries
             var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
             if (roundsPlayed == 0 || holesWithDetails.Count == 0)
             {
-                return null;
+                return new UserStats(0, 0 ,0, 0, 0, 0, 0, 0);
             }
 
             var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == username)).ToList();

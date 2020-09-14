@@ -26,8 +26,8 @@ export default ({ round, swipeHandlers }: RoundPricesProps) => {
   const mostPars = mostBetterThan(round, (s) => s.relativeToPar === 0);
   const mostBogies = mostBetterThan(round, (s) => s.relativeToPar > 0);
   return (
-    <div className="columns is-centered" {...swipeHandlers}>
-      <div className="column is-10 px-5">
+    <div className="columns section is-centered py-0" {...swipeHandlers}>
+      <div className="column is-one-third">
         {mostBirdies && (
           <div className="box column has-background-success-light has-text-centered">
             Most birdies:

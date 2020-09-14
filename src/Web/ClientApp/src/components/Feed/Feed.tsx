@@ -59,6 +59,8 @@ const getIcon = (item: UserStore.FeedItem) => {
       return <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>;
     case "Friend":
       return <i className="fas fa-lg fa-user-friends" aria-hidden="true"></i>;
+    case "User":
+      return <i className="fas fa-lg fa-user" aria-hidden="true"></i>;
   }
 };
 
@@ -75,6 +77,15 @@ const getScoreName = (relativeScore: number) => {
 
 const getText = (item: UserStore.FeedItem) => {
   switch (item.itemType) {
+    case "User":
+      return (
+        <span>
+          <p className="is-size-7">
+            {item.subjects[0]} started using <strong>discman.live</strong> - add
+            your <Link to="/friends">friends</Link> and start a round!
+          </p>
+        </span>
+      );
     case "Round":
       return (
         <span>
@@ -157,6 +168,8 @@ const getUri = (item: UserStore.FeedItem) => {
       return `/tournaments/${item.tournamentId}`;
     case "Friend":
       return `/users/${item.friendName}`;
+    case "User":
+      return `/user`;
     default:
       return `/rounds/${item.roundId}`;
   }

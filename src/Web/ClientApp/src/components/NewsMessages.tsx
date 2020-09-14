@@ -11,7 +11,7 @@ export interface News {
 
 const mapState = (state: ApplicationState) => {
   return {
-    newsSeen: state.user?.userDetails?.newsIdsSeen,
+    user: state.user,
   };
 };
 
@@ -29,12 +29,13 @@ const news: News[] = [
         In the settings page you can configure your email address to be used if
         you loose your password.
         <br />
+        <br />
         You also have the choice between two scoring modes, detailed and simple.
         It is recomended to turn on detailed scoring to get the most out of
         discman.live
         <br />
-        <Link to="/settings" onClick={() => setSeen("5")}>
-          {" "}
+        <br />
+        <Link to="/settings" onClick={() => setSeen("10")}>
           Close and go to settings page
         </Link>
       </div>
@@ -43,14 +44,10 @@ const news: News[] = [
 ];
 
 const NewsMessages = (props: Props) => {
-  const [toDisplay, setToDisplay] = useState<News[] | null>(null);
-  useEffect(() => {
-    const seenMsgs = props.newsSeen;
-    const tmp = news.filter(
-      (n) => !seenMsgs || !seenMsgs?.some((m) => m === n.id)
-    );
-    setToDisplay(tmp);
-  }, [props.newsSeen]);
+  const seenMsgs = props.user?.userDetails?.newsIdsSeen;
+  const toDisplay = seenMsgs
+    ? news.filter((n) => !seenMsgs?.some((m) => m === n.id))
+    : news;
 
   const setSeen = (id: string) => {
     props.setNewsSeen(id);
@@ -59,7 +56,7 @@ const NewsMessages = (props: Props) => {
   return (
     <>
       {toDisplay &&
-        props.newsSeen &&
+        seenMsgs &&
         toDisplay.map((m, i) => (
           <div className="modal is-active" key={m.id}>
             <div className="modal-background  "></div>

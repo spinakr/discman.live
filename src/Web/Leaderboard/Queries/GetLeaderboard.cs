@@ -57,6 +57,8 @@ namespace Web.Leaderboard.Queries
 
             var roundsThisMonth = rounds
                 .Where(r => r.StartTime.Year == DateTime.Now.Year && (month == 0 || r.StartTime.Month == month)).ToList();
+            
+            if(!roundsThisMonth.Any()) return new List<PlayerStats>();
 
             var playersStats = roundsThisMonth
                 .CalculatePlayerStats()
