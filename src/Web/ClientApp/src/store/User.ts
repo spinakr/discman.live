@@ -849,6 +849,7 @@ export const reducer: Reducer<UserState> = (
     case "FRIEND_ADDED":
       return {
         ...state,
+        searchedUsers: state.searchedUsers.filter((u) => u !== action.friend),
         userDetails: state.userDetails
           ? {
               ...state.userDetails,
@@ -881,7 +882,9 @@ export const reducer: Reducer<UserState> = (
     case "SEARCH_USERS_SUCCESS":
       return {
         ...state,
-        searchedUsers: action.users,
+        searchedUsers: action.users.filter(
+          (u) => !state.userDetails?.friends.some((f) => f === u)
+        ),
       };
     default:
       return state;

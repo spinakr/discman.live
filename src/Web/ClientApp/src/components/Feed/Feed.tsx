@@ -82,7 +82,7 @@ const getText = (item: UserStore.FeedItem) => {
         <span>
           <p className="is-size-7">
             {item.subjects[0]} started using <strong>discman.live</strong> - add
-            your <Link to="/friends">friends</Link> and start a round!
+            your friends and start playing!
           </p>
         </span>
       );
