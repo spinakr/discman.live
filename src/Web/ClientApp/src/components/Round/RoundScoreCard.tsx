@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
-import { Round } from "../../store/Rounds";
+import { Round, PlayerCourseStats } from "../../store/Rounds";
 
 export interface ScoreCardProps {
   username: string;
   round: Round;
   activeHole: number;
   setActiveHole: (hole: number) => void;
+  playersStats: PlayerCourseStats[];
   closeDialog: () => void;
 }
 
@@ -15,6 +16,7 @@ const RoundScoreCard = ({
   activeHole,
   setActiveHole,
   closeDialog,
+  playersStats,
 }: ScoreCardProps) => {
   const tableRef = React.createRef<HTMLDivElement>();
   useEffect(() => {
@@ -24,6 +26,7 @@ const RoundScoreCard = ({
       if (activeHole > 15) tableRef.current.scrollLeft = 600;
     }
   });
+  const playerStats = playersStats.find((s) => s.playerName === username);
 
   return (
     <div className="columns is-marginless is-paddingless is-mobile">
@@ -86,6 +89,14 @@ const RoundScoreCard = ({
                   className={s.hole.number === activeHole ? "is-selected" : ""}
                 >
                   {s.hole.number}
+                  {playerStats &&
+                    playerStats.holeStats.find(
+                      (s) => s.holeNumber === activeHole
+                    )?.birdie && (
+                      <span className="icon is-small">
+                        <i className="fas fa-dove"></i>
+                      </span>
+                    )}
                 </th>
               ))}
             </tr>

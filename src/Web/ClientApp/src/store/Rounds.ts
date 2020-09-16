@@ -47,6 +47,14 @@ export interface PlayerCourseStats {
   holeAverages: number[];
   averagePrediction: number[];
   roundsPlayed: string;
+  holeStats: HoleStats[];
+}
+
+export interface HoleStats {
+  holeNumber: number;
+  bestScore: number;
+  averageScore: number;
+  birdie: boolean;
 }
 
 export interface PlayerRoundProgression {

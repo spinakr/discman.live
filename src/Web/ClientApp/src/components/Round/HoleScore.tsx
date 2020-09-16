@@ -1,11 +1,12 @@
 import React from "react";
-import { Round } from "../../store/Rounds";
+import { Round, PlayerCourseStats } from "../../store/Rounds";
 
 export interface ScoreCardProps {
   username: string;
   round: Round;
   activeHole: number;
   setActiveHole: (hole: number) => void;
+  playersStats: PlayerCourseStats[];
 }
 
 const HoleScoreComponent = ({
@@ -13,6 +14,7 @@ const HoleScoreComponent = ({
   round,
   activeHole,
   setActiveHole,
+  playersStats,
 }: ScoreCardProps) => {
   const playerScores =
     round.playerScores.find((p) => p.playerName === username)?.scores ||
@@ -20,10 +22,28 @@ const HoleScoreComponent = ({
 
   const holeScore = playerScores.find((s) => s.hole.number === activeHole);
 
+  const playerStats = playersStats.find((s) => s.playerName === username);
+  const playersBirdies = playersStats.map((p) => {
+    return {
+      name: p.playerName,
+      holeBirdied: p.holeStats.find((h) => h.holeNumber === activeHole)?.birdie,
+    };
+  });
+
+  console.log(playersBirdies);
+  const holeStats =
+    playerStats?.holeStats &&
+    playerStats.holeStats.find((s) => s.holeNumber === activeHole);
+
   return (
     <div className="pt-2">
       <h2 className="subtitle has-text-centered">
-        Hole {holeScore?.hole.number}
+        {holeStats && holeStats.birdie && (
+          <span className="icon is-small">
+            <i className="fas fa-dove"></i>
+          </span>
+        )}
+        &nbsp;Hole {holeScore?.hole.number}
       </h2>
       <div className="tour-stats">
         <div className="columns is-centered is-mobile">
@@ -72,6 +92,12 @@ const HoleScoreComponent = ({
                     return total + score.relativeToPar;
                   }, 0)}
                   )
+                  {playersBirdies.find((x) => x.name === p.playerName)
+                    ?.holeBirdied && (
+                    <span className="icon is-small">
+                      <i className="fas fa-dove"></i>
+                    </span>
+                  )}
                 </th>
               ))}
             </tr>

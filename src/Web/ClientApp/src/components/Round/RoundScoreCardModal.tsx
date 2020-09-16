@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Round } from "../../store/Rounds";
+import { Round, PlayerCourseStats } from "../../store/Rounds";
 import RoundScoreCard from "./RoundScoreCard";
 
 export interface ScoreCardModalProps {
@@ -7,6 +7,7 @@ export interface ScoreCardModalProps {
   round: Round;
   activeHole: number;
   setActiveHole: (hole: number) => void;
+  playersStats: PlayerCourseStats[];
   closeDialog: () => void;
 }
 
@@ -16,6 +17,7 @@ const RoundScoreCardModal = ({
   activeHole,
   setActiveHole,
   closeDialog,
+  playersStats,
 }: ScoreCardModalProps) => {
   const tableRef = React.createRef<HTMLDivElement>();
   useEffect(() => {
@@ -42,6 +44,7 @@ const RoundScoreCardModal = ({
             activeHole={activeHole}
             setActiveHole={setActiveHole}
             closeDialog={closeDialog}
+            playersStats={playersStats}
           />
         </div>
         <footer className="modal-card-foot"></footer>

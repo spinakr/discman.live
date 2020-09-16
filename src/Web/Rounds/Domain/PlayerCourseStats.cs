@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Web.Rounds.Queries;
 
 namespace Web.Rounds
 {
@@ -13,5 +14,6 @@ namespace Web.Rounds
         public List<double> HoleAverages { get; set; }
         public List<double> AveragePrediction { get; set; }
         public int RoundsPlayed { get; set; }
+        public List<HoleStats> HoleStats { get; set; }
     }
 }

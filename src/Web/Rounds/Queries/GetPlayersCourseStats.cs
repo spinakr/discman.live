@@ -22,7 +22,7 @@ namespace Web.Rounds.Queries
         {
             _documentSession = documentSession;
         }
-        
+
         public async Task<List<PlayerCourseStats>> Handle(GetPlayersCourseStatsQuery request, CancellationToken cancellationToken)
         {
             var activeRound = await _documentSession
@@ -33,7 +33,7 @@ namespace Web.Rounds.Queries
             {
                 return new List<PlayerCourseStats>();
             }
-            
+
             var courseName = activeRound.CourseName;
             var layoutName = activeRound.CourseLayout;
             var players = activeRound.PlayerScores.Select(p => p.PlayerName);
@@ -52,8 +52,17 @@ namespace Web.Rounds.Queries
                     .Where(r => r.PlayerScores.Any(s => s.PlayerName == player))
                     .ToList();
 
-                var playerHoleScores = playerRounds.SelectMany(r => r.PlayerScores.Single(p => p.PlayerName == player).Scores);
-                var bestSCores = playerHoleScores.GroupBy(x => x.Hole.Number).Select(x => x.Min(y => y.RelativeToPar));
+                var playerHoleScores = playerRounds.SelectMany(r => r.PlayerScores.Single(p => p.PlayerName == player).Scores).ToList();
+
+                var holeStats = playerHoleScores.Any()
+                    ? playerHoleScores.GroupBy(x => x.Hole.Number).Select(x => new HoleStats
+                    {
+                        HoleNumber = x.Key,
+                        AverageScore = x.Average(s => s.Strokes),
+                        BestScore = x.Min(s => s.RelativeToPar),
+                        Birdie = x.Any(s => s.RelativeToPar == -1)
+                    }).ToList()
+                    : new List<HoleStats>();
 
                 var playerCourseRecord = playerRounds.Any() ? playerRounds.Select(r => r.PlayerScore(player)).Min() : (int?) null;
 
@@ -78,6 +87,7 @@ namespace Web.Rounds.Queries
                     .GroupBy(s => s.Hole.Number)
                     .ToDictionary(x => x.Key.ToString(), x => x.Average(y => y.RelativeToPar));
 
+                // Total score for each hole, as a list of totals, one per hole
                 var progressionDataPoints = playerHoleAverages.Scan((state, item) => state + item.Value, 0.0).Skip(1).ToList();
 
                 playersStats.Add(new PlayerCourseStats
@@ -90,11 +100,20 @@ namespace Web.Rounds.Queries
                     ThisRoundVsAverage = thisRound - currentCourseAverage,
                     HoleAverages = playerHoleAverages.Select(x => x.Value).ToList(),
                     AveragePrediction = progressionDataPoints,
-                    RoundsPlayed = playerRounds.Count
+                    RoundsPlayed = playerRounds.Count,
+                    HoleStats = holeStats,
                 });
             }
 
             return playersStats.OrderBy(s => s.ThisRoundVsAverage).ToList();
         }
+    }
+
+    public class HoleStats
+    {
+        public int HoleNumber { get; set; }
+        public int BestScore { get; set; }
+        public double AverageScore { get; set; }
+        public bool Birdie { get; set; }
     }
 }

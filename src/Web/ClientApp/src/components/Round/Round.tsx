@@ -17,6 +17,7 @@ const mapState = (state: ApplicationState) => {
   return {
     user: state.user,
     round: state.rounds?.round,
+    playersStats: state.rounds?.playerCourseStats || [],
     scoreCardOpen: state.rounds?.scoreCardOpen,
     activeHole: state.rounds?.activeHole,
   };
@@ -82,6 +83,7 @@ const RoundComponent = (props: Props) => {
               activeHole={activeHole}
               setActiveHole={props.setActiveHole}
               closeDialog={() => props.setScorecardOpen(false)}
+              playersStats={props.playersStats}
             />
           </div>
         ) : (
@@ -90,6 +92,7 @@ const RoundComponent = (props: Props) => {
             round={round}
             activeHole={activeHole}
             setActiveHole={props.setActiveHole}
+            playersStats={props.playersStats}
           />
         )}
         {props.scoreCardOpen && (
@@ -99,6 +102,7 @@ const RoundComponent = (props: Props) => {
             activeHole={activeHole}
             setActiveHole={props.setActiveHole}
             closeDialog={() => props.setScorecardOpen(false)}
+            playersStats={props.playersStats}
           />
         )}
         <hr />
