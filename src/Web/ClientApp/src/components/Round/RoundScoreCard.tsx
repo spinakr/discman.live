@@ -86,12 +86,15 @@ const RoundScoreCard = ({
                     setActiveHole(s.hole.number);
                     closeDialog();
                   }}
-                  className={s.hole.number === activeHole ? "is-selected" : ""}
+                  style={{ whiteSpace: "nowrap" }}
+                  className={
+                    s.hole.number === activeHole ? "is-selected pr-0" : "pr-0"
+                  }
                 >
                   {s.hole.number}
                   {playerStats &&
                     playerStats.holeStats.find(
-                      (s) => s.holeNumber === activeHole
+                      (h) => h.holeNumber === s.hole.number
                     )?.birdie && (
                       <span className="icon is-small">
                         <i className="fas fa-dove"></i>
