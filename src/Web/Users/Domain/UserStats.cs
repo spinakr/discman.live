@@ -4,24 +4,28 @@ namespace Web.Users
     {
         public int RoundsPlayed { get; }
         public int HolesPlayed { get; }
-        public double PutsPerHole { get; }
         public double FairwayHitRate { get; }
         public double ScrambleRate { get; }
-        public double OnePutRate { get; }
+        public double Circle1Rate { get; }
+        public double Circle2Rate { get; }
         public double AverageScore { get; }
         public double StrokesGained { get; }
+        public double BirdieRate { get; set; }
+        public double ObRate { get; set; }
 
-        public UserStats(int roundsPlayed, int holesPlayed, double putsPerHole, double fairwayHitRate, double scrambleRate, double onePutRate,
-            double averageScore, double strokesGained)
+        public UserStats(int roundsPlayed, int holesPlayed, double circle1Rate, double circle2Rate, double fairwayHitRate, double scrambleRate,
+            double averageScore, double strokesGained, double birdieRate, double obRate)
         {
             this.RoundsPlayed = roundsPlayed;
             this.HolesPlayed = holesPlayed;
-            this.PutsPerHole = putsPerHole;
+            this.Circle1Rate = circle1Rate;
+            this.Circle2Rate = circle2Rate;
             this.FairwayHitRate = fairwayHitRate;
             this.ScrambleRate = scrambleRate;
-            this.OnePutRate = onePutRate;
             this.AverageScore = averageScore;
             this.StrokesGained = strokesGained;
+            BirdieRate = birdieRate;
+            ObRate = obRate;
         }
     }
 }

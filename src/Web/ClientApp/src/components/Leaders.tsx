@@ -29,7 +29,7 @@ const Leaders = (props: Props) => {
       {!user?.loggedIn && <Login />}
       {user?.loggedIn && (
         <>
-          <div className="tabs is-centered">
+          <div className="tabs is-fullwidth is-centered">
             <ul>
               <li
                 className={active === 2 ? "is-active" : ""}

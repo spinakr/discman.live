@@ -44,7 +44,7 @@ const GlobalLeaderBoard = (props: Props) => {
   }, [activeMonth, fetchLeaderboard, onlyFriends]);
   return (
     <>
-      <div className="tabs is-centered">
+      <div className="tabs is-small is-centered">
         <ul>
           <li
             className={onlyFriends ? "is-active" : ""}

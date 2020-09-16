@@ -39,7 +39,6 @@ namespace Web.Common.Behaviours
                 var username = _httpContextAccessor.HttpContext?.User?.Claims?.SingleOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
                 Log
-                    .ForContext("Request", request, destructureObjects: true)
                     .Warning("Discman long running request: {RequestName} {ElapsedMilliseconds} {Username}", requestName,
                         elapsedMilliseconds, username);
             }

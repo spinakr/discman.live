@@ -18,7 +18,8 @@ type Props = PropsFromRedux & {};
 
 const UserStatsComponent = (props: Props) => {
   const { username } = useParams();
-  const [statsSince, setStatsSince] = useState(0);
+  const year = new Date().getMonth() + 1;
+  const [statsSince, setStatsSince] = useState(year);
   const { fetchUserStats, user } = props;
   useEffect(() => {
     fetchUserStats(statsSince, username);
@@ -41,9 +42,7 @@ const UserStatsComponent = (props: Props) => {
                 >
                   <option value="1">Last month</option>
                   <option value="3">Last 3 months</option>
-                  <option value={new Date().getMonth() + 1}>
-                    Year to date
-                  </option>
+                  <option value={year}>Year to date</option>
                   <option value="0">All time</option>
                 </select>
               </div>
@@ -77,12 +76,22 @@ const UserStatsComponent = (props: Props) => {
             </div>
             <div className="columns is-centered is-mobile">
               <div className="column has-text-centered">
-                <h6 className="title is-6">Puts/hole</h6>
-                {stats.putsPerHole.toFixed(1)}
+                <h6 className="title is-6">Circle 1 rate</h6>
+                {(stats.circle1Rate * 100).toFixed(0)} %
               </div>
               <div className="column has-text-centered">
-                <h6 className="title is-6">One-put rate</h6>
-                {(stats.onePutRate * 100).toFixed(0)} %
+                <h6 className="title is-6">Circle 2 rate</h6>
+                {(stats.circle2Rate * 100).toFixed(0)} %
+              </div>
+            </div>
+            <div className="columns is-centered is-mobile">
+              <div className="column has-text-centered">
+                <h6 className="title is-6">Birdie rate</h6>
+                {(stats.birdieRate * 100).toFixed(0)} %
+              </div>
+              <div className="column has-text-centered">
+                <h6 className="title is-6">OB rate</h6>
+                {(stats.obRate * 100).toFixed(0)} %
               </div>
             </div>
             <div className="columns is-centered is-mobile">

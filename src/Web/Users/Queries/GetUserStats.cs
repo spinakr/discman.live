@@ -16,8 +16,8 @@ namespace Web.Users.Queries
         public DateTime Since { get; set; }
         public int IncludeMonths { get; set; }
     }
-    
-    public class GetUserStatsQueryHandler: IRequestHandler<GetUserStatsQuery, UserStats>
+
+    public class GetUserStatsQueryHandler : IRequestHandler<GetUserStatsQuery, UserStats>
     {
         private readonly IDocumentSession _documentSession;
         private readonly UserStatsCache _userStatsCache;
@@ -27,7 +27,7 @@ namespace Web.Users.Queries
             _documentSession = documentSession;
             _userStatsCache = userStatsCache;
         }
-        
+
         public async Task<UserStats> Handle(GetUserStatsQuery request, CancellationToken cancellationToken)
         {
             var userStats = await _userStatsCache.GetOrCreate($"{request.Username}{request.Since}{request.IncludeMonths}",
@@ -35,7 +35,7 @@ namespace Web.Users.Queries
 
             return userStats;
         }
-        
+
         private async Task<UserStats> CalculateUserStats(string username, DateTime since, int includeMonths)
         {
             var rounds = await _documentSession
@@ -52,7 +52,7 @@ namespace Web.Users.Queries
             var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
             if (roundsPlayed == 0 || holesWithDetails.Count == 0)
             {
-                return new UserStats(0, 0 ,0, 0, 0, 0, 0, 0);
+                return new UserStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             }
 
             var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == username)).ToList();
@@ -63,13 +63,15 @@ namespace Web.Users.Queries
             var playerRoundAverage = totalScore / (double) playerRounds.Count;
             var strokesGained = playerRoundAverage - totalAverageAllPlayers;
 
-            var putsPerHole = holesWithDetails.PutsPerHole();
+            var circle1Rate = holesWithDetails.Circle1Rate();
+            var circle2Rate = holesWithDetails.Circle2Rate();
             var scrambleRate = holesWithDetails.ScrambleRate();
             var fairwayHitRate = holesWithDetails.FairwayRate();
-            var onePutRate = holesWithDetails.OnePutRate();
+            var birdieRate = holesWithDetails.BirdieRate();
+            var obRate = holesWithDetails.ObRate();
 
-            return new UserStats(roundsPlayed, holesPlayed, putsPerHole, fairwayHitRate, scrambleRate, onePutRate, playerRoundAverage,
-                strokesGained);
+            return new UserStats(roundsPlayed, holesPlayed, circle1Rate, circle2Rate, fairwayHitRate, scrambleRate, playerRoundAverage,
+                strokesGained, birdieRate, obRate);
         }
     }
 }

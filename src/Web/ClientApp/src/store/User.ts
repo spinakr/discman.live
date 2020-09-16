@@ -11,10 +11,12 @@ export interface User {
 export interface UserStats {
   roundsPlayed: number;
   holesPlayed: number;
-  putsPerHole: number;
   fairwayHitRate: number;
   scrambleRate: number;
-  onePutRate: number;
+  circle1Rate: number;
+  circle2Rate: number;
+  obRate: number;
+  birdieRate: number;
   averageScore: number;
   strokesGained: number;
 }

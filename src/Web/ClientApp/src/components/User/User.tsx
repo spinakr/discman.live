@@ -30,7 +30,7 @@ const UserComponent = (props: Props) => {
         {username || props.user?.user?.username}
       </h2>
 
-      <div className="tabs is-centered">
+      <div className="tabs is-small is-fullwidth is-centered">
         <ul>
           <li
             className={active === 1 ? "is-active" : ""}
@@ -39,16 +39,16 @@ const UserComponent = (props: Props) => {
             <a>Rounds</a>
           </li>
           <li
-            className={active === 4 ? "is-active" : ""}
-            onClick={() => setActive(4)}
-          >
-            <a>Tourneys</a>
-          </li>
-          <li
             className={active === 2 ? "is-active" : ""}
             onClick={() => setActive(2)}
           >
             <a>Stats</a>
+          </li>
+          <li
+            className={active === 4 ? "is-active" : ""}
+            onClick={() => setActive(4)}
+          >
+            <a>Tourneys</a>
           </li>
           <li
             className={active === 3 ? "is-active" : ""}

@@ -32,7 +32,6 @@ namespace Web.Common.Behaviours
                 if (authedUser != null) LogContext.PushProperty("Username", authedUser);
                 Log
                     .ForContext("Username", authedUser)
-                    .ForContext("Request", request, destructureObjects: true)
                     .ForContext("Exception", ex, destructureObjects: true)
                     .Error(ex, "Unhandled exception when handling request {RequestName}", requestName);
 

@@ -21,14 +21,42 @@ namespace Web
                 .ToList();
         }
 
-        public static double PutsPerHole(this IReadOnlyList<HoleScore> holes)
+        public static double Circle1Rate(this IReadOnlyList<HoleScore> holes)
+        {
+            var circle1Puts = holes.Sum(s => s.StrokeSpecs.Count(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Circle1));
+            var circle1PutsMade = holes.Sum(s => s.StrokeSpecs.Any(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Circle1) ? 1 : 0);
+
+            if (circle1Puts == 0 || circle1PutsMade == 0) return 0;
+
+            return circle1PutsMade / (double) circle1Puts;
+        }
+
+        public static double Circle2Rate(this IReadOnlyList<HoleScore> holes)
+        {
+            var circle2Puts = holes.Sum(s => s.StrokeSpecs.Count(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Circle2));
+            
+            var circle2PutsMade = holes.Sum(s => 
+                s.StrokeSpecs.Any(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Circle2) && 
+                s.StrokeSpecs.All(spec => spec.Outcome != StrokeSpec.StrokeOutcome.Circle1) 
+                    ? 1 : 0);
+
+            if (circle2Puts == 0 || circle2PutsMade == 0) return 0;
+
+            return circle2PutsMade / (double) circle2Puts ;
+        }
+
+        public static double BirdieRate(this IReadOnlyList<HoleScore> holes)
         {
             var holesPlayed = holes.Count;
+            var birdies = holes.Count(s => s.RelativeToPar == -1);
+            return birdies / (double) holesPlayed;
+        }
 
-            var puts = holes.Sum(s =>
-                s.StrokeSpecs.Count(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Circle1 || spec.Outcome == StrokeSpec.StrokeOutcome.Circle2));
-
-            return puts / (double) holesPlayed;
+        public static double ObRate(this IReadOnlyList<HoleScore> holes)
+        {
+            var strokes = holes.Sum(x => x.StrokeSpecs.Count);
+            var obs = holes.Sum(x => x.StrokeSpecs.Count(s => s.Outcome == StrokeSpec.StrokeOutcome.OB));
+            return obs / (double) strokes;
         }
 
         public static double ScrambleRate(this IReadOnlyList<HoleScore> holes)
@@ -53,16 +81,6 @@ namespace Web
                 s.StrokeSpecs[0].Outcome == StrokeSpec.StrokeOutcome.Circle1 ||
                 s.StrokeSpecs[0].Outcome == StrokeSpec.StrokeOutcome.Circle2);
             return holesPlayed != 0 ? fairwayOnFirst / (double) holesPlayed : 0;
-        }
-
-        public static double OnePutRate(this IReadOnlyList<HoleScore> holes)
-        {
-            var holesPlayed = holes.Count;
-            var onePuts = holes
-                .Count(s => s.StrokeSpecs
-                    .Count(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Circle1 ||
-                                   spec.Outcome == StrokeSpec.StrokeOutcome.Circle2) < 2);
-            return holesPlayed != 0 ? onePuts / (double) holesPlayed : 0;
         }
 
         public static IEnumerable<PlayerStats> CalculatePlayerStats(this IReadOnlyList<Round> rounds)
