@@ -30,6 +30,7 @@ namespace Web.Users
             this.StrokesGained = strokesGained;
             BirdieRate = birdieRate;
             ObRate = obRate;
+            ParRate = parRate;
         }
 
         public static UserStats Empty(string username)
