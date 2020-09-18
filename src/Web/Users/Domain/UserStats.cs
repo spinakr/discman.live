@@ -2,6 +2,7 @@ namespace Web.Users
 {
     public class UserStats
     {
+        public string Username { get; set; }
         public int RoundsPlayed { get; }
         public int HolesPlayed { get; }
         public double FairwayHitRate { get; }
@@ -12,10 +13,13 @@ namespace Web.Users
         public double StrokesGained { get; }
         public double BirdieRate { get; set; }
         public double ObRate { get; set; }
+        public double ParRate { get; set; }
 
-        public UserStats(int roundsPlayed, int holesPlayed, double circle1Rate, double circle2Rate, double fairwayHitRate, double scrambleRate,
-            double averageScore, double strokesGained, double birdieRate, double obRate)
+        public UserStats(string username, int roundsPlayed, int holesPlayed, double circle1Rate, double circle2Rate, double fairwayHitRate,
+            double scrambleRate,
+            double averageScore, double strokesGained, double birdieRate, double obRate, double parRate)
         {
+            Username = username;
             this.RoundsPlayed = roundsPlayed;
             this.HolesPlayed = holesPlayed;
             this.Circle1Rate = circle1Rate;
@@ -26,6 +30,11 @@ namespace Web.Users
             this.StrokesGained = strokesGained;
             BirdieRate = birdieRate;
             ObRate = obRate;
+        }
+
+        public static UserStats Empty(string username)
+        {
+            return new UserStats(username, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
         }
     }
 }

@@ -3,12 +3,15 @@ import React, { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
 import RoundChart from "./RoundChart";
-import RoundPrices from "./RoundPrices";
 import PlayerCourseImprovments from "./PlayerCourseImprovments";
 import RoundAchievements from "./RoundAchievements";
+import RoundStats from "./RoundStats";
+import { UserStats } from "../../store/User";
 
 export interface RoundSummaryProps {
   round: Round;
+  finishedRoundStats: UserStats[];
+  username: string;
 }
 
 const playerTotal = (playerScore: PlayerScore) => {
@@ -17,7 +20,7 @@ const playerTotal = (playerScore: PlayerScore) => {
   }, 0);
 };
 
-export default ({ round }: RoundSummaryProps) => {
+export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
   round.playerScores.sort((a, b) => {
     const atotal = playerTotal(a);
     const btotal = playerTotal(b);
@@ -120,7 +123,7 @@ export default ({ round }: RoundSummaryProps) => {
             className={active === 2 ? "is-active" : ""}
             onClick={() => setActive(2)}
           >
-            <a>Prices</a>
+            <a>Stats</a>
           </li>
           <li
             className={active === 3 ? "is-active" : ""}
@@ -153,7 +156,13 @@ export default ({ round }: RoundSummaryProps) => {
           <div style={{ height: "300px", width: "auto" }} {...handlers}></div>
         </div>
       )}
-      {active === 2 && <RoundPrices round={round} swipeHandlers={handlers} />}
+      {active === 2 && (
+        <RoundStats
+          stats={finishedRoundStats}
+          swipeHandlers={handlers}
+          username={username}
+        />
+      )}
 
       {active === 3 && <RoundChart round={round} swipeHandlers={handlers} />}
 

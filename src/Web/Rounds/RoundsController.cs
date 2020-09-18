@@ -123,9 +123,15 @@ namespace Web.Rounds
                 
             return Ok(newCourse);
         }
-
+        
         [HttpGet("{roundId}/stats")]
-        public async Task<IActionResult> GetRoundStatsOnCourse(Guid roundId)
+        public async Task<IActionResult> GetRoundStats(Guid roundId)
+        {
+            return Ok(await _mediator.Send(new GetRoundStatsQuery {RoundId = roundId}));
+        }
+        
+        [HttpGet("{roundId}/courseStats")]
+        public async Task<IActionResult> GetCourseStatsForRound(Guid roundId)
         {
             return Ok(await _mediator.Send(new GetPlayersCourseStatsQuery {RoundId = roundId}));
         }

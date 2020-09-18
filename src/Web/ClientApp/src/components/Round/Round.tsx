@@ -20,6 +20,7 @@ const mapState = (state: ApplicationState) => {
     playersStats: state.rounds?.playerCourseStats || [],
     scoreCardOpen: state.rounds?.scoreCardOpen,
     activeHole: state.rounds?.activeHole,
+    finishedRoundStats: state.rounds?.finishedRoundStats || [],
   };
 };
 
@@ -62,16 +63,32 @@ const toDateString = (date: Date) => {
 };
 
 const RoundComponent = (props: Props) => {
-  const { round, activeHole, fetchRound, fetchStatsOnCourse } = props;
+  const {
+    round,
+    activeHole,
+    fetchRound,
+    fetchStatsOnCourse,
+    fetchUserStats,
+    finishedRoundStats,
+  } = props;
   let { roundId } = useParams();
+  const roundCompleted = round?.isCompleted;
   useEffect(() => {
+    if (!roundId) return;
     fetchRound(roundId as string);
-    roundId && fetchStatsOnCourse(roundId);
-  }, [fetchRound, fetchStatsOnCourse, roundId]);
+    fetchStatsOnCourse(roundId);
+    roundCompleted && fetchUserStats(roundId);
+  }, [fetchRound, fetchStatsOnCourse, fetchUserStats, roundCompleted, roundId]);
 
   const renderRound = (round: Round, activeHole: number) => {
-    if (round.isCompleted) {
-      return <RoundSummary round={round} />;
+    if (roundCompleted) {
+      return (
+        <RoundSummary
+          round={round}
+          finishedRoundStats={finishedRoundStats}
+          username={props.user?.user?.username || ""}
+        />
+      );
     }
     return (
       <>

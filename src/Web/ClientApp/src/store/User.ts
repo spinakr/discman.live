@@ -9,6 +9,7 @@ export interface User {
   token: string;
 }
 export interface UserStats {
+  username: string;
   roundsPlayed: number;
   holesPlayed: number;
   fairwayHitRate: number;
@@ -17,6 +18,7 @@ export interface UserStats {
   circle2Rate: number;
   obRate: number;
   birdieRate: number;
+  parRate: number;
   averageScore: number;
   strokesGained: number;
 }

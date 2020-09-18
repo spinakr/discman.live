@@ -58,6 +58,13 @@ namespace Web
             var obs = holes.Sum(x => x.StrokeSpecs.Count(s => s.Outcome == StrokeSpec.StrokeOutcome.OB));
             return obs / (double) strokes;
         }
+        
+        public static double ParRate(this IReadOnlyList<HoleScore> holes)
+        {
+            var holesPlayed = holes.Count;
+            var pars = holes.Count(s => s.RelativeToPar == 0);
+            return pars / (double) holesPlayed;
+        }
 
         public static double ScrambleRate(this IReadOnlyList<HoleScore> holes)
         {
@@ -70,7 +77,7 @@ namespace Web
                     .Count(spec => spec.Outcome == StrokeSpec.StrokeOutcome.Rough ||
                                    spec.Outcome == StrokeSpec.StrokeOutcome.OB) > 0) && s.RelativeToPar == 0);
 
-            return holesWithRoughHit != 0 ? scrambles / (double) holesWithRoughHit : 0;
+            return holesWithRoughHit != 0 ? scrambles / (double) holesWithRoughHit : 1;
         }
 
         public static double FairwayRate(this IReadOnlyList<HoleScore> holes)

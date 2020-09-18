@@ -52,7 +52,7 @@ namespace Web.Users.Queries
             var holesPlayed = rounds.Sum(r => r.PlayerScores[0].Scores.Count);
             if (roundsPlayed == 0 || holesWithDetails.Count == 0)
             {
-                return new UserStats(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                return UserStats.Empty(username);
             }
 
             var playerRounds = rounds.Where(r => r.PlayerScores.Any(p => p.PlayerName == username)).ToList();
@@ -69,9 +69,10 @@ namespace Web.Users.Queries
             var fairwayHitRate = holesWithDetails.FairwayRate();
             var birdieRate = holesWithDetails.BirdieRate();
             var obRate = holesWithDetails.ObRate();
+            var parRate = holesWithDetails.ParRate();
 
-            return new UserStats(roundsPlayed, holesPlayed, circle1Rate, circle2Rate, fairwayHitRate, scrambleRate, playerRoundAverage,
-                strokesGained, birdieRate, obRate);
+            return new UserStats(username, roundsPlayed, holesPlayed, circle1Rate, circle2Rate, fairwayHitRate, scrambleRate, playerRoundAverage,
+                strokesGained, birdieRate, obRate, parRate);
         }
     }
 }

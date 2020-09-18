@@ -5,7 +5,11 @@ import { push, CallHistoryMethodAction } from "connected-react-router";
 import { hub } from "./configureStore";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as notificationActions } from "./Notifications";
-import { actionCreators as UserActions, UserAchievement } from "./User";
+import {
+  actionCreators as UserActions,
+  UserAchievement,
+  UserStats,
+} from "./User";
 
 export interface Hole {
   number: number;
@@ -92,6 +96,7 @@ export interface RoundsState {
   activeHole: number;
   playerCourseStats: PlayerCourseStats[] | null;
   scoreCardOpen: boolean;
+  finishedRoundStats: UserStats[];
 }
 
 //Actions
@@ -118,6 +123,11 @@ export interface RoundWasUpdatedAction {
 export interface ScoreUpdatedSuccessAction {
   type: "SCORE_UPDATED_SUCCESS";
   round: Round;
+}
+
+export interface FetchRoundStatsSuccessAction {
+  type: "FETCH_ROUND_STATS_SUCCESS";
+  userStats: UserStats[];
 }
 
 export interface SpectatorJoinedAction {
@@ -182,6 +192,7 @@ export type KnownAction =
   | SpectatorJoinedAction
   | RoundWasDeletedAction
   | SpectatorLeftAction
+  | FetchRoundStatsSuccessAction
   | CourseWasSavedAction;
 
 const fetchRound = (
@@ -226,6 +237,7 @@ const initialState: RoundsState = {
   activeHole: 1,
   playerCourseStats: null,
   scoreCardOpen: false,
+  finishedRoundStats: [],
 };
 
 export const actionCreators = {
@@ -280,7 +292,7 @@ export const actionCreators = {
         );
       });
   },
-  fetchStatsOnCourse: (roundId: string): AppThunkAction<KnownAction> => (
+  fetchUserStats: (roundId: string): AppThunkAction<KnownAction> => (
     dispatch,
     getState
   ) => {
@@ -288,6 +300,39 @@ export const actionCreators = {
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
     fetch(`api/rounds/${roundId}/stats`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => response.json() as Promise<UserStats[]>)
+      .then((data) => {
+        dispatch({
+          type: "FETCH_ROUND_STATS_SUCCESS",
+          userStats: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch round stats failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
+  fetchStatsOnCourse: (roundId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/rounds/${roundId}/courseStats`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -730,6 +775,8 @@ export const reducer: Reducer<RoundsState> = (
       };
     case "NEW_ROUND_CREATED":
       return { ...state, round: action.round };
+    case "FETCH_ROUND_STATS_SUCCESS":
+      return { ...state, finishedRoundStats: action.userStats };
     case "SCORE_UPDATED_SUCCESS":
       return {
         ...state,
