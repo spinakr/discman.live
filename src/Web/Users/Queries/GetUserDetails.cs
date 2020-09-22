@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -6,6 +7,7 @@ using AutoMapper;
 using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Web.Rounds;
 
 namespace Web.Users.Queries
 {
@@ -30,7 +32,19 @@ namespace Web.Users.Queries
         {
             var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == authenticatedUsername, token: cancellationToken);
-            return _mapper.Map<UserDetails>(user);
+            var details = _mapper.Map<UserDetails>(user);
+            
+            
+            var activeRound = await _documentSession
+                .Query<Round>()
+                .Where(r => !r.Deleted)
+                .Where(r => !r.IsCompleted)
+                .Where(r => r.PlayerScores.Any(s => s.PlayerName == authenticatedUsername))
+                .FirstOrDefaultAsync( token: cancellationToken);
+
+            if (activeRound != null) details.ActiveRound = activeRound.Id;
+            
+            return details;
         }
     }
 }

@@ -14,7 +14,7 @@ const mapState = (state: ApplicationState) => {
   return {
     user: state.user,
     round: state.rounds?.round,
-    roundInProgress: state.user?.roundInProgress,
+    roundInProgress: state.user?.userDetails?.activeRound,
     location: state.router.location,
   };
 };
@@ -51,7 +51,7 @@ const NavMenu = (props: Props) => {
               <div className="column py-0">
                 {props.roundInProgress ? (
                   <Link
-                    to={`/rounds/${props.roundInProgress.id}`}
+                    to={`/rounds/${props.roundInProgress}`}
                     className="button is-primary waggle pr-1 pl-3"
                   >
                     <span className="icon">

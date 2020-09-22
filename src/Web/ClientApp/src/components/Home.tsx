@@ -25,9 +25,9 @@ const Home = (props: Props) => {
   const { user, fetchUserRounds } = props;
   const username = user?.user?.username;
   const loggedId = user?.loggedIn;
-  React.useEffect(() => {
-    loggedId && fetchUserRounds(1, username);
-  }, [fetchUserRounds, loggedId, username]);
+  // React.useEffect(() => {
+  //   loggedId && fetchUserRounds(1, username);
+  // }, [fetchUserRounds, loggedId, username]);
   return (
     <div>
       <div className="section pt-0">

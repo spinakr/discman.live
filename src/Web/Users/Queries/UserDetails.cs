@@ -13,5 +13,13 @@ namespace Web.Users.Queries
         public bool SimpleScoring { get; set; } 
         public List<string> NewsIdsSeen { get; set; } 
         public List<string> Friends { get; set; }
+        public Guid? ActiveRound { get; set; }
+        
+        public void Mapping(Profile profile)
+        {
+            profile.CreateMap<User, UserDetails>()
+                .ForMember(d => d.ActiveRound,
+                    opt => opt.Ignore());
+        }
     }
 }

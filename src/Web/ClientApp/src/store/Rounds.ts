@@ -491,8 +491,8 @@ export const actionCreators = {
         return res;
       })
       .then((response) => {
-        dispatch({ type: "ROUND_WAS_DELETED" });
         dispatch(push("/"));
+        dispatch({ type: "ROUND_WAS_DELETED" });
       })
       .catch((err: Error) => {
         notificationActions.showNotification(

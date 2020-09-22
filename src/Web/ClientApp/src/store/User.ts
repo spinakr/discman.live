@@ -2,7 +2,8 @@ import { Action, Reducer } from "redux";
 import { AppThunkAction } from ".";
 import { CallHistoryMethodAction, push } from "connected-react-router";
 import { actionCreators as notificationActions } from "./Notifications";
-import { Round } from "./Rounds";
+import { Round, NewRoundCreatedAction, RoundWasDeletedAction } from "./Rounds";
+import { stat } from "fs";
 
 export interface User {
   username: string;
@@ -28,6 +29,7 @@ export interface UserDetails {
   simpleScoring: boolean;
   newsIdsSeen: string[];
   friends: string[];
+  activeRound: string | null;
 }
 
 export interface UserAchievement {
@@ -47,7 +49,6 @@ export interface UserState {
   failedLoginMessage: string | null;
   userStats: UserStats | null;
   userRounds: PagedRounds | null;
-  roundInProgress: Round | null;
   userAchievements: GroupedAchievement[];
   searchedUsers: string[];
   feed: Feed | null;
@@ -193,6 +194,8 @@ export type KnownAction =
   | LikeToggledAction
   | FetchFeedSuccessAction
   | ClearFeedAction
+  | NewRoundCreatedAction
+  | RoundWasDeletedAction
   | SpectatorLeftAction;
 
 let user: User | null = null;
@@ -210,7 +213,6 @@ const initialState: UserState = user
       userRounds: null,
       userAchievements: [],
       searchedUsers: [],
-      roundInProgress: null,
       feed: null,
     }
   : {
@@ -222,7 +224,6 @@ const initialState: UserState = user
       userRounds: null,
       userAchievements: [],
       searchedUsers: [],
-      roundInProgress: null,
       feed: null,
     };
 
@@ -870,13 +871,29 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         userRounds: action.pagedRounds,
-        roundInProgress:
-          action.pagedRounds.rounds.find((r) => !r.isCompleted) || null,
+        // roundInProgress:
+        //   action.pagedRounds.rounds.find((r) => !r.isCompleted) || null,
       };
     case "FETCH_USER_DETAILS_SUCCESS":
       return {
         ...state,
         userDetails: action.userDetails,
+      };
+    case "NEW_ROUND_CREATED":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          activeRound: action.round.id,
+        },
+      };
+    case "ROUND_WAS_DELETED":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          activeRound: null,
+        },
       };
     case "FETCH_USER_ACHIEVEMENTS_SUCCESS":
       return {

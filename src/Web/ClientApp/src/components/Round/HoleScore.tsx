@@ -30,7 +30,6 @@ const HoleScoreComponent = ({
     };
   });
 
-  console.log(playersBirdies);
   const holeStats =
     playerStats?.holeStats &&
     playerStats.holeStats.find((s) => s.holeNumber === activeHole);
