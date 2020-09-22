@@ -219,6 +219,9 @@ After finishing the round, an actuall course can be created from the registered 
                 );
                 setShowDialog(false);
               }}
+              disabled={
+                (!selectedLayout && !manualReg) || (manualReg && !roundName)
+              }
             >
               Start
             </button>
