@@ -47,6 +47,14 @@ namespace Web.Common.Behaviours
                     newUserRequest.Password = password;
                     break;
                 }
+                case ChangePasswordCommand changePasswordCommand:
+                {
+                    var password = changePasswordCommand.NewPassword;
+                    changePasswordCommand.NewPassword = string.Empty;
+                    LogRequest(request, requestName, username);
+                    changePasswordCommand.NewPassword = password;
+                    break;
+                }
                 default:
                     LogRequest(request, requestName, username);
                     break;

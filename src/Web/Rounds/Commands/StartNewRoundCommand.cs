@@ -45,14 +45,14 @@ namespace Web.Rounds.Commands
                 .Query<Course>()
                 .SingleOrDefault(x => x.Id == request.CourseId);
 
-            var justStartedRound = await _documentSession
-                .Query<Round>()
-                .Where(r => !r.Deleted)
-                .Where(r => !r.IsCompleted)
-                .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
-                .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10), token: cancellationToken);
-
-            if (justStartedRound is object) return justStartedRound;
+            // var justStartedRound = await _documentSession
+            //     .Query<Round>()
+            //     .Where(r => !r.Deleted)
+            //     .Where(r => !r.IsCompleted)
+            //     .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
+            //     .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10), token: cancellationToken);
+            //
+            // if (justStartedRound is object) return justStartedRound;
 
             var round = course != null
                 ? new Round(course, players, username, request.RoundName, request.ScoreMode)

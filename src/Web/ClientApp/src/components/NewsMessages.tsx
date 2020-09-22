@@ -41,6 +41,29 @@ const news: News[] = [
       </div>
     ),
   },
+  {
+    id: "12",
+    body: (setSeen: (id: string) => void) => (
+      <div>
+        When starting a new round, one player has to create the round, adding
+        all players in the "New Round" dialogue.
+        <br />
+        <br />
+        The new round will apear in all users' feeds and as a green "Live"
+        button on the home page. Click the live button to start registering
+        scores. If you have multiple active rounds, you can find all rounds at
+        your&nbsp;
+        <Link to="/user" onClick={() => setSeen("12")}>
+          profile page.
+        </Link>
+        <br />
+        <br />
+        NB: Each player has to register scores before the hole is "completed".
+        You can change your score on the active hole or by choosing a previous
+        hole by clicking the hole number in the score card.
+      </div>
+    ),
+  },
 ];
 
 const NewsMessages = (props: Props) => {
@@ -63,7 +86,7 @@ const NewsMessages = (props: Props) => {
             <div className="modal-card">
               <header className="modal-card-head">
                 <p className="modal-card-title">
-                  News ({i + 1} / {toDisplay.length})
+                  Info ({i + 1} / {toDisplay.length})
                 </p>
               </header>
               <section

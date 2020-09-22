@@ -83,7 +83,7 @@ services:
       - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.215
+    image: sp1nakr/disclive:0.216
     container_name: discmanweb
     restart: unless-stopped
     # ports:
