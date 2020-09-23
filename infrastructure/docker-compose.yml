@@ -83,11 +83,11 @@ services:
       - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.220
+    image: sp1nakr/disclive:0.221
     container_name: discmanweb
     restart: unless-stopped
-    # ports:
-    #   - "80:80"
+    ports:
+      - "80:80"
     env_file:
       - ./variables.env
 
