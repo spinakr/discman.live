@@ -36,6 +36,15 @@ namespace Web
 
             return Task.WhenAll(notifyTasks);
         }
+        
+        public static Task NotifyPlayersOnDeletedRound(this IHubContext<RoundsHub> hub, Guid roundId, List<string> notificationPlayers)
+        {
+            var notifyTasks = notificationPlayers
+                .Select(p => hub.Clients.Group(p)
+                    .SendAsync("roundDeleted", roundId.ToString()));
+
+            return Task.WhenAll(notifyTasks);
+        }
 
         public static Task NotifyPlayersOnUpdatedRound(this RoundsHub hub, Round round)
         {

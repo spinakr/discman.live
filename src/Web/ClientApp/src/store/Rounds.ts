@@ -157,6 +157,7 @@ export interface RoundWasCompletedAction {
 
 export interface RoundWasDeletedAction {
   type: "ROUND_WAS_DELETED";
+  roundId: string;
 }
 
 export interface ConnectToHubAction {
@@ -471,6 +472,10 @@ export const actionCreators = {
         );
       });
   },
+
+  roundWasDeleted: (roundId: string) => {
+    return { type: "ROUND_WAS_DELETED", roundId: roundId };
+  },
   deleteRound: (roundId: string): AppThunkAction<KnownAction> => (
     dispatch,
     getState
@@ -495,7 +500,7 @@ export const actionCreators = {
       })
       .then((response) => {
         dispatch(push("/"));
-        dispatch({ type: "ROUND_WAS_DELETED" });
+        dispatch({ type: "ROUND_WAS_DELETED", roundId });
       })
       .catch((err: Error) => {
         notificationActions.showNotification(
@@ -800,7 +805,10 @@ export const reducer: Reducer<RoundsState> = (
         round: { ...state.round, isCompleted: true },
       };
     case "ROUND_WAS_DELETED":
-      return initialState;
+      if (state.round?.id === action.roundId) {
+        return initialState;
+      }
+      return state;
     case "SET_ACTIVE_HOLE":
       const nextHole = state.round ? getActiveHolde(state.round) : 100;
       if (action.hole > nextHole) return state;

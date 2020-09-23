@@ -45,7 +45,7 @@ namespace Web.Rounds.Commands
             _documentSession.Delete(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
 
-            await _mediator.Publish(new RoundWasDeleted {RoundId = round.Id}, cancellationToken);
+            await _mediator.Publish(new RoundWasDeleted {RoundId = round.Id, Players = round.PlayerScores.Select(s => s.PlayerName).ToList()}, cancellationToken);
 
             return new Unit();
         }

@@ -49,6 +49,10 @@ const connectHub = (dispatch: Dispatch<AnyAction>) => {
     );
   });
 
+  hub.on("roundDeleted", (roundId: string) => {
+    dispatch(roundsActions.roundWasDeleted(roundId));
+  });
+
   // hub.on("spectatorJoined", (roundId: string, username: string) => {
   //   dispatch(roundsActions.specJoined(roundId, username));
   // });
