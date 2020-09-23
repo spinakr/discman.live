@@ -5,7 +5,7 @@ import * as RoundsStore from "../../store/Rounds";
 import { useParams } from "react-router";
 import RoundScoreCard from "./RoundScoreCard";
 import HoleScoreSelector from "./HoleScoreSelector";
-import WindowFocusHandler from "../WindowFocusHandler";
+import WindowFocusHandler from "./WindowFocusHandler";
 import RoundSummary from "./RoundSummary";
 import { Round } from "../../store/Rounds";
 import HoleScore from "./HoleScore";
@@ -126,7 +126,7 @@ const RoundComponent = (props: Props) => {
         <HoleScoreSelector />
         <WindowFocusHandler />
         <ScoreAnimations />
-        <Spectators spectators={round.spectators} />
+        {/* <Spectators spectators={round.spectators} /> */}
       </>
     );
   };

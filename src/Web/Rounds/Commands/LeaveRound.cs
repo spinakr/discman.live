@@ -41,7 +41,7 @@ namespace Web.Rounds.Commands
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
-            await _roundsHub.NotifyPlayersInRound(round);
+            await _roundsHub.NotifyPlayersOnUpdatedRound(round);
 
             return new Unit();
         }

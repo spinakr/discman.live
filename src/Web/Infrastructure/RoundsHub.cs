@@ -24,16 +24,20 @@ namespace Web.Infrastructure
         public override async Task OnConnectedAsync()
         {
             var username = Context.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var rounds = _documentSession
-                .Query<Round>()
-                .Where(r => r.PlayerScores.Any(p => p.PlayerName == username))
-                .Where(r => !r.IsCompleted)
-                .ToList();
+            
+            // var rounds = _documentSession
+            //     .Query<Round>()
+            //     .Where(r => r.PlayerScores.Any(p => p.PlayerName == username))
+            //     .Where(r => !r.IsCompleted)
+            //     .ToList();
+            //
+            // foreach (var activeRound in rounds)
+            // {
+            //     await Groups.AddToGroupAsync(Context.ConnectionId, activeRound.Id.ToString());
+            // }
+            
+            await Groups.AddToGroupAsync(Context.ConnectionId, username);
 
-            foreach (var activeRound in rounds)
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, activeRound.Id.ToString());
-            }
 
             await base.OnConnectedAsync();
         }
@@ -41,27 +45,11 @@ namespace Web.Infrastructure
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var username = Context.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
-            var rounds = await _documentSession
-                .Query<Round>()
-                .Where(r => !r.IsCompleted)
-                .Where(r => r.Spectators.Any(s => s == username))
-                .ToListAsync();
 
-            if (rounds.Any())
-            {
-                foreach (var round in rounds)
-                {
-                    if (round.Spectators.All(s => s != username)) continue;
-                    round.Spectators = round.Spectators.Where(s => s != username).ToList();
-                    _documentSession.Update(round);
-                    await this.NotifyPlayersInRound(round);
-                }
-
-                await _documentSession.SaveChangesAsync();
-            }
-
+            // await CleanupSpectatorEntries(username);
             await base.OnDisconnectedAsync(exception);
         }
+
 
         public async Task SpectatorJoined(Guid roundId)
         {
@@ -106,6 +94,28 @@ namespace Web.Infrastructure
 
             await Clients.Group(round.Id.ToString()).SendAsync("spectatorLeft", roundId.ToString(), username);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roundId.ToString());
+        }
+        
+        private async Task CleanupSpectatorEntries(string username)
+        {
+            var rounds = await _documentSession
+                .Query<Round>()
+                .Where(r => !r.IsCompleted)
+                .Where(r => r.Spectators.Any(s => s == username))
+                .ToListAsync();
+
+            if (rounds.Any())
+            {
+                foreach (var round in rounds)
+                {
+                    if (round.Spectators.All(s => s != username)) continue;
+                    round.Spectators = round.Spectators.Where(s => s != username).ToList();
+                    _documentSession.Update(round);
+                    await this.NotifyPlayersOnUpdatedRound(round);
+                }
+
+                await _documentSession.SaveChangesAsync();
+            }
         }
     }
 }

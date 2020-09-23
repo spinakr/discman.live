@@ -249,6 +249,9 @@ export const actionCreators = {
   roundWasUpdated: (round: Round) => {
     return { type: "ROUND_WAS_UPDATED", round: round };
   },
+  roundWasCreated: (round: Round) => {
+    return { type: "NEW_ROUND_CREATED", round: round };
+  },
   specJoined: (roundId: string, username: string) => {
     return { type: "SPECTATOR_JOINED", roundId, username };
   },

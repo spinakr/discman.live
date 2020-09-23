@@ -61,7 +61,7 @@ namespace Web.Rounds.Commands
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
-            await _roundsHub.NotifyPlayersInRound(round);
+            await _roundsHub.NotifyPlayersOnUpdatedRound(round);
 
             await _mediator.Publish(new ScoreWasUpdated
             {

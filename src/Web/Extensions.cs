@@ -33,18 +33,6 @@ namespace Web
         }
 
 
-        public static Task NotifyPlayersInRound(this IHubContext<RoundsHub> hub, Round round)
-        {
-            return hub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
-                JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
-        }
-        
-        public static Task NotifyPlayersInRound(this RoundsHub hub, Round round)
-        {
-            return hub.Clients.Group(round.Id.ToString()).SendAsync("roundUpdated",
-                JsonConvert.SerializeObject(round, new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()}));
-        }
-        
         public static void MakeLesserOf(ref int self, int other) {
             self = self > other ? other : self;
         }

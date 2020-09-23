@@ -27,7 +27,7 @@ export interface AppCompState {
 
 const mapState = (state: ApplicationState) => {
   return {
-    user: state.user,
+    loggedIn: state.user?.loggedIn,
   };
 };
 
@@ -44,7 +44,13 @@ export class App extends React.PureComponent<Props, AppCompState> {
   }
 
   componentDidMount() {
-    if (this.props.user?.loggedIn) {
+    if (this.props.loggedIn) {
+      this.props.fetchUserDetails();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.loggedIn) {
       this.props.fetchUserDetails();
     }
   }

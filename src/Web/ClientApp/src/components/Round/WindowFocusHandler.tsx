@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
-import * as RoundsStore from "../store/Rounds";
+import * as RoundsStore from "../../store/Rounds";
 
 const connector = connect(null, RoundsStore.actionCreators);
 

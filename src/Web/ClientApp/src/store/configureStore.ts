@@ -16,6 +16,7 @@ import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
 import { actionCreators as roundsActions, Round } from "./Rounds";
 import { User } from "./User";
+import { actionCreators as notificationActions } from "./Notifications";
 
 const createHub = () => {
   return new signalR.HubConnectionBuilder()
@@ -38,13 +39,22 @@ const connectHub = (dispatch: Dispatch<AnyAction>) => {
     let round: Round = JSON.parse(roundJson);
     dispatch(roundsActions.roundWasUpdated(round));
   });
+  hub.on("newRoundCreated", (roundJson: string) => {
+    let round: Round = JSON.parse(roundJson);
+    dispatch(roundsActions.roundWasCreated(round));
+    notificationActions.showNotification(
+      `${round.createdBy} created a round with you involved!`,
+      "info",
+      dispatch
+    );
+  });
 
-  hub.on("spectatorJoined", (roundId: string, username: string) => {
-    dispatch(roundsActions.specJoined(roundId, username));
-  });
-  hub.on("spectatorLeft", (roundId: string, username: string) => {
-    dispatch(roundsActions.specLeft(roundId, username));
-  });
+  // hub.on("spectatorJoined", (roundId: string, username: string) => {
+  //   dispatch(roundsActions.specJoined(roundId, username));
+  // });
+  // hub.on("spectatorLeft", (roundId: string, username: string) => {
+  //   dispatch(roundsActions.specLeft(roundId, username));
+  // });
 
   hub.start();
 };
@@ -63,22 +73,22 @@ const socketsMiddleware: Middleware = ({
   }
 
   //Handle spectator notifications
-  if (action.type === "SPEC_JOINED") {
-    const a: any = action;
-    if (hub.state === signalR.HubConnectionState.Disconnected) {
-      connectHub(dispatch);
-      setTimeout(() => {}, 1000);
-    }
-    hub.invoke("SpectatorJoined", a.roundId);
-  }
-  if (action.type === "SPEC_LEFT") {
-    const a: any = action;
-    if (hub.state === signalR.HubConnectionState.Disconnected) {
-      connectHub(dispatch);
-      setTimeout(() => {}, 1000);
-    }
-    hub.invoke("SpectatorLeft", a.roundId);
-  }
+  // if (action.type === "SPEC_JOINED") {
+  //   const a: any = action;
+  //   if (hub.state === signalR.HubConnectionState.Disconnected) {
+  //     connectHub(dispatch);
+  //     setTimeout(() => {}, 1000);
+  //   }
+  //   hub.invoke("SpectatorJoined", a.roundId);
+  // }
+  // if (action.type === "SPEC_LEFT") {
+  //   const a: any = action;
+  //   if (hub.state === signalR.HubConnectionState.Disconnected) {
+  //     connectHub(dispatch);
+  //     setTimeout(() => {}, 1000);
+  //   }
+  //   hub.invoke("SpectatorLeft", a.roundId);
+  // }
 
   return next(action);
 };
