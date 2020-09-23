@@ -2,8 +2,14 @@ import { Action, Reducer } from "redux";
 import { AppThunkAction } from ".";
 import { CallHistoryMethodAction, push } from "connected-react-router";
 import { actionCreators as notificationActions } from "./Notifications";
-import { Round, NewRoundCreatedAction, RoundWasDeletedAction } from "./Rounds";
-import { stat } from "fs";
+import { hub } from "./configureStore";
+import {
+  Round,
+  NewRoundCreatedAction,
+  RoundWasDeletedAction,
+  ConnectToHubAction,
+} from "./Rounds";
+import * as signalR from "@microsoft/signalr";
 
 export interface User {
   username: string;
@@ -180,6 +186,7 @@ export type KnownAction =
   | LoginSuccessAction
   | LoginFailedAction
   | LogUserOutAction
+  | ConnectToHubAction
   | SetNewsSeenSuccessAction
   | FriendAddedSuccessAction
   | FetchUserStatsSuccessAction
@@ -690,10 +697,23 @@ export const actionCreators = {
         );
       });
   },
-  fetchUserDetails: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  connectToHub: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({ type: "CONNECT_TO_HUB" });
+  },
+  fetchUserDetails: (
+    onlyIfDisconnected?: boolean
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
+
+    if (
+      onlyIfDisconnected &&
+      hub.state === signalR.HubConnectionState.Connected
+    ) {
+      return;
+    }
+
     const user = appState.user.user.username;
     fetch(`api/users/details`, {
       method: "GET",

@@ -37,6 +37,14 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & AppCompProps;
 
+const onFocus = (
+  refreshUserDetails: (onlyIfDisconnected: boolean) => void,
+  connectToHub: () => void
+) => () => {
+  refreshUserDetails(true);
+  connectToHub();
+};
+
 export class App extends React.PureComponent<Props, AppCompState> {
   constructor(props: Props) {
     super(props);
@@ -47,6 +55,17 @@ export class App extends React.PureComponent<Props, AppCompState> {
     if (this.props.loggedIn) {
       this.props.fetchUserDetails();
     }
+    window.addEventListener(
+      "focus",
+      onFocus(this.props.fetchUserDetails, this.props.connectToHub)
+    );
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener(
+      "focus",
+      onFocus(this.props.fetchUserDetails, this.props.connectToHub)
+    );
   }
 
   componentDidUpdate() {
