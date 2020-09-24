@@ -11,7 +11,6 @@ import { Round } from "../../store/Rounds";
 import HoleScore from "./HoleScore";
 import RoundScoreCardModal from "./RoundScoreCardModal";
 import ScoreAnimations from "./ScoreAnimations";
-import Spectators from "./Spectators";
 
 const mapState = (state: ApplicationState) => {
   return {

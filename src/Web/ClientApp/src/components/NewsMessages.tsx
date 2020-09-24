@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { ApplicationState } from "../store";
 import { connect, ConnectedProps } from "react-redux";
 import { actionCreators as userActionCreator } from "../store/User";

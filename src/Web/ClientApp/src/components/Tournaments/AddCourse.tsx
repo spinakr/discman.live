@@ -26,7 +26,9 @@ type Props = PropsFromRedux & {};
 
 const AddCourse = (props: Props) => {
   let { tournamentId } = useParams();
+  const [courseFilter, setCourseFilter] = useState("");
   const [showDialog, setShowDialog] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<string | undefined>();
   const [selectedLayout, setSelectedLayout] = useState<Course | undefined>(
     undefined
   );
@@ -37,6 +39,7 @@ const AddCourse = (props: Props) => {
   const courseSelected = (courseName: string) => {
     if (!props.courses) return;
     const layouts = props.courses.find((c) => c[0] === courseName);
+    setSelectedCourse(courseName);
     layouts && setAvailableLayouts(layouts[1]);
     layouts && setSelectedLayout(layouts[1][0]);
   };
@@ -47,8 +50,8 @@ const AddCourse = (props: Props) => {
   };
 
   useEffect(() => {
-    showDialog && fetchCourses("");
-  }, [fetchCourses, showDialog]);
+    showDialog && courseFilter.length > 2 && fetchCourses(courseFilter);
+  }, [courseFilter, fetchCourses, showDialog]);
 
   return (
     <>
@@ -64,18 +67,35 @@ const AddCourse = (props: Props) => {
             <label className="label">Course</label>
             <>
               <div className="field">
-                <div className="control">
-                  <div className="select is-primary">
-                    <select onChange={(e) => courseSelected(e.target.value)}>
-                      <option></option>
-                      {props.courses?.map((c) => (
-                        <option key={c[0]} value={c[0]}>
-                          {c[0]}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                <div className="control has-icons-left">
+                  <input
+                    className="input"
+                    type="text"
+                    placeholder="Search"
+                    onChange={(e) => {
+                      setCourseFilter(e.target.value);
+                    }}
+                  />
+                  <span className="icon is-left">
+                    <i className="fas fa-search" aria-hidden="true"></i>
+                  </span>
                 </div>
+              </div>
+              <div className="panel">
+                {props.courses?.slice(0, 5).map((c) => (
+                  <span
+                    onClick={() => courseSelected(c[0])}
+                    key={c[0]}
+                    className={`panel-block ${
+                      selectedCourse === c[0] && "is-active"
+                    }`}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-cloud-sun" aria-hidden="true"></i>
+                    </span>
+                    {c[0]}
+                  </span>
+                ))}
               </div>
               <div className="field">
                 <div className="control">

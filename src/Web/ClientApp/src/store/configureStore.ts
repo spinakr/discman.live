@@ -10,7 +10,7 @@ import {
   AnyAction,
 } from "redux";
 import thunk from "redux-thunk";
-import { connectRouter, routerMiddleware } from "connected-react-router";
+import { connectRouter, routerMiddleware, push } from "connected-react-router";
 import { History } from "history";
 import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
@@ -51,6 +51,7 @@ const connectHub = (dispatch: Dispatch<AnyAction>) => {
 
   hub.on("roundDeleted", (roundId: string) => {
     dispatch(roundsActions.roundWasDeleted(roundId));
+    dispatch(push("/"));
   });
 
   // hub.on("spectatorJoined", (roundId: string, username: string) => {
