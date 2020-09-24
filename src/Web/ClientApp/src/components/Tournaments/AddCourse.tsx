@@ -97,19 +97,25 @@ const AddCourse = (props: Props) => {
                   </span>
                 ))}
               </div>
-              <div className="field">
-                <div className="control">
-                  <div className="select is-primary">
-                    <select onChange={(e) => layoutSelected(e.target.value)}>
-                      {availableLayouts?.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.layout}
-                        </option>
-                      ))}
-                    </select>
+              {availableLayouts &&
+                availableLayouts.length > 0 &&
+                availableLayouts[1] && (
+                  <div className="field">
+                    <div className="control">
+                      <div className="select is-grey">
+                        <select
+                          onChange={(e) => layoutSelected(e.target.value)}
+                        >
+                          {availableLayouts?.map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.layout}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                )}
             </>
           </section>
           <footer className="modal-card-foot">
