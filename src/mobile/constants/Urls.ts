@@ -1,3 +1,3 @@
 export default {
-  discmanWebBaseUrl: "localhost:5000"
+  discmanWebBaseUrl: "http://localhost:5000",
 };

@@ -134,6 +134,11 @@ export interface SimpleScoringUpdatedSuccessACtion {
   simpleScoring: boolean;
 }
 
+export interface SetLoggedInUserAction {
+  type: "SET_LOGGEDIN_USER";
+  user: User;
+}
+
 export interface LogUserOutAction {
   type: "LOG_USER_OUT";
 }
@@ -199,6 +204,7 @@ export type KnownAction =
   | FetchUserDetailsSuccessAction
   | ChangePasswordSuccessAction
   | LikeToggledAction
+  | SetLoggedInUserAction
   | FetchFeedSuccessAction
   | ClearFeedAction
   | NewRoundCreatedAction
@@ -252,6 +258,13 @@ export const actionCreators = {
     getState
   ) => {
     dispatch({ type: "SPEC_LEFT", roundId });
+  },
+  setLoggedInUser: (userJson: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    dispatch({ type: "SET_LOGGEDIN_USER", user: JSON.parse(userJson) });
+    localStorage.setItem("user", userJson);
   },
 
   createUser: (
@@ -793,6 +806,13 @@ export const reducer: Reducer<UserState> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case "LOGIN_SUCCEED":
+      return {
+        ...state,
+        loggedIn: true,
+        user: action.user,
+        failedLoginMessage: null,
+      };
+    case "SET_LOGGEDIN_USER":
       return {
         ...state,
         loggedIn: true,

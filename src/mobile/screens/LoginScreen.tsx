@@ -1,35 +1,52 @@
+import { Input, Button } from "@jrobins/bulma-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
-import { StyleSheet, Text, View } from "react-native";
-
+import { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { connect, ConnectedProps } from "react-redux";
+import * as UserStore from "../store/User";
 import { StackParamList } from "../types";
 
-export default function LoginScreen({ navigation }: StackScreenProps<StackParamList, "Login">) {
+const connector = connect(null, UserStore.actionCreators);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {} & StackScreenProps<StackParamList, "Login">;
+
+const LoginScreen = ({ navigation, requestLogin }: Props) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Input
+        iconLeft="envelope"
+        containerStyle={styles.input}
+        value={username}
+        onChangeText={(username) => setUsername(username)}
+        autoCompleteType="username"
+      />
+      <Input
+        iconLeft="lock"
+        containerStyle={styles.input}
+        value={password}
+        onChangeText={(pw) => setPassword(pw)}
+        autoCompleteType="password"
+        secureTextEntry={true}
+      />
+      <Button onPress={() => requestLogin(username, password)}>Login</Button>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    backgroundColor: "#f2ffde",
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-  linkText: {
-    fontSize: 14,
-    color: "#2e78b7",
-  },
+  input: { width: 200, padding: 5 },
 });
+
+export default connector(LoginScreen);

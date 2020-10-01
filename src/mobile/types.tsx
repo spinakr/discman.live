@@ -1,13 +1,12 @@
 export type StackParamList = {
   Login: undefined;
-  Discman: undefined;
   AuthLoading: undefined;
-  Play: undefined;
+  Home: undefined;
   NotFound: undefined;
 };
 
 export type HomeBottomTabParamList = {
-  "Discman.Live": undefined;
+  "Discman.live": undefined;
   Play: undefined;
 };
 
@@ -20,4 +19,3 @@ export type PlayStackParamList = {
   Live: undefined;
   Summary: undefined;
 };
-

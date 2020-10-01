@@ -2,35 +2,49 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { WebView } from "react-native-webview";
 import * as React from "react";
 import { StyleSheet } from "react-native";
-import { StackParamList } from "../types";
+import { HomeBottomTabParamList, StackParamList } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ApplicationState } from "../store";
+import { connect, ConnectedProps } from "react-redux";
+import * as UserStore from "../store/User";
+import Urls from "../constants/Urls";
 
-export default function DiscmanScreen({}: StackScreenProps<StackParamList, "Discman">) {
+const mapState = (state: ApplicationState) => {
+  return {
+    user: state.user?.user,
+  };
+};
+
+const connector = connect(mapState, UserStore.actionCreators);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {} & StackScreenProps<HomeBottomTabParamList, "Discman.live">;
+
+const DiscmanScreen = ({ user }: Props) => {
+  const userstring = JSON.stringify(user);
   const injectedCode = () => {
-    const token =
-      '{"username":"akofoed","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImFrb2ZvZWQiLCJuYmYiOjE2MDA4NTU0MTIsImV4cCI6MTYzMjM5MTQxMiwiaWF0IjoxNjAwODU1NDEyfQ.E2tDs4Gt-_T0pNDPZog4N5x8UPftasht63qR-LsvVoQ","email":"anders.kfd@gmail.com"}';
-
     return `
         var storedToken = localStorage.getItem('user');
-        console.log('injected!!!')
-        if (!storedToken || storedToken !== '${token}') {
-          localStorage.setItem('user', '${token}');
+        if (!storedToken || storedToken !== '${userstring}') {
+          localStorage.setItem('user', '${userstring}');
           location.reload();
         }
     `;
   };
 
+  if (!user?.token) return null;
   return (
-    <SafeAreaView style={{ flex:1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <WebView
-        source={{ uri: "http://localhost:5000/?nonav=1" }}
+        source={{ uri: `${Urls.discmanWebBaseUrl}?token=${encodeURI(JSON.stringify(user))}` }}
         javaScriptEnabled={true}
         injectedJavaScript={injectedCode()}
         domStorageEnabled={true}
       />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -48,3 +62,5 @@ const styles = StyleSheet.create({
     width: "80%",
   },
 });
+
+export default connector(DiscmanScreen);

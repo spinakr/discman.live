@@ -15,6 +15,7 @@ import About from "./components/About";
 import { ApplicationState } from "./store";
 import { actionCreators as usersActionCreators } from "./store/User";
 import { connect, ConnectedProps } from "react-redux";
+import queryString from "query-string";
 
 export interface AppCompProps {
   token: string | undefined;
@@ -27,6 +28,7 @@ export interface AppCompState {
 const mapState = (state: ApplicationState) => {
   return {
     loggedIn: state.user?.loggedIn,
+    location: state.router.location,
   };
 };
 
@@ -58,6 +60,9 @@ export class App extends React.PureComponent<Props, AppCompState> {
       "focus",
       onFocus(this.props.fetchUserDetails, this.props.connectToHub)
     );
+    const query = queryString.parse(this.props.location.search);
+    const userToken = query.token as string;
+    if (userToken) this.props.setLoggedInUser(decodeURI(userToken));
   }
 
   componentWillUnmount() {
