@@ -4,9 +4,7 @@ import { StyleSheet, View, Text } from "react-native";
 import { PlayStackParamList, StackParamList } from "../types";
 
 export default function LiveScreen({}: StackScreenProps<PlayStackParamList, "Live">) {
-
   return (
-
     <View style={styles.container}>
       <Text style={styles.title}>Play</Text>
     </View>

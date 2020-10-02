@@ -1,7 +1,7 @@
 import { Input, Button } from "@jrobins/bulma-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 import * as UserStore from "../store/User";
@@ -13,7 +13,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {} & StackScreenProps<StackParamList, "Login">;
 
-const LoginScreen = ({ navigation, requestLogin }: Props) => {
+const LoginScreen = ({ navigation, requestLogin, loadLogginInfo }: Props) => {
+  useEffect(() => {
+    loadLogginInfo();
+  }, []);
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 

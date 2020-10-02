@@ -1,7 +1,7 @@
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
-import { ColorSchemeName } from "react-native";
+import { ColorSchemeName, SafeAreaView, StyleSheet } from "react-native";
 import * as UserStore from "../store/User";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { StackParamList } from "../types";
@@ -10,6 +10,8 @@ import LinkingConfiguration from "./LinkingConfiguration";
 import { ApplicationState } from "../store";
 import { connect, ConnectedProps } from "react-redux";
 import LoginScreen from "../screens/LoginScreen";
+import AuthLoadingScreen from "../screens/AuthLoadingScreen";
+import { StatusBar } from "react-native";
 
 const Stack = createStackNavigator<StackParamList>();
 
@@ -29,21 +31,31 @@ type Props = PropsFromRedux & {
 
 const Navigation = ({ colorScheme, user }: Props) => {
   return (
-    <NavigationContainer linking={LinkingConfiguration} theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user?.loggedIn ? (
-          <>
-            <Stack.Screen name="Home" component={BottomTabNavigator} />
-            <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: "Oops!" }} />
-          </>
-        ) : (
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={styles.container}>
+      <NavigationContainer linking={LinkingConfiguration} theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="AuthLoading">
+          {user?.loggedIn ? (
+            <>
+              <Stack.Screen name="Home" component={BottomTabNavigator} />
+              <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: "Oops!" }} />
+            </>
+          ) : (
+            <>
+              {/* <Stack.Screen name="AuthLoading" component={AuthLoadingScreen} /> */}
+              <Stack.Screen name="Login" component={LoginScreen} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
+});
 
 export default connector(Navigation);

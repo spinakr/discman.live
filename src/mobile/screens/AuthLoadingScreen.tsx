@@ -1,10 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, StatusBar, View } from "react-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import { StackParamList } from "../types";
+import { connect, ConnectedProps } from "react-redux";
+import * as UserStore from "../store/User";
+import { ApplicationState } from "../store";
 
-const AuthLoadingScreen = ({ navigation }: StackScreenProps<StackParamList, "AuthLoading">) => {
-  // Render any loading content that you like here
+const connector = connect(null, UserStore.actionCreators);
+
+type PropsFromRedux = ConnectedProps<typeof connector>;
+
+type Props = PropsFromRedux & {} & StackScreenProps<StackParamList, "AuthLoading">;
+
+const AuthLoadingScreen = ({ loadLogginInfo }: Props) => {
+  useEffect(() => {
+    loadLogginInfo();
+  }, []);
+
   return (
     <View>
       <ActivityIndicator />
@@ -13,4 +25,4 @@ const AuthLoadingScreen = ({ navigation }: StackScreenProps<StackParamList, "Aut
   );
 };
 
-export default AuthLoadingScreen;
+export default connector(AuthLoadingScreen);

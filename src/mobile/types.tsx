@@ -1,5 +1,6 @@
 export type StackParamList = {
   Login: undefined;
+  Settings: undefined;
   AuthLoading: undefined;
   Home: undefined;
   NotFound: undefined;
@@ -8,6 +9,7 @@ export type StackParamList = {
 export type HomeBottomTabParamList = {
   "Discman.live": undefined;
   Play: undefined;
+  Settings: undefined;
 };
 
 export type LoginParamList = {

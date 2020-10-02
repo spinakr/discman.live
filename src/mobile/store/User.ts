@@ -17,6 +17,7 @@ export interface UserDetails {
 }
 
 export interface UserState {
+  loggingIn: boolean;
   loggedIn: boolean;
   user: User | null;
   userDetails: UserDetails | null;
@@ -31,9 +32,12 @@ export interface LoginFailedAction {
   type: "LOGIN_FAILED";
   errorMessage: string;
 }
+export interface LoginRequestedAction {
+  type: "LOGIN_REQUESTED";
+}
 
 export interface LogUserOutAction {
-  type: "LOG_USER_OUT";
+  type: "LOGOUT_SUCCEED";
 }
 
 export interface FetchUserDetailsSuccessAction {
@@ -41,10 +45,30 @@ export interface FetchUserDetailsSuccessAction {
   userDetails: UserDetails;
 }
 
-export type KnownAction = LoginSuccessAction | LoginFailedAction | LogUserOutAction | FetchUserDetailsSuccessAction;
+export type KnownAction = LoginSuccessAction | LoginFailedAction | LogUserOutAction | FetchUserDetailsSuccessAction | LoginRequestedAction;
 
 export const actionCreators = {
+  loadLogginInfo: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    AsyncStorage.getItem("user").then((data) => {
+      if (!data) return;
+      const user: User = JSON.parse(data);
+      dispatch({
+        type: "LOGIN_SUCCEED",
+        user,
+      });
+    });
+  },
+  logout: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    AsyncStorage.removeItem("user").then(() => {
+      dispatch({
+        type: "LOGOUT_SUCCEED",
+      });
+    });
+  },
   requestLogin: (username: string, password: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    dispatch({
+      type: "LOGIN_REQUESTED",
+    });
     fetch(`${urls.discmanWebBaseUrl}/api/users/authenticate`, {
       method: "POST",
       headers: {
@@ -69,7 +93,7 @@ export const actionCreators = {
       .catch((err: Error) => {
         dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });
         setTimeout(() => {
-          dispatch({ type: "LOG_USER_OUT" });
+          dispatch({ type: "LOGOUT_SUCCEED" });
         }, 2000);
       });
   },
@@ -78,7 +102,7 @@ export const actionCreators = {
     if (!appState.user || !appState.user.loggedIn || !appState.user.user) return;
 
     const user = appState.user.user.username;
-    fetch(`api/users/details`, {
+    fetch(`${urls.discmanWebBaseUrl}/api/users/details`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -97,12 +121,15 @@ export const actionCreators = {
           userDetails: data,
         });
       })
-      .catch((err: Error) => {});
+      .catch((err: Error) => {
+        //SDASD
+      });
   },
 };
 
 const initialState: UserState = {
   loggedIn: false,
+  loggingIn: false,
   userDetails: null,
   user: null,
   failedLoginMessage: null,
@@ -115,10 +142,16 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
+    case "LOGIN_REQUESTED":
+      return {
+        ...state,
+        loggingIn: true,
+      };
     case "LOGIN_SUCCEED":
       return {
         ...state,
         loggedIn: true,
+        loggingIn: false,
         user: action.user,
         failedLoginMessage: null,
       };
@@ -126,14 +159,13 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
       return {
         ...state,
         loggedIn: false,
+        loggingIn: false,
         failedLoginMessage: action.errorMessage,
       };
-    case "LOG_USER_OUT":
-      return {
-        ...state,
-        loggedIn: false,
-        failedLoginMessage: null,
-      };
+
+    case "LOGOUT_SUCCEED":
+      return initialState;
+
     case "FETCH_USER_DETAILS_SUCCESS":
       return {
         ...state,
