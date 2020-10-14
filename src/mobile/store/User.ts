@@ -2,6 +2,7 @@ import { AsyncStorage } from "react-native";
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from ".";
 import urls from "../constants/Urls";
+import { RoundWasCreatedAction, RoundWasDeletedAction } from "./ActiveRound";
 
 export interface User {
   username: string;
@@ -44,8 +45,19 @@ export interface FetchUserDetailsSuccessAction {
   type: "FETCH_USER_DETAILS_SUCCESS";
   userDetails: UserDetails;
 }
+export interface ConnectToHubAction {
+  type: "CONNECT_TO_HUB";
+}
 
-export type KnownAction = LoginSuccessAction | LoginFailedAction | LogUserOutAction | FetchUserDetailsSuccessAction | LoginRequestedAction;
+export type KnownAction =
+  | LoginSuccessAction
+  | LoginFailedAction
+  | LogUserOutAction
+  | ConnectToHubAction
+  | FetchUserDetailsSuccessAction
+  | LoginRequestedAction
+  | RoundWasCreatedAction
+  | RoundWasDeletedAction;
 
 export const actionCreators = {
   loadLogginInfo: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
@@ -163,6 +175,22 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
         failedLoginMessage: action.errorMessage,
       };
 
+    case "ROUND_WAS_CREATED":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          activeRound: action.round.id,
+        },
+      };
+    case "ROUND_WAS_DELETED":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          activeRound: null,
+        },
+      };
     case "LOGOUT_SUCCEED":
       return initialState;
 

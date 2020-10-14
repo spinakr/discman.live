@@ -2,27 +2,38 @@ import { Input, Button } from "@jrobins/bulma-native";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
+import { View } from "../components/Themed";
+import Colors from "../constants/Colors";
+import useColorScheme from "../hooks/useColorScheme";
+import { ApplicationState } from "../store";
 import * as UserStore from "../store/User";
 import { StackParamList } from "../types";
 
-const connector = connect(null, UserStore.actionCreators);
+const mapState = (state: ApplicationState) => {
+  return {
+    loggedIn: state.user?.loggedIn,
+  };
+};
+const connector = connect(mapState, UserStore.actionCreators);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {} & StackScreenProps<StackParamList, "Login">;
 
-const LoginScreen = ({ navigation, requestLogin, loadLogginInfo }: Props) => {
+const LoginScreen = ({ navigation, requestLogin, loadLogginInfo, loggedIn }: Props) => {
   useEffect(() => {
-    loadLogginInfo();
+    if (!loggedIn) {
+      loadLogginInfo();
+    }
   }, []);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   return (
-    <View style={styles.container}>
+    <View style={{ ...styles.container }}>
       <Input
         iconLeft="envelope"
         containerStyle={styles.input}
@@ -48,7 +59,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f2ffde",
   },
   input: { width: 200, padding: 5 },
 });

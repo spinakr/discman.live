@@ -35,32 +35,15 @@ const DiscmanScreen = ({ user }: Props) => {
 
   if (!user?.token) return null;
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <WebView
-        source={{ uri: `${Urls.discmanWebBaseUrl}?token=${encodeURI(JSON.stringify(user))}` }}
-        javaScriptEnabled={true}
-        injectedJavaScript={injectedCode()}
-        domStorageEnabled={true}
-      />
-    </SafeAreaView>
+    <WebView
+      source={{ uri: `${Urls.discmanWebBaseUrl}?token=${encodeURI(JSON.stringify(user))}` }}
+      javaScriptEnabled={true}
+      injectedJavaScript={injectedCode()}
+      domStorageEnabled={true}
+    />
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-});
+const styles = StyleSheet.create({ safeArea: { flex: 1, justifyContent: "flex-start" } });
 
 export default connector(DiscmanScreen);

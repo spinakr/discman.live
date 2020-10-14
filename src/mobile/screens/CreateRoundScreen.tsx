@@ -1,11 +1,12 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
-import { PlayStackParamList } from "../types";
+import { HomeBottomTabParamList, PlayStackParamList } from "../types";
 import * as UserStore from "../store/User";
 import { useEffect } from "react";
+import { View, Text } from "../components/Themed";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -18,12 +19,16 @@ const connector = connect(mapState, UserStore.actionCreators);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {} & StackScreenProps<PlayStackParamList, "CreateRound">;
+type Props = PropsFromRedux & {} & StackScreenProps<HomeBottomTabParamList, "Play"> & StackScreenProps<PlayStackParamList, "CreateRound">;
 
 const CreateRoundScreen = ({ activeRound, navigation, fetchUserDetails, user }: Props) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Round!</Text>
+      <Text>
+        Go to
+        <Text onPress={() => navigation.navigate("Discman.live")}> discman.live </Text>
+        to start a round!{"\n"}It will appear here for the players after started.
+      </Text>
     </View>
   );
 };

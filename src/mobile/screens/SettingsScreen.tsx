@@ -1,10 +1,13 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, FlatList, SectionList } from "react-native";
+import { StyleSheet, TouchableOpacity, FlatList, SectionList } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import { HomeBottomTabParamList } from "../types";
 import * as UserStore from "../store/User";
+import { View, Text } from "../components/Themed";
+import useColorScheme from "../hooks/useColorScheme";
+import Colors from "../constants/Colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -31,7 +34,7 @@ interface LinkSection {
 }
 
 const Item = ({ textLeft, textRight, onPress, style }: { textLeft: string; textRight?: string; onPress: any; style: any }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.item]}>
+  <TouchableOpacity onPress={onPress} style={styles.item}>
     <View style={styles.itemContainer}>
       <View style={styles.leftContainer}>
         <Text style={style}>{textLeft}</Text>
@@ -48,12 +51,14 @@ const renderItem = ({ item }: { item: LinkItem }) => {
 };
 
 const ItemSeparatorView = () => {
+  const colorScheme = useColorScheme();
   return (
     <View
       style={{
         height: 0.5,
         width: "100%",
-        backgroundColor: "#080808",
+        // backgroundColor: "#080808",
+        backgroundColor: Colors[colorScheme].text,
       }}
     />
   );
@@ -108,7 +113,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginBottom: 10,
-    marginTop: 30,
   },
   itemContainer: {
     flex: 1,
@@ -124,10 +128,10 @@ const styles = StyleSheet.create({
   header: {
     padding: 10,
     fontSize: 20,
-    backgroundColor: "#e8e9eb",
   },
   logoutLink: {
     color: "red",
+    margin: -1,
   },
   item: {
     padding: 15,

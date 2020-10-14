@@ -1,3 +1,3 @@
 export default {
-  discmanWebBaseUrl: "http://localhost:5000",
+  discmanWebBaseUrl: __DEV__ ? "http://localhost:5000" : "https://discman.live",
 };

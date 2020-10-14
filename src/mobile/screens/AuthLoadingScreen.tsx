@@ -13,10 +13,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {} & StackScreenProps<StackParamList, "AuthLoading">;
 
 const AuthLoadingScreen = ({ loadLogginInfo }: Props) => {
-  useEffect(() => {
-    loadLogginInfo();
-  }, []);
-
   return (
     <View>
       <ActivityIndicator />
