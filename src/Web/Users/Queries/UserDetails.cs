@@ -11,6 +11,7 @@ namespace Web.Users.Queries
     {
         public string Email { get; set; }
         public bool SimpleScoring { get; set; } 
+        public bool RegisterPutDistance { get; set; } 
         public List<string> NewsIdsSeen { get; set; } 
         public List<string> Friends { get; set; }
         public Guid? ActiveRound { get; set; }

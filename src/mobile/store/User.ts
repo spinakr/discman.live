@@ -12,6 +12,7 @@ export interface User {
 export interface UserDetails {
   email: string;
   simpleScoring: boolean;
+  registerPutDistance: boolean;
   newsIdsSeen: string[];
   friends: string[];
   activeRound: string | null;

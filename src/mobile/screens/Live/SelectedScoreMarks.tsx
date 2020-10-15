@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View } from "../../components/Themed";
+import { View, Text } from "../../components/Themed";
 import { StrokeOutcome } from "../../store/ActiveRound";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
@@ -10,9 +10,10 @@ import Colors from "../../constants/Colors";
 export interface SelectedScoreMarksProps {
   strokes: StrokeOutcome[];
   onIconClicked: () => void;
+  putDistance: number | undefined;
 }
 
-const SelectedScoreMarks = ({ strokes, onIconClicked }: SelectedScoreMarksProps) => {
+const SelectedScoreMarks = ({ strokes, onIconClicked, putDistance }: SelectedScoreMarksProps) => {
   const last9Marks = strokes.slice(-9);
   const scheme = useColorScheme();
   return (
@@ -23,6 +24,7 @@ const SelectedScoreMarks = ({ strokes, onIconClicked }: SelectedScoreMarksProps)
             <OutcomeIcon outcome={s} size={20} />
           </TouchableOpacity>
           {s !== "Basket" && <AntDesign name="arrowright" size={10} color={Colors[scheme].tabIconDefault} style={{ padding: 5 }} />}
+          {s === "Basket" && putDistance && <Text>{putDistance}m</Text>}
         </React.Fragment>
       ))}
     </View>

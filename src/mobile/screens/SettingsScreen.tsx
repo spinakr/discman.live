@@ -81,6 +81,12 @@ const SettingsScreen = ({ navigation, logout, user }: Props) => {
           onPress: () => {},
           style: null,
         },
+        {
+          textLeft: "Register put distances",
+          textRight: user?.userDetails?.registerPutDistance ? "Yes" : "No",
+          onPress: () => {},
+          style: null,
+        },
       ],
     },
     {
@@ -120,6 +126,7 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     flex: 1,
+    margin: -1,
   },
   rightContainer: {
     flex: 1,

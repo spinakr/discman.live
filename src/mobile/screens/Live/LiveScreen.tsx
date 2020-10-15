@@ -37,9 +37,9 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
       fetchStatsOnCourse(activeRoundId);
     }
   }, [activeRoundId]);
-  const saveScore = (strokes: StrokeOutcome[]) => {
+  const saveScore = (strokes: StrokeOutcome[], putDistance?: number) => {
     setEdit(false);
-    setScore(strokes);
+    setScore(strokes, putDistance);
   };
   const round = activeRound?.round;
   const playerScores = round?.playerScores.find((p) => p.playerName === user?.user?.username)?.scores || round?.playerScores[0].scores;
@@ -63,7 +63,11 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
         {holeScore.strokes !== 0 && !edit ? (
           <HoleScore holeScore={holeScore} setEdit={setEdit} />
         ) : (
-          <ScoreSelection saveScore={saveScore} cancelEdit={edit ? () => setEdit(false) : null} />
+          <ScoreSelection
+            saveScore={saveScore}
+            cancelEdit={edit ? () => setEdit(false) : null}
+            registerPutDistance={user?.userDetails?.registerPutDistance || false}
+          />
         )}
       </View>
     </View>

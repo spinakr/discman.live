@@ -90,17 +90,10 @@ namespace Web.Rounds
         }
 
         [HttpPut("{roundId}/scores")]
-        public async Task<IActionResult> UpdateScore(Guid roundId, [FromBody] UpdateScoreRequest request)
+        public async Task<IActionResult> UpdateScore(Guid roundId, [FromBody] UpdatePlayerScoreCommand request)
         {
-            var round = await _mediator.Send(new UpdatePlayerScoreCommand
-            {
-                RoundId = roundId,
-                Hole = request.Hole,
-                Strokes = request.Strokes,
-                StrokeOutcomes = request.StrokeOutcomes,
-                Username = request.Username
-            });
- 
+            request.RoundId = roundId;
+            var round = await _mediator.Send(request);
             return Ok(round);
         }
 
@@ -168,20 +161,10 @@ namespace Web.Rounds
         public ScoreMode ScoreMode { get; set; }
     }
 
-
     public class AddHoleRequest
     {
         public int HoleNumber { get; set; }
         public int Par { get; set; }
         public int Length { get; set; }
-    }
-
-    public class UpdateScoreRequest
-    {
-        public int Hole { get; set; }
-        public int Strokes { get; set; }
-        public string Username { get; set; }
-
-        public string[] StrokeOutcomes { get; set; }
     }
 }

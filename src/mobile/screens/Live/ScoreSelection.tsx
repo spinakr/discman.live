@@ -1,29 +1,40 @@
 import * as React from "react";
 import { View, Text } from "../../components/Themed";
 import { StrokeOutcome } from "../../store/ActiveRound";
-import { StyleSheet } from "react-native";
+import { Alert, Modal, StyleSheet } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useState } from "react";
 import SelectedScoreMarks from "./SelectedScoreMarks";
 import OutcomeIcon from "./OutcomeIcon";
+import Slider from "@react-native-community/slider";
 
 export interface ScoreSelectionProps {
-  saveScore: (strokes: StrokeOutcome[]) => void;
+  saveScore: (strokes: StrokeOutcome[], putDistance?: number) => void;
   cancelEdit: (() => void) | null;
+  registerPutDistance: boolean;
 }
 
-const ScoreSelection = ({ saveScore, cancelEdit }: ScoreSelectionProps) => {
+const ScoreSelection = ({ saveScore, cancelEdit, registerPutDistance }: ScoreSelectionProps) => {
   const [showDescriptions, setShowDescriptions] = useState(false);
   const [strokes, setStrokes] = useState<StrokeOutcome[]>([]);
-
+  const [tmpPutDistance, setTmpPutDistance] = useState(0);
+  const [showPutDistanceSelector, setShowPutDistanceSelector] = useState(false);
+  const completeScore = (putDistance?: number) => {
+    saveScore([...strokes, "Basket"], putDistance);
+    setStrokes([]);
+    setShowPutDistanceSelector(false);
+  };
   const renderSelectorButton = (selectorItem: React.ReactElement, description: string, outcome: StrokeOutcome) => {
     return (
       <TouchableOpacity
         style={styles.scoreSelector}
         onPress={() => {
           if (outcome === "Basket") {
-            saveScore([...strokes, "Basket"]);
-            setStrokes([]);
+            if (registerPutDistance) {
+              setShowPutDistanceSelector(true);
+            } else {
+              completeScore();
+            }
           } else {
             setStrokes([...strokes, outcome]);
           }
@@ -45,12 +56,39 @@ const ScoreSelection = ({ saveScore, cancelEdit }: ScoreSelectionProps) => {
 
   return (
     <>
+      <Modal animationType="slide" transparent={true} visible={showPutDistanceSelector}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.headerText}>Approximate put distance</Text>
+            <Text>{tmpPutDistance} meters</Text>
+            <View style={styles.sliderView}>
+              <Slider
+                style={{ flex: 1, height: 40 }}
+                minimumValue={0}
+                maximumValue={10}
+                minimumTrackTintColor="#FFFFFF"
+                maximumTrackTintColor="#000000"
+                step={1}
+                onSlidingComplete={(value: number) => {
+                  setShowPutDistanceSelector(false);
+                  completeScore(value);
+                }}
+                onValueChange={(value: number) => setTmpPutDistance(value)}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.selectorContainer}>
         <View style={styles.selectedScoresRow}>
           {showDescriptions ? (
             <Text style={styles.helpText}>Click the icons to register your strokes, the score is saved when you click the basket button.</Text>
           ) : (
-            <SelectedScoreMarks strokes={strokes} onIconClicked={() => setStrokes([...strokes.filter((e, i) => i !== strokes.length - 1)])} />
+            <SelectedScoreMarks
+              strokes={strokes}
+              onIconClicked={() => setStrokes([...strokes.filter((e, i) => i !== strokes.length - 1)])}
+              putDistance={undefined}
+            />
           )}
         </View>
         <View style={styles.helpTextContainer}>
@@ -108,6 +146,30 @@ const styles = StyleSheet.create({
     margin: 5,
     flexDirection: "row",
   },
+
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+    backgroundColor: "#00000080",
+  },
+  modalView: {
+    margin: 20,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  sliderView: { flex: 1, maxHeight: 40, flexDirection: "row" },
+  headerText: { fontSize: 18, paddingBottom: 30 },
 });
 
 export default ScoreSelection;

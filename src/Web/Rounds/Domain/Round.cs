@@ -106,6 +106,11 @@ namespace Web.Rounds
         {
             return PlayerScores.Any(p => p.PlayerName == username);
         }
+
+        public void OrderByTeeHonours()
+        {
+            PlayerScores = PlayerScores.OrderBy(ps => ps.Scores.LastOrDefault(s => s.Strokes != 0)?.RelativeToPar).ToList();
+        }
     }
 
     public enum ScoreMode
@@ -123,12 +128,13 @@ namespace Web.Rounds
 
     public class HoleScore
     {
-        public int UpdateScore(int strokes, string[] strokeOutcomes)
+        public int UpdateScore(int strokes, string[] strokeOutcomes, int? putDistance = null)
         {
             Strokes = strokes;
             var relativeToPar = strokes - Hole.Par;
             RelativeToPar = relativeToPar;
             StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec {Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome)}).ToList();
+            if(StrokeSpecs != null && StrokeSpecs.Any()) StrokeSpecs.Last().PutDistance = putDistance;
             RegisteredAt = DateTime.Now;
             return relativeToPar;
         }
@@ -144,6 +150,7 @@ namespace Web.Rounds
     public class StrokeSpec
     {
         public StrokeOutcome Outcome { get; set; }
+        public int? PutDistance { get; set; }
 
         public enum StrokeOutcome
         {

@@ -13,6 +13,7 @@ export interface Hole {
 }
 export interface StrokeSpec {
   outcome: StrokeOutcome;
+  putDistance: number;
 }
 
 export type StrokeOutcome = "Fairway" | "Rough" | "OB" | "Circle2" | "Circle1" | "Basket";
@@ -241,7 +242,7 @@ export const actionCreators = {
     if (!appState.user || !appState.user.loggedIn || !appState.user.user) return;
     fetchRound(roundId, appState.user.user.token, dispatch);
   },
-  setScore: (strokes: StrokeOutcome[]): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  setScore: (strokes: StrokeOutcome[], putDistance?: number): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     const loggedInUser = appState?.user?.user;
 
@@ -263,6 +264,7 @@ export const actionCreators = {
         strokes: score,
         strokeOutcomes: strokes,
         username: loggedInUser.username,
+        putDistance: putDistance,
       }),
     })
       .then((res) => {
@@ -300,7 +302,7 @@ const getActiveHole = (round: Round) => {
     .find(() => true);
   const activeHoleIndex = activeHole && round.playerScores[0].scores.findIndex((x) => x.hole.number === activeHole.hole.number);
 
-  return activeHoleIndex !== undefined ? activeHoleIndex : 100;
+  return activeHoleIndex !== undefined ? activeHoleIndex : round.playerScores[0].scores.length - 1;
 };
 
 export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | undefined, incomingAction: Action): ActiveRoundState => {

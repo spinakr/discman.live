@@ -57,10 +57,11 @@ const mapStrokesOutcomeInt = (outcomeString: number) => {
 const HoleScoreComp = ({ holeScore, setEdit }: HoleScoreProps) => {
   const scheme = useColorScheme();
   const strokeOutcomes: StrokeOutcome[] = holeScore.strokeSpecs.map((s) => mapStrokesOutcomeInt(+s.outcome));
+  const putDistance = holeScore.strokeSpecs.find((s) => s.putDistance)?.putDistance;
   return (
     <View style={styles.container}>
       <View style={styles.selectedView}>
-        <SelectedScoreMarks strokes={strokeOutcomes} onIconClicked={() => {}} />
+        <SelectedScoreMarks strokes={strokeOutcomes} putDistance={putDistance} onIconClicked={() => {}} />
       </View>
       <View style={styles.changeView}>
         <Text style={styles.scoreText}>{scoreText(holeScore)}</Text>

@@ -23,6 +23,8 @@ namespace Web.Rounds.Commands
         public string Username { get; set; }
 
         public string[] StrokeOutcomes { get; set; }
+        public int? PutDistance { get; set; }
+        
     }
 
     public class UpdatePlayerScoreCommandHandler : IRequestHandler<UpdatePlayerScoreCommand, Round>
@@ -32,7 +34,8 @@ namespace Web.Rounds.Commands
         private readonly IHubContext<RoundsHub> _roundsHub;
         private readonly IMediator _mediator;
 
-        public UpdatePlayerScoreCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IHubContext<RoundsHub> roundsHub, IMediator mediator)
+        public UpdatePlayerScoreCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor,
+            IHubContext<RoundsHub> roundsHub, IMediator mediator)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
@@ -55,9 +58,11 @@ namespace Web.Rounds.Commands
                 .Single(s => s.Hole.Number == request.Hole);
 
             var holeAlreadyRegistered = holeScore.Strokes != 0;
-            
-            var relativeScore = holeScore
-                .UpdateScore(request.Strokes, request.StrokeOutcomes);
+
+            var relativeScore = holeScore.UpdateScore(request.Strokes, request.StrokeOutcomes, request.PutDistance);
+
+            // round.PlayerScores = round.PlayerScores.OrderBy(ps => ps.Scores.Sum(s => s.RelativeToPar)).ToList();
+            round.OrderByTeeHonours();
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
