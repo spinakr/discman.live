@@ -38,6 +38,11 @@ export interface LoginRequestedAction {
   type: "LOGIN_REQUESTED";
 }
 
+export interface RegisterPutDistanceSuccessAction {
+  type: "REGISTERPUTDISTANCE_UPDATED_SUCCESS";
+  registerPutDistance: boolean;
+}
+
 export interface LogUserOutAction {
   type: "LOGOUT_SUCCEED";
 }
@@ -56,6 +61,7 @@ export type KnownAction =
   | LogUserOutAction
   | ConnectToHubAction
   | FetchUserDetailsSuccessAction
+  | RegisterPutDistanceSuccessAction
   | LoginRequestedAction
   | RoundWasCreatedAction
   | RoundWasDeletedAction;
@@ -109,6 +115,26 @@ export const actionCreators = {
           dispatch({ type: "LOGOUT_SUCCEED" });
         }, 2000);
       });
+  },
+  setRegisterPutDistance: (registerPutDistance: boolean): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user) return;
+    fetch(`${urls.discmanWebBaseUrl}/api/users/registerPutDistance`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({ registerPutDistance }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((data) => {
+        dispatch({ type: "REGISTERPUTDISTANCE_UPDATED_SUCCESS", registerPutDistance });
+      })
+      .catch((err: Error) => {});
   },
   fetchUserDetails: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
@@ -175,7 +201,14 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
         loggingIn: false,
         failedLoginMessage: action.errorMessage,
       };
-
+    case "REGISTERPUTDISTANCE_UPDATED_SUCCESS":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          registerPutDistance: action.registerPutDistance,
+        },
+      };
     case "ROUND_WAS_CREATED":
       return {
         ...state,

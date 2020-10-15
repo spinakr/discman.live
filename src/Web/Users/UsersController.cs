@@ -139,6 +139,13 @@ namespace Web.Users
             var user = await _mediator.Send(req);
             return Ok(user);
         }
+        
+        [HttpPost("registerPutDistance")]
+        public async Task<IActionResult> SetRegisterPutDistance([FromBody] SetRegisterPutDistanceCommand req)
+        {
+            var user = await _mediator.Send(req);
+            return Ok(user);
+        }
 
         [HttpPost("friends")]
         public async Task<IActionResult> AddFriend([FromBody] AddFriendsRequest req)

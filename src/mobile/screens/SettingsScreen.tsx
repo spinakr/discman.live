@@ -1,6 +1,6 @@
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
-import { StyleSheet, TouchableOpacity, FlatList, SectionList } from "react-native";
+import { StyleSheet, TouchableOpacity, SectionList, Switch } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import { HomeBottomTabParamList } from "../types";
@@ -24,7 +24,7 @@ type Props = PropsFromRedux & {} & StackScreenProps<HomeBottomTabParamList, "Set
 
 interface LinkItem {
   textLeft: string;
-  textRight?: string;
+  textRight?: string | JSX.Element;
   onPress: any;
   style: any;
 }
@@ -33,7 +33,7 @@ interface LinkSection {
   data: LinkItem[];
 }
 
-const Item = ({ textLeft, textRight, onPress, style }: { textLeft: string; textRight?: string; onPress: any; style: any }) => (
+const Item = ({ textLeft, textRight, onPress, style }: { textLeft: string; textRight?: string | JSX.Element; onPress: any; style: any }) => (
   <TouchableOpacity onPress={onPress} style={styles.item}>
     <View style={styles.itemContainer}>
       <View style={styles.leftContainer}>
@@ -64,7 +64,7 @@ const ItemSeparatorView = () => {
   );
 };
 
-const SettingsScreen = ({ navigation, logout, user }: Props) => {
+const SettingsScreen = ({ navigation, logout, user, setRegisterPutDistance }: Props) => {
   const links: LinkSection[] = [
     {
       title: "User",
@@ -83,7 +83,14 @@ const SettingsScreen = ({ navigation, logout, user }: Props) => {
         },
         {
           textLeft: "Register put distances",
-          textRight: user?.userDetails?.registerPutDistance ? "Yes" : "No",
+          textRight: (
+            <Switch
+              value={user?.userDetails?.registerPutDistance || false}
+              onValueChange={() => {
+                setRegisterPutDistance(!user?.userDetails?.registerPutDistance);
+              }}
+            />
+          ),
           onPress: () => {},
           style: null,
         },
