@@ -12,7 +12,7 @@ export interface Hole {
   average: number;
 }
 export interface StrokeSpec {
-  strokeOutcome: StrokeOutcome;
+  outcome: StrokeOutcome;
 }
 
 export type StrokeOutcome = "Fairway" | "Rough" | "OB" | "Circle2" | "Circle1" | "Basket";
@@ -134,13 +134,23 @@ export interface ScoreUpdatedSuccessAction {
   round: Round;
 }
 
+export interface RoundNotFoundAction {
+  type: "ROUND_WAS_NOT_FOUND";
+}
+export interface PlayerCourseStatsFethSuceed {
+  type: "FETCH_COURSE_STATS_SUCCEED";
+  stats: PlayerCourseStats[];
+}
+
 export type KnownAction =
   | FetchRoundSuccessAction
   | RoundWasUpdatedAction
   | AppStateForegroundAction
   | RoundWasCreatedAction
   | RoundWasDeletedAction
+  | RoundNotFoundAction
   | SetActiveHoleAction
+  | PlayerCourseStatsFethSuceed
   | ScoreUpdatedSuccessAction;
 
 const fetchRound = (roundId: string, token: string, dispatch: (action: KnownAction) => void) => {
@@ -182,6 +192,29 @@ export const actionCreators = {
   roundWasUpdated: (round: Round) => {
     return { type: "ROUND_WAS_UPDATED", round: round };
   },
+  fetchStatsOnCourse: (roundId: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user) return;
+    fetch(`${urls.discmanWebBaseUrl}/api/rounds/${roundId}/courseStats`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => response.json() as Promise<PlayerCourseStats[]>)
+      .then((data) => {
+        dispatch({
+          type: "FETCH_COURSE_STATS_SUCCEED",
+          stats: data,
+        });
+      })
+      .catch((err: Error) => {});
+  },
   goToNextHole: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const state = getState();
     const courseHoles = state.activeRound?.round?.playerScores[0];
@@ -214,7 +247,6 @@ export const actionCreators = {
 
     const round = appState.activeRound?.round;
     const holeIndex = appState.activeRound?.activeHoleIndex;
-    console.log(holeIndex);
     if (!loggedInUser || !round || holeIndex === undefined || holeIndex < 0) return;
     const playerScores = round.playerScores.find((p) => p.playerName === loggedInUser.username);
     const holeScore = playerScores && playerScores.scores[holeIndex];
@@ -235,6 +267,9 @@ export const actionCreators = {
     })
       .then((res) => {
         if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        dispatch({
+          type: "ROUND_WAS_NOT_FOUND",
+        });
         return res;
       })
       .then((response) => response.json() as Promise<Round>)
@@ -263,9 +298,7 @@ const getActiveHole = (round: Round) => {
       return a && b ? a.hole.number - b.hole.number : 0;
     })
     .find(() => true);
-
-  const activeHoleIndex = activeHole && round.playerScores[0].scores.indexOf(activeHole);
-  console.log(activeHoleIndex);
+  const activeHoleIndex = activeHole && round.playerScores[0].scores.findIndex((x) => x.hole.number === activeHole.hole.number);
 
   return activeHoleIndex !== undefined ? activeHoleIndex : 100;
 };
@@ -297,6 +330,8 @@ export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | und
         round: action.round,
         activeHoleIndex: getActiveHole(action.round),
       };
+    case "ROUND_WAS_NOT_FOUND":
+      return initialState;
     case "ROUND_WAS_CREATED":
       return { ...state, round: action.round };
     case "ROUND_WAS_DELETED":
@@ -304,7 +339,11 @@ export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | und
         return initialState;
       }
       return state;
-
+    case "FETCH_COURSE_STATS_SUCCEED":
+      return {
+        ...state,
+        playerCourseStats: action.stats,
+      };
     case "APPSTATE_FORGROUND":
       return { ...state };
     default:

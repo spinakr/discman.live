@@ -21,7 +21,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {} & StackScreenProps<HomeBottomTabParamList, "Play"> & StackScreenProps<PlayStackParamList, "CreateRound">;
 
-const CreateRoundScreen = ({ activeRound, navigation, fetchUserDetails, user }: Props) => {
+const CreateRoundScreen = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <Text>

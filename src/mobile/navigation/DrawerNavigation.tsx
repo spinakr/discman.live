@@ -15,6 +15,7 @@ import { HomeBottomTabParamList, PlayStackParamList } from "../types";
 import SettingsScreen from "../screens/SettingsScreen";
 import reconnectToHubOnAppStateChange from "../hooks/dispatchAppStateChanges";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Drawer = createDrawerNavigator<HomeBottomTabParamList>();
 
@@ -77,6 +78,9 @@ const PlayNavigator = ({ activeRound, fetchUserDetails, username }: Props) => {
   }, [username]);
   reconnectToHubOnAppStateChange();
 
+  useFocusEffect(() => {
+    fetchUserDetails();
+  });
   return (
     <PlayStack.Navigator screenOptions={{}}>
       {activeRound ? (

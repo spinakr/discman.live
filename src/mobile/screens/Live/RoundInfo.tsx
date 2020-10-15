@@ -20,7 +20,7 @@ const RoundInfo = ({ holeScore, round, activeHole }: RoundInfoProps) => {
 };
 
 const styles = StyleSheet.create({
-  roundInfoSection: { flex: 1, padding: 5, justifyContent: "space-evenly", alignItems: "center", flexDirection: "row" },
+  roundInfoSection: { flex: 0.5, padding: 5, justifyContent: "space-evenly", alignItems: "center", flexDirection: "row" },
   subtitleText: { fontSize: 18 },
   titleText: { fontSize: 20, fontWeight: "bold" },
   infoText: { fontSize: 12 },
