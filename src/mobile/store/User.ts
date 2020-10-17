@@ -66,6 +66,8 @@ export type KnownAction =
   | RoundWasCreatedAction
   | RoundWasDeletedAction;
 
+var fetchedUserDetails: number = 0; //concurrency controll of exesive fetching
+
 export const actionCreators = {
   loadLogginInfo: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     AsyncStorage.getItem("user").then((data) => {
@@ -137,6 +139,8 @@ export const actionCreators = {
       .catch((err: Error) => {});
   },
   fetchUserDetails: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    if (Date.now() - fetchedUserDetails < 1000) return;
+    fetchedUserDetails = Date.now();
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user) return;
 
@@ -160,9 +164,7 @@ export const actionCreators = {
           userDetails: data,
         });
       })
-      .catch((err: Error) => {
-        //SDASD
-      });
+      .catch((err: Error) => {});
   },
 };
 

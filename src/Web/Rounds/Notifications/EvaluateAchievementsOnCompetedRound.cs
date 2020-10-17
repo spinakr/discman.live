@@ -35,7 +35,7 @@ namespace Web.Rounds.Notifications
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
-            await _roundsHub.NotifyPlayersOnUpdatedRound(round);
+            await _roundsHub.NotifyPlayersOnUpdatedRound("", round);
         }
 
         private async Task<IEnumerable<Achievement>> EvaluateAchievements(Round round)

@@ -42,7 +42,6 @@ const Navigation = ({ colorScheme, user }: Props) => {
             </>
           ) : (
             <>
-              {/* <Stack.Screen name="AuthLoading" component={AuthLoadingScreen} /> */}
               <Stack.Screen name="Login" component={LoginScreen} />
             </>
           )}

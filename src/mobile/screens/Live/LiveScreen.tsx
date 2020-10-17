@@ -19,7 +19,6 @@ const mapState = (state: ApplicationState) => {
   return {
     activeRound: state.activeRound,
     user: state.user,
-    courseStats: state.activeRound?.playerCourseStats,
   };
 };
 
@@ -28,7 +27,7 @@ const connector = connect(mapState, { ...RoundStore.actionCreators, ...UserStore
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {} & StackScreenProps<PlayStackParamList, "Live">;
-const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goToPreviousHole, fetchStatsOnCourse, courseStats }: Props) => {
+const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goToPreviousHole, fetchStatsOnCourse }: Props) => {
   const [edit, setEdit] = useState(false);
   const activeRoundId = user?.userDetails?.activeRound;
   React.useEffect(() => {
@@ -45,7 +44,7 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
   const playerScores = round?.playerScores.find((p) => p.playerName === user?.user?.username)?.scores || round?.playerScores[0].scores;
   if (!round || !activeRound || !playerScores) return null;
   const holeScore = playerScores[activeRound.activeHoleIndex];
-  const playerCourseStats = courseStats?.find((s) => s.playerName === user?.user?.username);
+  const playerCourseStats = activeRound.playerCourseStats?.find((s) => s.playerName === user?.user?.username);
   if (!holeScore) return null;
   return (
     <View style={styles.container}>
@@ -53,6 +52,7 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
       <HoleInfo playerCourseStats={playerCourseStats} hole={holeScore.hole} activeHoleNumber={holeScore.hole.number} />
       <View style={styles.scoresSection}>
         <PlayerScores
+          currentUser={user?.user?.username || ""}
           playerScores={round?.playerScores}
           activeHoleIndex={activeRound.activeHoleIndex}
           goToNextHole={goToNextHole}

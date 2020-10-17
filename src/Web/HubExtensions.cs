@@ -13,17 +13,19 @@ namespace Web
 {
     public static class HubExtensions
     {
-        public static Task NotifyPlayersOnUpdatedRound(this IHubContext<RoundsHub> hub, Round round)
+        public static Task NotifyPlayersOnUpdatedRound(this IHubContext<RoundsHub> hub, string username, Round round)
         {
             var notifyTasks = round
-                .PlayerScores.Select(s => hub.Clients.Group(s.PlayerName)
+                .PlayerScores
+                .Where(p => p.PlayerName != username)
+                .Select(s => hub.Clients.Group(s.PlayerName)
                     .SendAsync("roundUpdated",
                         JsonConvert.SerializeObject(round,
                             new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()})));
 
             return Task.WhenAll(notifyTasks);
         }
-        
+
         public static Task NotifyPlayersOnNewRound(this IHubContext<RoundsHub> hub, Round round)
         {
             var notifyTasks = round
@@ -36,7 +38,7 @@ namespace Web
 
             return Task.WhenAll(notifyTasks);
         }
-        
+
         public static Task NotifyPlayersOnDeletedRound(this IHubContext<RoundsHub> hub, Guid roundId, List<string> notificationPlayers)
         {
             var notifyTasks = notificationPlayers

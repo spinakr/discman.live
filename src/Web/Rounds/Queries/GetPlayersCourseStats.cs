@@ -60,7 +60,10 @@ namespace Web.Rounds.Queries
                         HoleNumber = x.Key,
                         AverageScore = x.Average(s => s.Strokes),
                         BestScore = x.Min(s => s.RelativeToPar),
-                        Birdie = x.Any(s => s.RelativeToPar == -1)
+                        Birdie = x.Any(s => s.RelativeToPar == -1),
+                        Birdies = x.Count(s => s.RelativeToPar == -1),
+                        Pars = x.Count(s => s.RelativeToPar == 0),
+                        WorseThanPar = x.Count(s => s.RelativeToPar > 0),
                     }).ToList()
                     : new List<HoleStats>();
 
@@ -115,5 +118,8 @@ namespace Web.Rounds.Queries
         public int BestScore { get; set; }
         public double AverageScore { get; set; }
         public bool Birdie { get; set; }
+        public int Birdies { get; set; }
+        public int Pars { get; set; }
+        public int WorseThanPar { get; set; }
     }
 }

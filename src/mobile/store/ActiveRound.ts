@@ -38,7 +38,7 @@ export interface PlayerCourseStats {
   playerCourseRecord: number;
   holeAverages: number[];
   averagePrediction: number[];
-  roundsPlayed: string;
+  roundsPlayed: number;
   holeStats: HoleStats[];
 }
 
@@ -47,6 +47,9 @@ export interface HoleStats {
   bestScore: number;
   averageScore: number;
   birdie: boolean;
+  birdies: number;
+  pars: number;
+  worseThanPar: number;
 }
 
 export interface PlayerRoundProgression {
@@ -268,10 +271,12 @@ export const actionCreators = {
       }),
     })
       .then((res) => {
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        dispatch({
-          type: "ROUND_WAS_NOT_FOUND",
-        });
+        if (!res.ok) {
+          dispatch({
+            type: "ROUND_WAS_NOT_FOUND",
+          });
+          throw new Error(`${res.status} - ${res.statusText}`);
+        }
         return res;
       })
       .then((response) => response.json() as Promise<Round>)
@@ -301,7 +306,6 @@ const getActiveHole = (round: Round) => {
     })
     .find(() => true);
   const activeHoleIndex = activeHole && round.playerScores[0].scores.findIndex((x) => x.hole.number === activeHole.hole.number);
-
   return activeHoleIndex !== undefined ? activeHoleIndex : round.playerScores[0].scores.length - 1;
 };
 

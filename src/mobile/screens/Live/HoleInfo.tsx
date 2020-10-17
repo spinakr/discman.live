@@ -10,30 +10,28 @@ export interface HoleInfoProps {
   hole: Hole;
 }
 
-const scoreName = (relativeScore: number, holePar: number) => {
-  switch (holePar - relativeScore) {
-    case -1:
-      return "Birdie";
-    case -1:
-      return "Eagle";
-  }
-};
-
 const HoleInfo = ({ playerCourseStats, activeHoleNumber, hole }: HoleInfoProps) => {
   if (!playerCourseStats) return null;
   const holeStats = playerCourseStats.holeStats.find((s) => s.holeNumber === activeHoleNumber);
-  if (!holeStats) return null;
-  const bestScore = hole.par + holeStats.bestScore;
+  const birdieRate = holeStats && ((holeStats.birdies / playerCourseStats.roundsPlayed) * 100).toFixed(0);
+  const parRate = holeStats && ((holeStats.pars / playerCourseStats.roundsPlayed) * 100).toFixed(0);
+  const worseRate = holeStats && ((holeStats.worseThanPar / playerCourseStats.roundsPlayed) * 100).toFixed(0);
   return (
     <View style={styles.holeInfoSection}>
       <Text>
-        <Text style={styles.descritionText}>avg </Text>
-        <Text style={styles.statsText}>{holeStats.averageScore.toFixed(1)}</Text>
+        <Text style={styles.descritionText}>best </Text>
+        {holeStats && <Text style={styles.statsText}>{hole.par + holeStats?.bestScore} </Text>}
+        {holeStats && holeStats?.bestScore === -1 && <FontAwesome5 name="earlybirds" size={20} color="black" />}
+        {holeStats && holeStats?.bestScore === -2 && <FontAwesome5 name="star" size={20} color="black" />}
+        {holeStats && holeStats?.bestScore === 0 && <FontAwesome5 name="square" size={20} color="black" />}
       </Text>
       <Text>
-        <Text style={styles.descritionText}>best </Text>
-        <Text style={styles.statsText}>{bestScore} </Text>
-        {holeStats.bestScore === -1 && <FontAwesome5 name="earlybirds" size={20} color="black" />}
+        <Text style={styles.descritionText}>avg </Text>
+        {holeStats && <Text style={styles.statsText}>{holeStats?.averageScore.toFixed(1)}</Text>}
+      </Text>
+      <Text>
+        <Text style={styles.descritionText}>birdies </Text>
+        {holeStats && <Text style={styles.statsText}>{birdieRate} %</Text>}
       </Text>
     </View>
   );

@@ -10,8 +10,9 @@ export interface PlayerScoresProps {
   activeHoleIndex: number;
   goToNextHole: () => void;
   goToPreviousHole: () => void;
+  currentUser: string;
 }
-const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviousHole }: PlayerScoresProps) => {
+const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviousHole, currentUser }: PlayerScoresProps) => {
   const courseHoles = playerScores[0].scores;
   const currentHole = courseHoles[activeHoleIndex];
   const nextHole = courseHoles.length - 1 >= activeHoleIndex + 1 ? courseHoles[activeHoleIndex + 1] : null;
@@ -42,28 +43,32 @@ const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviou
         }, 0);
 
         return (
-          <View style={styles.scoresRow} key={p.playerName}>
-            <View style={styles.scoresCellHead}>
+          <View style={[styles.scoresRow, currentUser === p.playerName && styles.currentUserRow]} key={p.playerName}>
+            <View style={[styles.scoresCellHead, currentUser === p.playerName && styles.currentUserCell]}>
               <DiscgolfBasketIcon color={currentHole.strokes === 0 ? "red" : "green"} size={40} />
               <Text numberOfLines={1} style={styles.scoresHeadText}>
                 {p.playerName}
               </Text>
             </View>
-            <View style={styles.scoresTotalCell}>
+            <View style={[styles.scoresTotalCell, currentUser === p.playerName && styles.currentUserCell]}>
               <Text>
                 ({totalScore > 0 && "+"}
                 {totalScore < 0 && "-"}
                 {Math.abs(totalScore)})
               </Text>
             </View>
-            <View style={styles.scoresCell}>
-              {prevHole && <Text style={styles.scoresText}>{previousHole.strokes === 0 ? "-" : previousHole.relativeToPar}</Text>}
+            <View style={[styles.scoresCell, currentUser === p.playerName && styles.currentUserCell]}>
+              {prevHole && <Text style={styles.scoresText}>{previousHole.strokes}</Text>}
             </View>
-            <View style={styles.currentScoresCell}>
-              {<Text style={styles.currentHoleScoreText}>{currentHole.strokes === 0 ? "-" : currentHole.relativeToPar}</Text>}
+            <View style={[styles.currentScoresCell, currentUser === p.playerName && styles.currentUserCell]}>
+              {
+                <Text style={currentUser === p.playerName ? styles.currentHoleCurrentUserScoreText : styles.currentHoleScoreText}>
+                  {currentHole.strokes}
+                </Text>
+              }
             </View>
-            <View style={styles.scoresCell}>
-              {nextHole && <Text style={styles.scoresText}>{nextHole.strokes === 0 ? "-" : nextHole.relativeToPar}</Text>}
+            <View style={[styles.scoresCell, currentUser === p.playerName && styles.currentUserCell]}>
+              {nextHole && <Text style={styles.scoresText}>{nextHole.strokes}</Text>}
             </View>
           </View>
         );
@@ -74,15 +79,18 @@ const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviou
 
 const styles = StyleSheet.create({
   scoresContainer: { flex: 1, padding: 5 },
-  scoresRow: { flex: 5, flexDirection: "row" },
+  scoresRow: { flex: 3, flexDirection: "row" },
   scoresHeaderRow: { flex: 1, flexDirection: "row" },
   scoresCell: { flex: 2, justifyContent: "center", alignItems: "center" },
   scoresTotalCell: { flex: 1, justifyContent: "center", alignItems: "center" },
   currentScoresCell: { flex: 4, justifyContent: "center", alignItems: "center", borderRightWidth: 1, borderLeftWidth: 1, borderColor: "lightgrey" },
-  currentHoleScoreText: { fontSize: 40 },
-  scoresCellHead: { flex: 3, justifyContent: "center", alignItems: "center", flexDirection: "row" },
+  currentHoleScoreText: { fontSize: 20 },
+  currentHoleCurrentUserScoreText: { fontSize: 30 },
+  scoresCellHead: { flex: 5, justifyContent: "flex-start", alignItems: "center", flexDirection: "row" },
   scoresHeadText: {},
   scoresText: { fontSize: 12 },
+  currentUserCell: {},
+  currentUserRow: { flex: 5, borderTopWidth: 3, borderBottomWidth: 3, borderColor: "rgba(0, 0, 0, 0.10)" },
 });
 
 export default PlayerScores;
