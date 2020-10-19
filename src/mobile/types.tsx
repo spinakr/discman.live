@@ -12,6 +12,11 @@ export type HomeBottomTabParamList = {
   Settings: undefined;
 };
 
+export type LiveBottomTabParamList = {
+  Register: undefined;
+  Scorecard: undefined;
+};
+
 export type LoginParamList = {
   LoginScreen: undefined;
 };

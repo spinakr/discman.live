@@ -1,21 +1,20 @@
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as React from "react";
 import { useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import * as UserStore from "../store/User";
-import Colors from "../constants/Colors";
-import useColorScheme from "../hooks/useColorScheme";
 import CreateRoundScreen from "../screens/CreateRoundScreen";
 import DiscmanScreen from "../screens/DiscmanScreen";
-import LiveScreen from "../screens/Live/LiveScreen";
 import { ApplicationState } from "../store";
 import { HomeBottomTabParamList, PlayStackParamList } from "../types";
 import SettingsScreen from "../screens/SettingsScreen";
 import reconnectToHubOnAppStateChange from "../hooks/dispatchAppStateChanges";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useFocusEffect } from "@react-navigation/native";
+import LiveScreen2 from "../screens/Live/LiveScreen2";
+import CommonNavHeader from "./CommonNavHeader";
+import LiveScreen from "../screens/Live/LiveScreen";
+import LiveScreen3 from "../screens/Live/LiveScreen3";
 
 const Drawer = createDrawerNavigator<HomeBottomTabParamList>();
 
@@ -23,7 +22,7 @@ const DrawerNavigator = () => {
   return (
     <Drawer.Navigator initialRouteName="Play">
       <Drawer.Screen name="Play" component={PlayContainer} />
-      <Drawer.Screen name="Discman.live" component={DiscmanScreen} />
+      <Drawer.Screen name="Discman.live" component={DiscmanScreen} options={{}} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
     </Drawer.Navigator>
   );
@@ -84,7 +83,7 @@ const PlayNavigator = ({ activeRound, fetchUserDetails, username }: Props) => {
   return (
     <PlayStack.Navigator screenOptions={{}}>
       {activeRound ? (
-        <PlayStack.Screen name="Live" component={LiveScreen} options={{ headerShown: false }} />
+        <PlayStack.Screen name="Live" component={LiveScreen3} options={{ headerShown: false }} />
       ) : (
         <PlayStack.Screen name="CreateRound" component={CreateRoundScreen} options={{ headerTitle: "Create Round" }} />
       )}

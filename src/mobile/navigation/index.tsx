@@ -10,9 +10,8 @@ import LinkingConfiguration from "./LinkingConfiguration";
 import { ApplicationState } from "../store";
 import { connect, ConnectedProps } from "react-redux";
 import LoginScreen from "../screens/LoginScreen";
-import AuthLoadingScreen from "../screens/AuthLoadingScreen";
 import { StatusBar } from "react-native";
-import NavHeader from "./NavHeader";
+import NavHeader from "./CommonNavHeader";
 
 const Stack = createStackNavigator<StackParamList>();
 
@@ -34,7 +33,7 @@ const Navigation = ({ colorScheme, user }: Props) => {
   return (
     <SafeAreaView style={styles.container}>
       <NavigationContainer linking={LinkingConfiguration} theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack.Navigator screenOptions={{ header: () => <NavHeader /> }} initialRouteName="Login">
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
           {user?.loggedIn ? (
             <>
               <Stack.Screen name="Home" component={BottomTabNavigator} />

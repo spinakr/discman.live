@@ -38,7 +38,7 @@ const HoleInfo = ({ playerCourseStats, activeHoleNumber, hole }: HoleInfoProps) 
 };
 
 const styles = StyleSheet.create({
-  holeInfoSection: { flex: 0.5, padding: 5, justifyContent: "space-evenly", alignItems: "center", flexDirection: "row" },
+  holeInfoSection: { flex: 1, padding: 5, justifyContent: "space-evenly", alignItems: "center", flexDirection: "row" },
   statsText: { fontSize: 18 },
   descritionText: { fontSize: 12 },
 });

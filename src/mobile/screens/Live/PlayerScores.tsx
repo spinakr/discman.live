@@ -52,9 +52,9 @@ const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviou
             </View>
             <View style={[styles.scoresTotalCell, currentUser === p.playerName && styles.currentUserCell]}>
               <Text>
-                ({totalScore > 0 && "+"}
+                {totalScore > 0 && "+"}
                 {totalScore < 0 && "-"}
-                {Math.abs(totalScore)})
+                {Math.abs(totalScore)}
               </Text>
             </View>
             <View style={[styles.scoresCell, currentUser === p.playerName && styles.currentUserCell]}>
@@ -79,7 +79,7 @@ const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviou
 
 const styles = StyleSheet.create({
   scoresContainer: { flex: 1, padding: 5 },
-  scoresRow: { flex: 3, flexDirection: "row" },
+  scoresRow: { flex: 2, flexDirection: "row" },
   scoresHeaderRow: { flex: 1, flexDirection: "row" },
   scoresCell: { flex: 2, justifyContent: "center", alignItems: "center" },
   scoresTotalCell: { flex: 1, justifyContent: "center", alignItems: "center" },
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   scoresHeadText: {},
   scoresText: { fontSize: 12 },
   currentUserCell: {},
-  currentUserRow: { flex: 5, borderTopWidth: 3, borderBottomWidth: 3, borderColor: "rgba(0, 0, 0, 0.10)" },
+  currentUserRow: { flex: 4, borderTopWidth: 3, borderBottomWidth: 3, borderColor: "rgba(0, 0, 0, 0.10)" },
 });
 
 export default PlayerScores;

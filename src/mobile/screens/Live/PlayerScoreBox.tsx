@@ -9,10 +9,12 @@ export interface PlayerScoreBoxProps {
 }
 const PlayerScoreBox = ({ player, activeHole }: PlayerScoreBoxProps) => {
   const playerScore = player.scores.find((s) => s.hole.number === activeHole)?.strokes || 0;
+
   return (
-    <View key={player.playerName} style={{ ...styles.playerNameScoreView, borderColor: playerScore !== 0 ? "green" : "red" }}>
-      <Text style={{ ...styles.playerNameText }}>{player.playerName}</Text>
-      <Text style={{ ...styles.playerScoreText }}>{playerScore !== 0 && playerScore}</Text>
+    <View key={player.playerName} style={{ ...styles.playerNameScoreView }}>
+      <Text style={{ ...styles.playerNameText, borderColor: playerScore !== 0 ? "green" : "red" }}>
+        {player.playerName.slice(0, 2).toLowerCase()}
+      </Text>
     </View>
   );
 };
@@ -20,19 +22,15 @@ const PlayerScoreBox = ({ player, activeHole }: PlayerScoreBoxProps) => {
 const styles = StyleSheet.create({
   playerNameScoreView: {
     alignItems: "center",
-    borderWidth: 3,
-    borderRadius: 10,
-    borderColor: "#E91E63",
-    padding: 1,
-    minWidth: 65,
-  },
-
-  playerScoreText: {
-    padding: 5,
   },
   playerNameText: {
-    padding: 5,
+    minWidth: 50,
     fontSize: 20,
+    borderWidth: 5,
+    borderRadius: 10,
+    borderColor: "#E91E63",
+    textAlign: "center",
+    padding: 5,
   },
 });
 

@@ -1,4 +1,4 @@
-import { StackScreenProps } from "@react-navigation/stack";
+import { createStackNavigator, StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { StyleSheet, TouchableOpacity, SectionList, Switch } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
@@ -8,6 +8,7 @@ import * as UserStore from "../store/User";
 import { View, Text } from "../components/Themed";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
+import CommonNavHeader from "../navigation/CommonNavHeader";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -154,4 +155,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connector(SettingsScreen);
+const Stack = createStackNavigator<{ Settings: undefined }>();
+
+const StackNavigator = () => {
+  return (
+    <Stack.Navigator initialRouteName="Settings" screenOptions={{ header: () => <CommonNavHeader /> }}>
+      <Stack.Screen name="Settings" component={connector(SettingsScreen)} />
+    </Stack.Navigator>
+  );
+};
+
+export default StackNavigator;

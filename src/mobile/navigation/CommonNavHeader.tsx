@@ -6,7 +6,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
 
-const NavHeader = () => {
+const CommonNavHeader = () => {
   const nav = useNavigation();
   const scheme = useColorScheme();
   return (
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NavHeader;
+export default CommonNavHeader;

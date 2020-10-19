@@ -79,17 +79,14 @@ const ScoreSelection = ({ saveScore, cancelEdit, registerPutDistance }: ScoreSel
           </View>
         </View>
       </Modal>
-      <View style={styles.selectorContainer}>
+      <View style={styles.container}>
+        <View style={styles.discSelectorContainer}></View>
         <View style={styles.selectedScoresRow}>
-          {showDescriptions ? (
-            <Text style={styles.helpText}>Click the icons to register your strokes, the score is saved when you click the basket button.</Text>
-          ) : (
-            <SelectedScoreMarks
-              strokes={strokes}
-              onIconClicked={() => setStrokes([...strokes.filter((e, i) => i !== strokes.length - 1)])}
-              putDistance={undefined}
-            />
-          )}
+          <SelectedScoreMarks
+            strokes={strokes}
+            onIconClicked={() => setStrokes([...strokes.filter((e, i) => i !== strokes.length - 1)])}
+            putDistance={undefined}
+          />
         </View>
         <View style={styles.helpTextContainer}>
           {cancelEdit ? (
@@ -102,15 +99,17 @@ const ScoreSelection = ({ saveScore, cancelEdit, registerPutDistance }: ScoreSel
             </TouchableOpacity>
           )}
         </View>
-        <View style={styles.scoreSelectorRow}>
-          {renderSelectorButton(<OutcomeIcon outcome="Rough" size={50} />, "Rough: \nnot where intended", "Rough")}
-          {renderSelectorButton(<OutcomeIcon outcome="Circle2" size={50} />, "Circle 2: \ninside 20 meters", "Circle2")}
-          {renderSelectorButton(<OutcomeIcon outcome="OB" size={50} />, "Out-of-bounds \n", "OB")}
-        </View>
-        <View style={styles.scoreSelectorRow}>
-          {renderSelectorButton(<OutcomeIcon outcome="Fairway" size={50} />, "Fairway:  \nclear path to basket", "Fairway")}
-          {renderSelectorButton(<OutcomeIcon outcome="Circle1" size={60} />, "Circle 1  \ninside 10 meters", "Circle1")}
-          {renderSelectorButton(<OutcomeIcon outcome="Basket" size={90} />, "In the basket!", "Basket")}
+        <View style={styles.scoreSelectorContainer}>
+          <View style={styles.scoreSelectorRow}>
+            {renderSelectorButton(<OutcomeIcon outcome="Rough" size={50} />, "Rough: \nnot where intended", "Rough")}
+            {renderSelectorButton(<OutcomeIcon outcome="Circle2" size={50} />, "Circle 2: \ninside 20 meters", "Circle2")}
+            {renderSelectorButton(<OutcomeIcon outcome="OB" size={50} />, "Out-of-bounds \n", "OB")}
+          </View>
+          <View style={styles.scoreSelectorRow}>
+            {renderSelectorButton(<OutcomeIcon outcome="Fairway" size={50} />, "Fairway:  \nclear path to basket", "Fairway")}
+            {renderSelectorButton(<OutcomeIcon outcome="Circle1" size={60} />, "Circle 1  \ninside 10 meters", "Circle1")}
+            {renderSelectorButton(<OutcomeIcon outcome="Basket" size={90} />, "In the basket!", "Basket")}
+          </View>
         </View>
       </View>
     </>
@@ -118,7 +117,8 @@ const ScoreSelection = ({ saveScore, cancelEdit, registerPutDistance }: ScoreSel
 };
 
 const styles = StyleSheet.create({
-  selectorContainer: { flex: 1, alignItems: "center" },
+  container: { flex: 1 },
+  discSelectorContainer: { flex: 2 },
   scoreSelector: {
     flex: 1,
     justifyContent: "center",
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
     borderColor: "grey",
     margin: 10,
     aspectRatio: 1,
+    maxHeight: 110,
     borderRadius: 10,
     borderWidth: 3,
     overflow: "hidden",
@@ -139,12 +140,14 @@ const styles = StyleSheet.create({
   helpTextClickable: { textDecorationLine: "underline" },
   selectedScoresRow: {
     flex: 1,
+    alignItems: "center",
   },
   selectedScoresContainer: { flex: 1, flexDirection: "row", padding: 3, alignItems: "center" },
+  scoreSelectorContainer: { flex: 4 },
   scoreSelectorRow: {
     flex: 1,
-    margin: 5,
     flexDirection: "row",
+    justifyContent: "center",
   },
 
   centeredView: {

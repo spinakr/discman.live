@@ -1,13 +1,13 @@
-import { StackScreenProps } from "@react-navigation/stack";
+import { createStackNavigator, StackScreenProps } from "@react-navigation/stack";
 import { WebView } from "react-native-webview";
 import * as React from "react";
 import { StyleSheet } from "react-native";
 import { HomeBottomTabParamList, StackParamList } from "../types";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ApplicationState } from "../store";
 import { connect, ConnectedProps } from "react-redux";
 import * as UserStore from "../store/User";
 import Urls from "../constants/Urls";
+import CommonNavHeader from "../navigation/CommonNavHeader";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -44,6 +44,14 @@ const DiscmanScreen = ({ user }: Props) => {
   );
 };
 
-const styles = StyleSheet.create({ safeArea: { flex: 1, justifyContent: "flex-start" } });
+const Stack = createStackNavigator<{ Discman: undefined }>();
 
-export default connector(DiscmanScreen);
+const StackNavigator = () => {
+  return (
+    <Stack.Navigator initialRouteName="Discman" screenOptions={{ header: () => <CommonNavHeader /> }}>
+      <Stack.Screen name="Discman" component={connector(DiscmanScreen)} />
+    </Stack.Navigator>
+  );
+};
+
+export default StackNavigator;
