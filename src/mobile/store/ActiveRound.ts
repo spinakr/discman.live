@@ -1,8 +1,6 @@
-import { AsyncStorage } from "react-native";
 import { Action, Reducer } from "redux";
-import { AppStateForegroundAction, AppThunkAction } from ".";
+import { ApplicationState, AppStateForegroundAction, AppThunkAction } from ".";
 import urls from "../constants/Urls";
-import { User } from "./User";
 
 export interface Hole {
   number: number;
@@ -50,12 +48,6 @@ export interface HoleStats {
   birdies: number;
   pars: number;
   worseThanPar: number;
-}
-
-export interface PlayerRoundProgression {
-  courseAverage: number;
-  holeAverages: [number, number][];
-  averagePrediction: [number, number][];
 }
 
 export interface HoleScore {
@@ -133,11 +125,6 @@ export interface SetActiveHoleAction {
   holeIndex: number;
 }
 
-export interface ScoreUpdatedSuccessAction {
-  type: "SCORE_UPDATED_SUCCESS";
-  round: Round;
-}
-
 export interface RoundNotFoundAction {
   type: "ROUND_WAS_NOT_FOUND";
 }
@@ -154,8 +141,7 @@ export type KnownAction =
   | RoundWasDeletedAction
   | RoundNotFoundAction
   | SetActiveHoleAction
-  | PlayerCourseStatsFethSuceed
-  | ScoreUpdatedSuccessAction;
+  | PlayerCourseStatsFethSuceed;
 
 const fetchRound = (roundId: string, token: string, dispatch: (action: KnownAction) => void) => {
   fetch(`${urls.discmanWebBaseUrl}/api/rounds/${roundId}`, {
@@ -178,7 +164,7 @@ const fetchRound = (roundId: string, token: string, dispatch: (action: KnownActi
         round: data,
       });
     })
-    .catch((err: Error) => {});
+    .catch(() => {});
 };
 
 const countScore = (strokes: StrokeOutcome[]) => {
@@ -217,7 +203,7 @@ export const actionCreators = {
           stats: data,
         });
       })
-      .catch((err: Error) => {});
+      .catch(() => {});
   },
   goToNextHole: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const state = getState();
@@ -282,11 +268,11 @@ export const actionCreators = {
       .then((response) => response.json() as Promise<Round>)
       .then((data) => {
         dispatch({
-          type: "SCORE_UPDATED_SUCCESS",
+          type: "ROUND_WAS_UPDATED",
           round: data,
         });
       })
-      .catch((err: Error) => {});
+      .catch(() => {});
   },
 };
 
@@ -298,7 +284,7 @@ const initialState: ActiveRoundState = {
   finishedRoundStats: [],
 };
 
-const getActiveHole = (round: Round) => {
+export const getActiveHole = (round: Round) => {
   const activeHole = round.playerScores
     .map((p) => p.scores.find((s) => s.strokes === 0))
     .sort((a, b) => {
@@ -326,16 +312,14 @@ export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | und
       return {
         ...state,
         round: action.round,
-        activeHoleIndex: getActiveHole(action.round),
+        //if holes has been shifted on the server, the activeHoleIndex is no longer valid
+        activeHoleIndex:
+          action.round.playerScores[0].scores[0].hole.number !== state.round.playerScores[0].scores[0].hole.number
+            ? getActiveHole(action.round) - 1
+            : state.activeHoleIndex,
       };
     case "ACTIVE_HOLE_WAS_SET":
       return { ...state, activeHoleIndex: action.holeIndex };
-    case "SCORE_UPDATED_SUCCESS":
-      return {
-        ...state,
-        round: action.round,
-        activeHoleIndex: getActiveHole(action.round),
-      };
     case "ROUND_WAS_NOT_FOUND":
       return initialState;
     case "ROUND_WAS_CREATED":

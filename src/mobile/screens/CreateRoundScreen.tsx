@@ -1,4 +1,4 @@
-import { StackScreenProps } from "@react-navigation/stack";
+import { createStackNavigator, StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { StyleSheet } from "react-native";
 import { connect, ConnectedProps } from "react-redux";
@@ -7,6 +7,7 @@ import { HomeBottomTabParamList, PlayStackParamList } from "../types";
 import * as UserStore from "../store/User";
 import { useEffect } from "react";
 import { View, Text } from "../components/Themed";
+import CommonNavHeader from "../navigation/CommonNavHeader";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -50,4 +51,14 @@ const styles = StyleSheet.create({
   },
 });
 
-export default connector(CreateRoundScreen);
+const Stack = createStackNavigator<{ CreateRound: undefined }>();
+
+const StackNavigator = () => {
+  return (
+    <Stack.Navigator initialRouteName="CreateRound" screenOptions={{ header: () => <CommonNavHeader /> }}>
+      <Stack.Screen name="CreateRound" component={connector(CreateRoundScreen)} />
+    </Stack.Navigator>
+  );
+};
+
+export default StackNavigator;

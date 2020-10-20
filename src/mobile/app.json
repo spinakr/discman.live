@@ -3,6 +3,7 @@
     "name": "discman.live",
     "slug": "discman",
     "version": "1.0.0",
+    "owner": "andkof",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "discman",
@@ -15,9 +16,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false
     },

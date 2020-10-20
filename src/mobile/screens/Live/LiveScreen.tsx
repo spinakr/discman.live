@@ -1,4 +1,4 @@
-import { StackScreenProps } from "@react-navigation/stack";
+import { createStackNavigator, StackHeaderProps, StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { StyleSheet } from "react-native";
 import { ApplicationState } from "../../store";
@@ -14,6 +14,7 @@ import { useState } from "react";
 import HoleScore from "./HoleScore";
 import { StrokeOutcome } from "../../store/ActiveRound";
 import HoleInfo from "./HoleInfo";
+import LiveNavHeader from "./LiveNavHeader";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -51,9 +52,6 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
       <View style={styles.roundInfoSection}>
         <RoundInfo holeScore={holeScore} round={round} activeHole={activeRound.activeHoleIndex} />
       </View>
-      <View style={styles.holeInfoSection}>
-        <HoleInfo playerCourseStats={playerCourseStats} hole={holeScore.hole} activeHoleNumber={holeScore.hole.number} />
-      </View>
       <View style={styles.scoresSection}>
         <PlayerScores
           currentUser={user?.user?.username || ""}
@@ -63,9 +61,18 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
           goToPreviousHole={goToPreviousHole}
         />
       </View>
+      <View style={styles.holeInfoSection}>
+        <HoleInfo playerCourseStats={playerCourseStats} hole={holeScore.hole} activeHoleNumber={holeScore.hole.number} />
+      </View>
       <View style={styles.selectorSection}>
         {holeScore.strokes !== 0 && !edit ? (
-          <HoleScore holeScore={holeScore} setEdit={setEdit} />
+          <HoleScore
+            playerScores={round.playerScores}
+            activeHoleIndex={activeRound.activeHoleIndex}
+            setEdit={setEdit}
+            username={user?.user?.username || ""}
+            playerCourseStats={playerCourseStats}
+          />
         ) : (
           <ScoreSelection
             saveScore={saveScore}
@@ -79,12 +86,29 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
 };
 
 const styles = StyleSheet.create({
-  roundInfoSection: { flex: 0.5, paddingTop: 10 },
-  holeInfoSection: { flex: 0.5 },
+  roundInfoSection: { flex: 1, paddingTop: 15 },
+  holeInfoSection: { flex: 1 },
   container: { flex: 1, paddingBottom: 10 },
   scoresSection: { flex: 3 },
   scoresSubSection: { flex: 1, flexDirection: "row", alignItems: "flex-start", justifyContent: "space-around" },
   selectorSection: { flex: 5 },
 });
 
-export default connector(LiveScreen);
+const Stack = createStackNavigator<{ Register: undefined; Scorecard: undefined }>();
+
+const StackNavigator = () => {
+  return (
+    <Stack.Navigator
+      headerMode="screen"
+      initialRouteName="Register"
+      screenOptions={{
+        header: (props: StackHeaderProps) => <LiveNavHeader activeScreen={props.scene.route.name} />,
+      }}
+    >
+      <Stack.Screen name="Scorecard" component={connector(LiveScreen)} />
+      <Stack.Screen name="Register" component={connector(LiveScreen)} />
+    </Stack.Navigator>
+  );
+};
+
+export default StackNavigator;

@@ -4,7 +4,7 @@ import { ApplicationState, reducers } from "./";
 import * as signalR from "@microsoft/signalr";
 import { User } from "./User";
 import { AsyncStorage } from "react-native";
-import { actionCreators as roundsActions, Round } from "./ActiveRound";
+import { actionCreators as roundsActions, getActiveHole, Round } from "./ActiveRound";
 import { actionCreators as userActions } from "./User";
 import Urls from "../constants/Urls";
 
@@ -48,7 +48,6 @@ const connectHub = (dispatch: Dispatch<AnyAction>) => {
 };
 const socketsMiddleware: Middleware = ({ dispatch, getState }: MiddlewareAPI) => (next: Dispatch) => <A extends Action>(action: A) => {
   if (action.type === "LOGIN_SUCCEED") {
-    const state: ApplicationState = getState();
     if (hub.state === signalR.HubConnectionState.Disconnected) {
       connectHub(dispatch);
     }
@@ -70,8 +69,23 @@ const socketsMiddleware: Middleware = ({ dispatch, getState }: MiddlewareAPI) =>
   return next(action);
 };
 
+const activeHoleMiddleware: Middleware = ({ dispatch, getState }: MiddlewareAPI) => (next: Dispatch) => <A extends Action>(action: A) => {
+  next(action);
+  if (action.type === "ROUND_WAS_UPDATED") {
+    const state: ApplicationState = getState();
+    const roundState = state.activeRound;
+    const activeRound = roundState?.round;
+    if (!roundState || !activeRound) return;
+    const activeHoleIndex = roundState.activeHoleIndex;
+    const playerScores = activeHoleIndex !== undefined && activeRound.playerScores.map((s) => s.scores[activeHoleIndex]);
+    const holeDone = playerScores && !playerScores.some((x) => x.strokes === 0);
+    const nextHole = getActiveHole(activeRound);
+    holeDone && setTimeout(() => dispatch({ type: "ACTIVE_HOLE_WAS_SET", holeIndex: nextHole }), 5000);
+  }
+};
+
 export default function configureStore(initialState?: ApplicationState) {
-  const middleware = [thunk, socketsMiddleware];
+  const middleware = [thunk, socketsMiddleware, activeHoleMiddleware];
 
   const rootReducer = combineReducers({
     ...reducers,

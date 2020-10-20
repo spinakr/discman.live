@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -24,7 +25,6 @@ namespace Web.Rounds.Commands
 
         public string[] StrokeOutcomes { get; set; }
         public int? PutDistance { get; set; }
-        
     }
 
     public class UpdatePlayerScoreCommandHandler : IRequestHandler<UpdatePlayerScoreCommand, Round>
@@ -61,8 +61,16 @@ namespace Web.Rounds.Commands
 
             var relativeScore = holeScore.UpdateScore(request.Strokes, request.StrokeOutcomes, request.PutDistance);
 
-            // round.PlayerScores = round.PlayerScores.OrderBy(ps => ps.Scores.Sum(s => s.RelativeToPar)).ToList();
             round.OrderByTeeHonours();
+
+            if (round.PlayerScores.Sum(p => p.Scores.Count(s => s.Strokes != 0)) == 1)
+            {
+                foreach (var playerScore in round.PlayerScores)
+                {
+                    var firstHoleIndex = playerScore.Scores.FindIndex(x => x.Hole.Number == request.Hole);
+                    playerScore.Scores = playerScore.Scores.Skip(firstHoleIndex).Concat(playerScore.Scores.Take(firstHoleIndex)).ToList();
+                }
+            }
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);

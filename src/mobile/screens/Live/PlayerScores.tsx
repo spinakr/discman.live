@@ -51,7 +51,7 @@ const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviou
               </Text>
             </View>
             <View style={[styles.scoresTotalCell, currentUser === p.playerName && styles.currentUserCell]}>
-              <Text>
+              <Text style={styles.scoresTotalCellText}>
                 {totalScore > 0 && "+"}
                 {totalScore < 0 && "-"}
                 {Math.abs(totalScore)}
@@ -78,11 +78,12 @@ const PlayerScores = ({ playerScores, activeHoleIndex, goToNextHole, goToPreviou
 };
 
 const styles = StyleSheet.create({
-  scoresContainer: { flex: 1, padding: 5 },
-  scoresRow: { flex: 2, flexDirection: "row" },
+  scoresContainer: { flex: 1, borderBottomWidth: 1, borderColor: "rgba(0, 0, 0, 0.10)" },
+  scoresRow: { flex: 2, flexDirection: "row", borderColor: "rgba(0, 0, 0, 0.10)", borderTopWidth: 1 },
   scoresHeaderRow: { flex: 1, flexDirection: "row" },
   scoresCell: { flex: 2, justifyContent: "center", alignItems: "center" },
   scoresTotalCell: { flex: 1, justifyContent: "center", alignItems: "center" },
+  scoresTotalCellText: { borderWidth: 1, padding: 2, borderColor: "lightgrey" },
   currentScoresCell: { flex: 4, justifyContent: "center", alignItems: "center", borderRightWidth: 1, borderLeftWidth: 1, borderColor: "lightgrey" },
   currentHoleScoreText: { fontSize: 20 },
   currentHoleCurrentUserScoreText: { fontSize: 30 },

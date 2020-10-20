@@ -80,7 +80,6 @@ const ScoreSelection = ({ saveScore, cancelEdit, registerPutDistance }: ScoreSel
         </View>
       </Modal>
       <View style={styles.container}>
-        <View style={styles.discSelectorContainer}></View>
         <View style={styles.selectedScoresRow}>
           <SelectedScoreMarks
             strokes={strokes}
@@ -118,7 +117,7 @@ const ScoreSelection = ({ saveScore, cancelEdit, registerPutDistance }: ScoreSel
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  discSelectorContainer: { flex: 2 },
+  discSelectorContainer: { flex: 1 },
   scoreSelector: {
     flex: 1,
     justifyContent: "center",
@@ -143,7 +142,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedScoresContainer: { flex: 1, flexDirection: "row", padding: 3, alignItems: "center" },
-  scoreSelectorContainer: { flex: 4 },
+  scoreSelectorContainer: { flex: 6 },
   scoreSelectorRow: {
     flex: 1,
     flexDirection: "row",

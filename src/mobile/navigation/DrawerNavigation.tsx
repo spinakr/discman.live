@@ -11,10 +11,7 @@ import SettingsScreen from "../screens/SettingsScreen";
 import reconnectToHubOnAppStateChange from "../hooks/dispatchAppStateChanges";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useFocusEffect } from "@react-navigation/native";
-import LiveScreen2 from "../screens/Live/LiveScreen2";
-import CommonNavHeader from "./CommonNavHeader";
 import LiveScreen from "../screens/Live/LiveScreen";
-import LiveScreen3 from "../screens/Live/LiveScreen3";
 
 const Drawer = createDrawerNavigator<HomeBottomTabParamList>();
 
@@ -27,35 +24,6 @@ const DrawerNavigator = () => {
     </Drawer.Navigator>
   );
 };
-// const BottomTabNavigator = () => {
-//   const colorScheme = useColorScheme();
-
-//   return (
-//     <BottomTab.Navigator initialRouteName="Play" tabBarOptions={{ activeTintColor: Colors[colorScheme].tint }}>
-//       <BottomTab.Screen
-//         name="Play"
-//         component={PlayContainer}
-//         options={{
-//           tabBarIcon: ({ color }) => <MaterialIcons size={30} style={{ marginBottom: -3, color: color }} name="live-tv" />,
-//         }}
-//       />
-//       <BottomTab.Screen
-//         name="Discman.live"
-//         component={DiscmanScreen}
-//         options={{
-//           tabBarIcon: ({ color }) => <MaterialCommunityIcons size={30} style={{ marginBottom: -3, color: color }} name="web" />,
-//         }}
-//       />
-//       <BottomTab.Screen
-//         name="Settings"
-//         component={SettingsScreen}
-//         options={{
-//           tabBarIcon: ({ color }) => <Ionicons size={30} style={{ marginBottom: -3, color: color }} name="md-settings" />,
-//         }}
-//       />
-//     </BottomTab.Navigator>
-//   );
-// };
 
 const PlayStack = createStackNavigator<PlayStackParamList>();
 const mapState = (state: ApplicationState) => {
@@ -83,9 +51,9 @@ const PlayNavigator = ({ activeRound, fetchUserDetails, username }: Props) => {
   return (
     <PlayStack.Navigator screenOptions={{}}>
       {activeRound ? (
-        <PlayStack.Screen name="Live" component={LiveScreen3} options={{ headerShown: false }} />
+        <PlayStack.Screen name="Live" component={LiveScreen} options={{ headerShown: false }} />
       ) : (
-        <PlayStack.Screen name="CreateRound" component={CreateRoundScreen} options={{ headerTitle: "Create Round" }} />
+        <PlayStack.Screen name="CreateRound" component={CreateRoundScreen} options={{ headerShown: false }} />
       )}
     </PlayStack.Navigator>
   );

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View, Text } from "../../components/Themed";
-import { HoleScore, Round, StrokeSpec } from "../../store/ActiveRound";
+import { HoleScore, PlayerCourseStats, PlayerScore, Round, StrokeSpec } from "../../store/ActiveRound";
 import { StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import SelectedScoreMarks from "./SelectedScoreMarks";
@@ -9,8 +9,11 @@ import Colors from "../../constants/Colors";
 import useColorScheme from "../../hooks/useColorScheme";
 
 export interface HoleScoreProps {
-  holeScore: HoleScore;
+  playerScores: PlayerScore[];
+  activeHoleIndex: number;
+  username: string;
   setEdit: React.Dispatch<React.SetStateAction<boolean>>;
+  playerCourseStats: PlayerCourseStats | undefined;
 }
 
 const scoreText = (holeScore: HoleScore) => {
@@ -54,29 +57,58 @@ const mapStrokesOutcomeInt = (outcomeString: number) => {
   }
 };
 
-const HoleScoreComp = ({ holeScore, setEdit }: HoleScoreProps) => {
+const HoleScoreComp = ({ playerScores, username, activeHoleIndex, setEdit, playerCourseStats }: HoleScoreProps) => {
+  const currentPlayerScores = playerScores.find((p) => p.playerName === username)?.scores;
+  if (!currentPlayerScores) return null;
+  const currentPlayerHoleScore = currentPlayerScores[activeHoleIndex];
   const scheme = useColorScheme();
-  const strokeOutcomes: StrokeOutcome[] = holeScore.strokeSpecs.map((s) => mapStrokesOutcomeInt(+s.outcome));
-  const putDistance = holeScore.strokeSpecs.find((s) => s.putDistance)?.putDistance;
+  const strokeOutcomes: StrokeOutcome[] = currentPlayerHoleScore.strokeSpecs.map((s) => mapStrokesOutcomeInt(+s.outcome));
+  const putDistance = currentPlayerHoleScore.strokeSpecs.find((s) => s.putDistance)?.putDistance;
+
+  const currentScore = currentPlayerScores.reduce((total, score) => {
+    return total + score.relativeToPar;
+  }, 0);
+
+  const lastScoredHoleIndex = currentPlayerScores.map((s) => s.strokes).lastIndexOf(0) - 1;
+
+  const currentAverage = playerCourseStats?.averagePrediction[lastScoredHoleIndex];
+
+  const versusAverage = Math.ceil((currentScore || 0) - (currentAverage || 0));
+
   return (
     <View style={styles.container}>
       <View style={styles.selectedView}>
         <SelectedScoreMarks strokes={strokeOutcomes} putDistance={putDistance} onIconClicked={() => {}} />
       </View>
       <View style={styles.changeView}>
-        <Text style={styles.scoreText}>{scoreText(holeScore)}</Text>
+        <Text style={styles.scoreText}>{scoreText(currentPlayerHoleScore)}</Text>
         <Feather name="edit" size={30} color={Colors[scheme].tabIconDefault} onPress={() => setEdit(true)} />
+      </View>
+      <View style={styles.roundStatusView}>
+        {playerCourseStats && (
+          <View>
+            <Text>
+              You are{" "}
+              <Text style={styles.averageText}>
+                {Math.abs(versusAverage)} {versusAverage < 0 ? "ahead of" : "behind"}
+              </Text>{" "}
+              your average score{" "}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  averageText: { fontSize: 25 },
   container: { flex: 1, padding: 5, justifyContent: "center", alignItems: "center", flexDirection: "column" },
   selectedView: { flex: 1 },
-  scoreText: { fontSize: 70, paddingRight: 15 },
+  scoreText: { fontSize: 50, paddingRight: 15 },
   changeText: { fontSize: 10 },
-  changeView: { flex: 3, flexDirection: "row", alignItems: "center" },
+  changeView: { flex: 2, flexDirection: "row", alignItems: "center" },
+  roundStatusView: { flex: 3 },
 });
 
 export default HoleScoreComp;
