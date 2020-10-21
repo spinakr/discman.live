@@ -10,16 +10,19 @@
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "#8DFF70"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "bundleIdentifier": "live.discman.app",
+      "buildNumber": "1.0.0"
     },
+    "android": { "versionCode": 1, "permissions": [], "package": "live.discman.app" },
     "web": {
       "favicon": "./assets/images/favicon.png"
     }

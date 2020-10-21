@@ -8,6 +8,7 @@ import User from "./components/User/User";
 import Friends from "./components/User/Friends";
 import Tournament from "./components/Tournaments/Tournament";
 import Leaders from "./components/Leaders";
+import PrivacyPolicy from "./PrivacyPolicy";
 import Tournaments from "./components/Tournaments/Tournaments";
 import UserSettings from "./components/User/UserSettings";
 import ResetPassword from "./components/User/ResetPassword";
@@ -64,7 +65,6 @@ export class App extends React.PureComponent<Props, AppCompState> {
     const userToken = query.token as string;
     if (userToken) this.props.setLoggedInUser(decodeURI(userToken));
   }
-
   componentWillUnmount() {
     window.removeEventListener(
       "focus",
@@ -73,6 +73,7 @@ export class App extends React.PureComponent<Props, AppCompState> {
   }
 
   componentDidUpdate() {
+    console.log(this.props.location);
     if (this.props.loggedIn) {
       this.props.fetchUserDetails();
     }
@@ -103,28 +104,32 @@ export class App extends React.PureComponent<Props, AppCompState> {
     }
     return (
       <>
-        <Layout>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/rounds/:roundId" component={Round} />
-          <Route
-            exact
-            path="/courses/:courseName?/:courseLayout?"
-            component={Courses}
-          />
-          <Route exact path="/user" component={User} />
-          <Route exact path="/settings" component={UserSettings} />
-          <Route exact path="/leaders" component={Leaders} />
-          <Route exact path="/users/:username" component={User} />
-          <Route exact path="/friends" component={Friends} />
-          <Route
-            exact
-            path="/tournaments/:tournamentId"
-            component={Tournament}
-          />
-          <Route exact path="/tournaments" component={Tournaments} />
-          <Route exact path="/about" component={About} />
-          <Route exact path="/resetpassword" component={ResetPassword} />
-        </Layout>
+        {this.props.location.pathname === "/privacypolicy" ? (
+          <Route exact path="/privacypolicy" component={PrivacyPolicy} />
+        ) : (
+          <Layout>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/rounds/:roundId" component={Round} />
+            <Route
+              exact
+              path="/courses/:courseName?/:courseLayout?"
+              component={Courses}
+            />
+            <Route exact path="/user" component={User} />
+            <Route exact path="/settings" component={UserSettings} />
+            <Route exact path="/leaders" component={Leaders} />
+            <Route exact path="/users/:username" component={User} />
+            <Route exact path="/friends" component={Friends} />
+            <Route
+              exact
+              path="/tournaments/:tournamentId"
+              component={Tournament}
+            />
+            <Route exact path="/tournaments" component={Tournaments} />
+            <Route exact path="/about" component={About} />
+            <Route exact path="/resetpassword" component={ResetPassword} />
+          </Layout>
+        )}
       </>
     );
   }
