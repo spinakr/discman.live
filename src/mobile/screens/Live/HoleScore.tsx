@@ -69,9 +69,7 @@ const HoleScoreComp = ({ playerScores, username, activeHoleIndex, setEdit, playe
     return total + score.relativeToPar;
   }, 0);
 
-  const lastScoredHoleIndex = currentPlayerScores.map((s) => s.strokes).lastIndexOf(0) - 1;
-
-  const currentAverage = playerCourseStats?.averagePrediction[lastScoredHoleIndex];
+  const currentAverage = playerCourseStats?.averagePrediction[activeHoleIndex];
 
   const versusAverage = Math.ceil((currentScore || 0) - (currentAverage || 0));
 

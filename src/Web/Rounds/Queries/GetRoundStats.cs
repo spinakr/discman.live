@@ -36,6 +36,7 @@ namespace Web.Rounds.Queries
             foreach (var playerScore in activeRound.PlayerScores)
             {
                 var holes = roundList.PlayerHolesWithDetails(playerScore.PlayerName);
+                if(!holes.Any()) continue;
                 usersStats.Add(new UserStats(
                     playerScore.PlayerName,
                     1, 
