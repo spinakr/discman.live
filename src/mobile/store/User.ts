@@ -138,6 +138,35 @@ export const actionCreators = {
       })
       .catch((err: Error) => {});
   },
+  createUser: (username: string, password: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    fetch(`api/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<User>;
+        }
+        throw new Error("Error creating user");
+      })
+      .then((data) => {
+        dispatch({
+          type: "LOGIN_SUCCEED",
+          user: data,
+        });
+        localStorage.setItem("user", JSON.stringify(data));
+        actionCreators.fetchUserDetails()(dispatch, getState);
+      })
+      .catch((err: Error) => {
+        dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });
+        setTimeout(() => {
+          dispatch({ type: "LOGOUT_SUCCEED" });
+        }, 2000);
+      });
+  },
   fetchUserDetails: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     if (Date.now() - fetchedUserDetails < 1000) return;
     fetchedUserDetails = Date.now();
