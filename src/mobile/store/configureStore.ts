@@ -79,8 +79,8 @@ const activeHoleMiddleware: Middleware = ({ dispatch, getState }: MiddlewareAPI)
     const activeHoleIndex = roundState.activeHoleIndex;
     const playerScores = activeHoleIndex !== undefined && activeRound.playerScores.map((s) => s.scores[activeHoleIndex]);
     const holeDone = playerScores && !playerScores.some((x) => x.strokes === 0);
-    const nextHole = getActiveHole(activeRound);
-    holeDone && setTimeout(() => dispatch({ type: "ACTIVE_HOLE_WAS_SET", holeIndex: nextHole }), 5000);
+    const nextHole = getActiveHole(activeRound, state.user?.user?.username || "");
+    setTimeout(() => dispatch({ type: "ACTIVE_HOLE_WAS_SET", holeIndex: nextHole }), 5000);
   }
 };
 

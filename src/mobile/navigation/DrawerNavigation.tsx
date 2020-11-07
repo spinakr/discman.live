@@ -18,7 +18,7 @@ const Drawer = createDrawerNavigator<HomeBottomTabParamList>();
 
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Rounds">
+    <Drawer.Navigator initialRouteName="Play">
       <Drawer.Screen name="Play" component={PlayContainer} />
       <Drawer.Screen name="Rounds" component={RoundsScreen} />
       <Drawer.Screen name="Discman.live" component={DiscmanScreen} options={{}} />

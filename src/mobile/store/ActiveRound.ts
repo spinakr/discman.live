@@ -1,6 +1,7 @@
 import { Action, Reducer } from "redux";
 import { ApplicationState, AppStateForegroundAction, AppThunkAction } from ".";
 import urls from "../constants/Urls";
+import { LoginSuccessAction, User } from "./User";
 
 export interface Hole {
   number: number;
@@ -77,6 +78,7 @@ export interface ActiveRoundState {
   playerCourseStats: PlayerCourseStats[] | null;
   scoreCardOpen: boolean;
   finishedRoundStats: UserStats[];
+  username: string;
 }
 
 export interface UserStats {
@@ -141,14 +143,15 @@ export type KnownAction =
   | RoundWasDeletedAction
   | RoundNotFoundAction
   | SetActiveHoleAction
+  | LoginSuccessAction
   | PlayerCourseStatsFethSuceed;
 
-const fetchRound = (roundId: string, token: string, dispatch: (action: KnownAction) => void) => {
+const fetchRound = (roundId: string, user: User, dispatch: (action: KnownAction) => void) => {
   fetch(`${urls.discmanWebBaseUrl}/api/rounds/${roundId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${user.token}`,
     },
   })
     .then((res) => {
@@ -268,7 +271,7 @@ export const actionCreators = {
   fetchRound: (roundId: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user) return;
-    fetchRound(roundId, appState.user.user.token, dispatch);
+    fetchRound(roundId, appState.user.user, dispatch);
   },
   setScore: (strokes: StrokeOutcome[], putDistance?: number): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
@@ -321,15 +324,17 @@ const initialState: ActiveRoundState = {
   playerCourseStats: null,
   scoreCardOpen: false,
   finishedRoundStats: [],
+  username: ""
 };
 
-export const getActiveHole = (round: Round) => {
-  const activeHole = round.playerScores
-    .map((p) => p.scores.find((s) => s.strokes === 0))
-    .sort((a, b) => {
-      return a && b ? a.hole.number - b.hole.number : 0;
-    })
-    .find(() => true);
+export const getActiveHole = (round: Round, user: string) => {
+  // const activeHole = round.playerScores
+  //   .map((p) => p.scores.find((s) => s.strokes === 0))
+  //   .sort((a, b) => {
+  //     return a && b ? a.hole.number - b.hole.number : 0;
+  //   })
+  //   .find(() => true);
+  const activeHole = round.playerScores.find(p => p.playerName == user)?.scores.find(s => s.strokes === 0);
   const activeHoleIndex = activeHole && round.playerScores[0].scores.findIndex((x) => x.hole.number === activeHole.hole.number);
   return activeHoleIndex !== undefined ? activeHoleIndex : round.playerScores[0].scores.length - 1;
 };
@@ -344,7 +349,8 @@ export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | und
       return {
         ...state,
         round: action.round,
-        activeHoleIndex: getActiveHole(action.round),
+        activeHoleIndex: getActiveHole(action.round, state.username),
+        username: state.username
       };
     case "ROUND_WAS_UPDATED":
       if (state.round?.id !== action.round.id) return state;
@@ -354,7 +360,7 @@ export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | und
         //if holes has been shifted on the server, the activeHoleIndex is no longer valid
         activeHoleIndex:
           action.round.playerScores[0].scores[0].hole.number !== state.round.playerScores[0].scores[0].hole.number
-            ? getActiveHole(action.round) - 1
+            ? getActiveHole(action.round, state.username) - 1
             : state.activeHoleIndex,
       };
     case "ACTIVE_HOLE_WAS_SET":
@@ -368,6 +374,8 @@ export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | und
         return initialState;
       }
       return state;
+    case "LOGIN_SUCCEED":
+      return {...state, username: action.user.username}
     case "FETCH_COURSE_STATS_SUCCEED":
       return {
         ...state,
