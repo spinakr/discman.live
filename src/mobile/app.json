@@ -2,9 +2,9 @@
   "expo": {
     "name": "Discman",
     "slug": "discman",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "owner": "andkof",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "discman",
     "userInterfaceStyle": "automatic",
@@ -20,9 +20,9 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "live.discman.app",
-      "buildNumber": "1.0.2"
+      "buildNumber": "1.0.4"
     },
-    "android": { "versionCode": 2, "permissions": [], "package": "live.discman.app" },
+    "android": { "versionCode": 4, "permissions": [], "package": "live.discman.app" },
     "web": {
       "favicon": "./assets/images/favicon.png"
     }

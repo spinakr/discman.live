@@ -10,6 +10,7 @@ export type HomeBottomTabParamList = {
   "Discman.live": undefined;
   Play: undefined;
   Settings: undefined;
+  Rounds: undefined;
 };
 
 export type LiveBottomTabParamList = {
@@ -25,4 +26,8 @@ export type PlayStackParamList = {
   CreateRound: undefined;
   Live: undefined;
   Summary: undefined;
+};
+
+export type RoundsStackParamList = {
+  Rounds: undefined;
 };

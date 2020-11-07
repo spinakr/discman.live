@@ -6,30 +6,38 @@ import { MaterialIcons } from "@expo/vector-icons";
 import useColorScheme from "../hooks/useColorScheme";
 import Colors from "../constants/Colors";
 
-const CommonNavHeader = () => {
+export interface CommonNavHeaderProps {
+  title?: string;
+}
+
+const CommonNavHeader = ({ title }: CommonNavHeaderProps) => {
   const nav = useNavigation();
   const scheme = useColorScheme();
   return (
     <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.trigger}
-        onPress={() => {
-          nav.dispatch(DrawerActions.toggleDrawer());
-        }}
-      >
-        <MaterialIcons name="menu" size={30} color={Colors[scheme].tabIconDefault} />
-      </TouchableOpacity>
+      <View style={styles.container}>
+        <TouchableOpacity
+          style={styles.trigger}
+          onPress={() => {
+            nav.dispatch(DrawerActions.toggleDrawer());
+          }}
+        >
+          <MaterialIcons name="menu" size={30} color={Colors[scheme].tabIconDefault} />
+        </TouchableOpacity>
+        <Text style={styles.titleText}>{title}</Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: { height: 30, margin: 0 },
+  titleText: { fontSize: 18 },
+  container: { flex: 1, flexDirection: "row", alignItems: "center" },
+  header: { height: 50, backgroundColor: "yellow" },
+  rightContainer: { flex: 1, flexDirection: "row", justifyContent: "flex-end" },
   trigger: {
-    borderRadius: 50,
+    flex: 1,
     marginLeft: 10,
-    width: 50,
-    height: 30,
   },
 });
 

@@ -5,8 +5,7 @@ import { ColorSchemeName, SafeAreaView, StyleSheet } from "react-native";
 import * as UserStore from "../store/User";
 import NotFoundScreen from "../screens/NotFoundScreen";
 import { StackParamList } from "../types";
-import BottomTabNavigator from "./DrawerNavigation";
-import LinkingConfiguration from "./LinkingConfiguration";
+import DrawerNavigator from "./DrawerNavigation";
 import { ApplicationState } from "../store";
 import { connect, ConnectedProps } from "react-redux";
 import LoginScreen from "../screens/LoginScreen";
@@ -33,11 +32,11 @@ const Navigation = ({ colorScheme, user }: Props) => {
   const theme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
   return (
     <SafeAreaView style={{ ...styles.container, backgroundColor: Colors[colorScheme === "dark" ? "dark" : "light"].background }}>
-      <NavigationContainer linking={LinkingConfiguration} theme={theme}>
+      <NavigationContainer theme={theme}>
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
           {user?.loggedIn ? (
             <>
-              <Stack.Screen name="Home" component={BottomTabNavigator} />
+              <Stack.Screen name="Home" component={DrawerNavigator} />
               <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: "Oops!" }} />
             </>
           ) : (
@@ -54,7 +53,7 @@ const Navigation = ({ colorScheme, user }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+    marginTop: (StatusBar.currentHeight || 0) + 30,
   },
 });
 

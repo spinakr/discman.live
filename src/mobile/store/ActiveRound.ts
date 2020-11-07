@@ -173,6 +173,45 @@ const countScore = (strokes: StrokeOutcome[]) => {
 };
 
 export const actionCreators = {
+  newRound: (
+    courseId: string | undefined,
+    players: string[],
+    roundName?: string | undefined,
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    const username = appState.user.user.username;
+    if (!players.some((p) => p === username)) {
+      players = [...players, username];
+    }
+    fetch(`${urls.discmanWebBaseUrl}/api/rounds`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({
+        courseId: courseId,
+        players: players,
+        roundName,
+        scoreMode: ScoreMode.DetailedLive,
+      }),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error(`${response.status} - ${response.statusText}`);
+        return response.json() as Promise<Round>;
+      })
+      .then((data) => {
+        dispatch({
+          type: "ROUND_WAS_CREATED",
+          round: data,
+        });
+      })
+      .catch((err: Error) => {
+      });
+  },
+
   roundWasCreated: (round: Round) => {
     return { type: "ROUND_WAS_CREATED", round: round };
   },

@@ -16,53 +16,53 @@ const LiveNavHeader = ({ activeScreen }: LiveNavHeaderProps) => {
   const scheme = useColorScheme();
   return (
     <View style={styles.header}>
-      <TouchableOpacity
-        style={styles.trigger}
-        onPress={() => {
-          nav.dispatch(DrawerActions.toggleDrawer());
-        }}
-      >
-        <MaterialIcons name="menu" size={30} color={Colors[scheme].tabIconDefault} />
-      </TouchableOpacity>
-      <View style={styles.rightContainer}>
+      <View style={styles.container}>
         <TouchableOpacity
           style={styles.trigger}
           onPress={() => {
-            nav.navigate("Register");
+            nav.dispatch(DrawerActions.toggleDrawer());
           }}
         >
-          <MaterialIcons
-            name="live-tv"
-            size={30}
-            color={activeScreen === "Register" ? Colors[scheme].tabIconSelected : Colors[scheme].tabIconDefault}
-          />
+          <MaterialIcons name="menu" size={30} color={Colors[scheme].tabIconDefault} />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.trigger}
-          onPress={() => {
-            nav.navigate("Scorecard");
-          }}
-        >
-          <FontAwesome5
-            name="clipboard-list"
-            size={30}
-            color={activeScreen === "Scorecard" ? Colors[scheme].tabIconSelected : Colors[scheme].tabIconDefault}
-          />
-        </TouchableOpacity>
+        <View style={styles.rightContainer}>
+          <TouchableOpacity
+            style={styles.trigger}
+            onPress={() => {
+              nav.navigate("Register");
+            }}
+          >
+            <MaterialIcons
+              name="live-tv"
+              size={30}
+              color={activeScreen === "Register" ? Colors[scheme].tabIconSelected : Colors[scheme].tabIconDefault}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.trigger}
+            onPress={() => {
+              nav.navigate("Scorecard");
+            }}
+          >
+            <FontAwesome5
+              name="clipboard-list"
+              size={30}
+              color={activeScreen === "Scorecard" ? Colors[scheme].tabIconSelected : Colors[scheme].tabIconDefault}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  header: { height: 30, flex: 1, flexDirection: "row", paddingBottom: 15 },
+  header: { height: 30, backgroundColor: "yellow" },
+  container: { flex: 1, flexDirection: "row", alignItems: "center" },
   rightContainer: { flex: 1, flexDirection: "row", justifyContent: "flex-end" },
   trigger: {
     flex: 1,
-    borderRadius: 50,
     marginLeft: 10,
-    width: 50,
-    height: 30,
   },
 });
 

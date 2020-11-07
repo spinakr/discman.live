@@ -15,6 +15,8 @@ import HoleScore from "./HoleScore";
 import { StrokeOutcome } from "../../store/ActiveRound";
 import HoleInfo from "./HoleInfo";
 import LiveNavHeader from "./LiveNavHeader";
+import ScorecardScreen from "../ScorecardScreen";
+import { Button } from "react-native-elements";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -86,7 +88,7 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
 };
 
 const styles = StyleSheet.create({
-  roundInfoSection: { flex: 1, paddingTop: 15 },
+  roundInfoSection: { flex: 1 },
   holeInfoSection: { flex: 1 },
   container: { flex: 1, paddingBottom: 10 },
   scoresSection: { flex: 3 },
@@ -105,8 +107,8 @@ const StackNavigator = () => {
         header: (props: StackHeaderProps) => <LiveNavHeader activeScreen={props.scene.route.name} />,
       }}
     >
-      <Stack.Screen name="Scorecard" component={connector(LiveScreen)} />
       <Stack.Screen name="Register" component={connector(LiveScreen)} />
+      <Stack.Screen name="Scorecard" component={ScorecardScreen} />
     </Stack.Navigator>
   );
 };

@@ -5,6 +5,7 @@ import { connect, ConnectedProps } from "react-redux";
 import * as UserStore from "../store/User";
 import CreateRoundScreen from "../screens/CreateRoundScreen";
 import DiscmanScreen from "../screens/DiscmanScreen";
+import RoundsScreen from "../screens/Rounds/RoundsScreen";
 import { ApplicationState } from "../store";
 import { HomeBottomTabParamList, PlayStackParamList } from "../types";
 import SettingsScreen from "../screens/SettingsScreen";
@@ -17,8 +18,9 @@ const Drawer = createDrawerNavigator<HomeBottomTabParamList>();
 
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator initialRouteName="Play">
+    <Drawer.Navigator initialRouteName="Rounds">
       <Drawer.Screen name="Play" component={PlayContainer} />
+      <Drawer.Screen name="Rounds" component={RoundsScreen} />
       <Drawer.Screen name="Discman.live" component={DiscmanScreen} options={{}} />
       <Drawer.Screen name="Settings" component={SettingsScreen} />
     </Drawer.Navigator>

@@ -1,4 +1,4 @@
-import { Input, Button } from "@jrobins/bulma-native";
+import { Input, Button } from "react-native-elements";
 import { StackScreenProps } from "@react-navigation/stack";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import useColorScheme from "../hooks/useColorScheme";
 import { ApplicationState } from "../store";
 import * as UserStore from "../store/User";
 import { StackParamList } from "../types";
+import { LinearGradient } from "expo-linear-gradient";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -35,13 +36,23 @@ const LoginScreen = ({ navigation, requestLogin, loadLogginInfo, loggedIn, creat
   const scheme = useColorScheme();
   return (
     <View style={{ ...styles.container }}>
-      <View style={{ ...styles.infoView, backgroundColor: Colors[scheme].appColor }}>
+      <View style={{ ...styles.infoView }}>
+        <LinearGradient
+          colors={[Colors[scheme].appColor, "transparent"]}
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            height: 400,
+          }}
+        />
         <DiscgolfBasketIcon size={150} color={Colors[scheme].tabIconDefault} />
         <Text style={styles.logoText}>Discman</Text>
       </View>
       <View style={styles.inputView}>
         <Input
-          iconLeft="envelope"
+          leftIcon={{ type: "ant-design", name: "user" }}
           containerStyle={styles.input}
           value={username}
           onChangeText={(username) => setUsername(username)}
@@ -49,7 +60,7 @@ const LoginScreen = ({ navigation, requestLogin, loadLogginInfo, loggedIn, creat
           placeholder="Username"
         />
         <Input
-          iconLeft="lock"
+          leftIcon={{ type: "ant-design", name: "lock" }}
           containerStyle={styles.input}
           value={password}
           onChangeText={(pw) => setPassword(pw)}
@@ -58,12 +69,18 @@ const LoginScreen = ({ navigation, requestLogin, loadLogginInfo, loggedIn, creat
           placeholder="Password"
         />
         <View style={styles.buttonView}>
-          <Button style={styles.button} onPress={() => requestLogin(username, password)} disabled={username.length < 3}>
-            Login
-          </Button>
-          <Button style={styles.button} onPress={() => createUser(username, password)} disabled={username.length < 3 || password.length < 6}>
-            Register
-          </Button>
+          <Button
+            type="outline"
+            title="Login"
+            onPress={() => requestLogin(username, password)}
+            disabled={username.length < 3 || password.length < 6}
+          />
+          <Button
+            type="outline"
+            title="Register"
+            onPress={() => createUser(username, password)}
+            disabled={username.length < 3 || password.length < 6}
+          />
         </View>
       </View>
     </View>

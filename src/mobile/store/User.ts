@@ -139,7 +139,7 @@ export const actionCreators = {
       .catch((err: Error) => {});
   },
   createUser: (username: string, password: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    fetch(`api/users`, {
+    fetch(`${urls.discmanWebBaseUrl}/api/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
