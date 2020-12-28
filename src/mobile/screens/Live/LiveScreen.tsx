@@ -2,7 +2,7 @@ import { createStackNavigator, StackHeaderProps, StackScreenProps } from "@react
 import * as React from "react";
 import { StyleSheet } from "react-native";
 import { ApplicationState } from "../../store";
-import { PlayStackParamList } from "../../types";
+import { HomeBottomTabParamList, PlayStackParamList } from "../../types";
 import * as RoundStore from "../../store/ActiveRound";
 import * as UserStore from "../../store/User";
 import { connect, ConnectedProps } from "react-redux";
@@ -29,8 +29,18 @@ const connector = connect(mapState, { ...RoundStore.actionCreators, ...UserStore
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-type Props = PropsFromRedux & {} & StackScreenProps<PlayStackParamList, "Live">;
-const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goToPreviousHole, fetchStatsOnCourse }: Props) => {
+type Props = PropsFromRedux & {} & StackScreenProps<HomeBottomTabParamList, "Play">; // & StackScreenProps<PlayStackParamList, "Live">
+const LiveScreen = ({
+  navigation,
+  activeRound,
+  fetchRound,
+  user,
+  setScore,
+  goToNextHole,
+  goToPreviousHole,
+  fetchStatsOnCourse,
+  completeRound,
+}: Props) => {
   const [edit, setEdit] = useState(false);
   const activeRoundId = user?.userDetails?.activeRound;
   React.useEffect(() => {
@@ -74,6 +84,11 @@ const LiveScreen = ({ activeRound, fetchRound, user, setScore, goToNextHole, goT
             setEdit={setEdit}
             username={user?.user?.username || ""}
             playerCourseStats={playerCourseStats}
+            completeRound={() => {
+              completeRound();
+              navigation.navigate("Rounds");
+              navigation.navigate("Rounds", { screen: "Round", params: { round: round } });
+            }}
           />
         ) : (
           <ScoreSelection

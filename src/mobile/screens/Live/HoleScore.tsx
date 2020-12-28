@@ -1,12 +1,13 @@
 import * as React from "react";
 import { View, Text } from "../../components/Themed";
-import { HoleScore, PlayerCourseStats, PlayerScore, Round, StrokeSpec } from "../../store/ActiveRound";
+import { HoleScore, PlayerCourseStats, PlayerScore } from "../../store/ActiveRound";
 import { StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import SelectedScoreMarks from "./SelectedScoreMarks";
 import { StrokeOutcome } from "../../store/ActiveRound";
 import Colors from "../../constants/Colors";
 import useColorScheme from "../../hooks/useColorScheme";
+import { Button } from "react-native-elements";
 
 export interface HoleScoreProps {
   playerScores: PlayerScore[];
@@ -14,6 +15,7 @@ export interface HoleScoreProps {
   username: string;
   setEdit: React.Dispatch<React.SetStateAction<boolean>>;
   playerCourseStats: PlayerCourseStats | undefined;
+  completeRound: any;
 }
 
 const scoreText = (holeScore: HoleScore) => {
@@ -57,7 +59,7 @@ const mapStrokesOutcomeInt = (outcomeString: number) => {
   }
 };
 
-const HoleScoreComp = ({ playerScores, username, activeHoleIndex, setEdit, playerCourseStats }: HoleScoreProps) => {
+const HoleScoreComp = ({ playerScores, username, activeHoleIndex, setEdit, playerCourseStats, completeRound }: HoleScoreProps) => {
   const currentPlayerScores = playerScores.find((p) => p.playerName === username)?.scores;
   if (!currentPlayerScores) return null;
   const currentPlayerHoleScore = currentPlayerScores[activeHoleIndex];
@@ -72,6 +74,8 @@ const HoleScoreComp = ({ playerScores, username, activeHoleIndex, setEdit, playe
   const currentAverage = playerCourseStats?.averagePrediction[activeHoleIndex];
 
   const versusAverage = Math.ceil((currentScore || 0) - (currentAverage || 0));
+
+  const allHolesCompleted = playerScores.every((p) => p.scores.every((s) => s.strokes !== 0));
 
   return (
     <View style={styles.container}>
@@ -95,6 +99,16 @@ const HoleScoreComp = ({ playerScores, username, activeHoleIndex, setEdit, playe
           </View>
         )}
       </View>
+      <View style={styles.completeRoundView}>
+        {allHolesCompleted && (
+          <Button
+            title="Complete Round"
+            onPress={() => completeRound()}
+            style={{ flex: 1 }}
+            buttonStyle={{ backgroundColor: "green", padding: 15, borderRadius: 10 }}
+          ></Button>
+        )}
+      </View>
     </View>
   );
 };
@@ -107,6 +121,7 @@ const styles = StyleSheet.create({
   changeText: { fontSize: 10 },
   changeView: { flex: 2, flexDirection: "row", alignItems: "center" },
   roundStatusView: { flex: 3 },
+  completeRoundView: { flex: 2, flexDirection: "row" },
 });
 
 export default HoleScoreComp;

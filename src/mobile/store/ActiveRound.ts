@@ -1,5 +1,6 @@
+import { round } from "react-native-reanimated";
 import { Action, Reducer } from "redux";
-import { ApplicationState, AppStateForegroundAction, AppThunkAction } from ".";
+import {  AppStateForegroundAction, AppThunkAction } from ".";
 import urls from "../constants/Urls";
 import { LoginSuccessAction, User } from "./User";
 
@@ -77,23 +78,7 @@ export interface ActiveRoundState {
   activeHoleIndex: number;
   playerCourseStats: PlayerCourseStats[] | null;
   scoreCardOpen: boolean;
-  finishedRoundStats: UserStats[];
   username: string;
-}
-
-export interface UserStats {
-  username: string;
-  roundsPlayed: number;
-  holesPlayed: number;
-  fairwayHitRate: number;
-  scrambleRate: number;
-  circle1Rate: number;
-  circle2Rate: number;
-  obRate: number;
-  birdieRate: number;
-  parRate: number;
-  averageScore: number;
-  strokesGained: number;
 }
 
 export interface UserAchievement {
@@ -110,6 +95,10 @@ export interface FetchRoundSuccessAction {
 export interface RoundWasUpdatedAction {
   type: "ROUND_WAS_UPDATED";
   round: Round;
+}
+
+export interface RoundWasCompletedAction {
+  type: "ROUND_WAS_COMPLETED";
 }
 
 export interface RoundWasCreatedAction {
@@ -143,6 +132,7 @@ export type KnownAction =
   | RoundWasDeletedAction
   | RoundNotFoundAction
   | SetActiveHoleAction
+  | RoundWasCompletedAction
   | LoginSuccessAction
   | PlayerCourseStatsFethSuceed;
 
@@ -316,6 +306,34 @@ export const actionCreators = {
       })
       .catch(() => {});
   },
+  completeRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    const loggedInUser = appState?.user?.user;
+
+    const roundId = appState.activeRound?.round?.id;
+    const hole = appState.activeRound?.activeHoleIndex;
+    if (!loggedInUser || !roundId || !hole || hole < 1) return;
+
+    fetch(`${urls.discmanWebBaseUrl}/api/rounds/${roundId}/complete`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${loggedInUser.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => {
+        if (response.ok) {
+          dispatch({ type: "ROUND_WAS_COMPLETED" });
+          
+        }
+      })
+      .catch((err: Error) => {
+      });
+  },
 };
 
 const initialState: ActiveRoundState = {
@@ -323,7 +341,6 @@ const initialState: ActiveRoundState = {
   activeHoleIndex: 0,
   playerCourseStats: null,
   scoreCardOpen: false,
-  finishedRoundStats: [],
   username: ""
 };
 
@@ -381,6 +398,8 @@ export const reducer: Reducer<ActiveRoundState> = (state: ActiveRoundState | und
         ...state,
         playerCourseStats: action.stats,
       };
+    case "ROUND_WAS_COMPLETED":
+      return state.round ? {...state, round: {...state.round, isCompleted: true}} : state;
     case "APPSTATE_FORGROUND":
       return { ...state };
     default:

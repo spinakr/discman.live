@@ -159,7 +159,7 @@ const Stack = createStackNavigator<{ CreateRound: undefined }>();
 
 const StackNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="CreateRound" screenOptions={{ header: () => <CommonNavHeader title="New Round" /> }}>
+    <Stack.Navigator initialRouteName="CreateRound" screenOptions={{ header: () => <CommonNavHeader /> }}>
       <Stack.Screen name="CreateRound" component={connector(CreateRoundScreen)} />
     </Stack.Navigator>
   );

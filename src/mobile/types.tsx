@@ -1,3 +1,5 @@
+import { Round } from "./store/ActiveRound";
+
 export type StackParamList = {
   Login: undefined;
   Settings: undefined;
@@ -10,7 +12,7 @@ export type HomeBottomTabParamList = {
   "Discman.live": undefined;
   Play: undefined;
   Settings: undefined;
-  Rounds: undefined;
+  Rounds: { screen: string; params: any } | undefined;
 };
 
 export type LiveBottomTabParamList = {
@@ -30,4 +32,5 @@ export type PlayStackParamList = {
 
 export type RoundsStackParamList = {
   Rounds: undefined;
+  Round: { round: Round };
 };

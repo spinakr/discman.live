@@ -1,6 +1,6 @@
 import { Action, Reducer } from "redux";
 import { AppThunkAction } from ".";
-import { Hole, Round } from "./ActiveRound";
+import { Hole, PlayerCourseStats, Round } from "./ActiveRound";
 import urls from "../constants/Urls";
 
 export interface PagedRounds {
@@ -10,11 +10,28 @@ export interface PagedRounds {
   pages: number;
 }
 
+export interface UserStats {
+  username: string;
+  roundsPlayed: number;
+  holesPlayed: number;
+  fairwayHitRate: number;
+  scrambleRate: number;
+  circle1Rate: number;
+  circle2Rate: number;
+  obRate: number;
+  birdieRate: number;
+  parRate: number;
+  averageScore: number;
+  strokesGained: number;
+}
+
 export interface RoundsState {
   pageRounds: PagedRounds | null;
   rounds: Round[];
   lastPageFetched: number;
   totalPages: number;
+  finishedRoundStats: UserStats[];
+  courseStats: PlayerCourseStats[];
 }
 
 //Actions
@@ -23,14 +40,24 @@ export interface FetchRoundsSuccessAction {
   pagedRounds: PagedRounds;
 }
 
+export interface FetchCourseStatsSucess {
+  type:"FETCH_COURSE_STATS_SUCCESS";
+  stats: PlayerCourseStats[];
+}
+
 export interface FetchMoreRoundsSuccessAction {
   type: "MORE_ROUNDS_FETCHED";
   pagedRounds: PagedRounds;
 }
 
-export type KnownAction = FetchRoundsSuccessAction | FetchMoreRoundsSuccessAction;
+export interface FetchRoundStatsSuccessAction {
+  type: "FETCH_ROUND_STATS_SUCCESS";
+  userStats: UserStats[];
+}
 
-const initialState: RoundsState = { pageRounds: null, rounds: [], lastPageFetched: 0, totalPages: 1 };
+export type KnownAction = FetchRoundsSuccessAction | FetchMoreRoundsSuccessAction |FetchRoundStatsSuccessAction | FetchCourseStatsSucess;
+
+const initialState: RoundsState = { pageRounds: null, rounds: [], lastPageFetched: 0, totalPages: 1, finishedRoundStats: [], courseStats: []};
 
 export const actionCreators = {
   fetchMoreRounds: (
@@ -64,6 +91,29 @@ export const actionCreators = {
       .catch((err: Error) => {
       });
   },
+  fetchStatsOnCourse: (roundId: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user) return;
+    fetch(`${urls.discmanWebBaseUrl}/api/rounds/${roundId}/courseStats`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => response.json() as Promise<PlayerCourseStats[]>)
+      .then((data) => {
+        dispatch({
+          type: "FETCH_COURSE_STATS_SUCCESS",
+          stats: data,
+        });
+      })
+      .catch(() => {console.log("ERROR")});
+  },
   fetchUserRounds: (
     page: number,
     usernameToFetch?: string
@@ -93,6 +143,34 @@ export const actionCreators = {
       .catch((err: Error) => {
       });
   },
+  fetchUsersRoundStats: (roundId: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`${urls.discmanWebBaseUrl}/api/rounds/${roundId}/stats`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((response) => response.json() as Promise<UserStats[]>)
+      .then((data) => {
+        dispatch({
+          type: "FETCH_ROUND_STATS_SUCCESS",
+          userStats: data,
+        });
+      })
+      .catch((err: Error) => {
+      });
+  },
 };
 
 // ----------------
@@ -109,6 +187,10 @@ export const reducer: Reducer<RoundsState> = (state: RoundsState | undefined, in
       return {...state, pageRounds: action.pagedRounds}
     case "MORE_ROUNDS_FETCHED":
       return {...state, lastPageFetched: state.lastPageFetched + 1, totalPages: action.pagedRounds.pages, rounds: [...state.rounds, ...action.pagedRounds.rounds]}
+    case "FETCH_ROUND_STATS_SUCCESS":
+      return { ...state, finishedRoundStats: action.userStats };
+      case "FETCH_COURSE_STATS_SUCCESS":
+        return {...state, courseStats: action.stats}
 
     default:
       return state;
