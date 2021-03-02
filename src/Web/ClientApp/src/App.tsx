@@ -73,7 +73,6 @@ export class App extends React.PureComponent<Props, AppCompState> {
   }
 
   componentDidUpdate() {
-    console.log(this.props.location);
     if (this.props.loggedIn) {
       this.props.fetchUserDetails();
     }

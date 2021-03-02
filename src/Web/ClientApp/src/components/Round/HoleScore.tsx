@@ -36,28 +36,25 @@ const HoleScoreComponent = ({
 
   return (
     <div className="pt-2">
-      <h2 className="subtitle has-text-centered">
+      {/* <h2 className="subtitle has-text-centered">
         {holeStats && holeStats.birdie && (
           <span className="icon is-small">
             <i className="fas fa-dove"></i>
           </span>
         )}
-        &nbsp;Hole {holeScore?.hole.number}
-      </h2>
+      </h2> */}
       <div className="tour-stats">
         <div className="columns is-centered is-mobile">
+          <span className="column has-text-centered">
+            <h6 className="title is-6">Hole</h6>
+            {holeScore?.hole.number}
+          </span>
           <span className="column has-text-centered">
             <h6 className="title is-6">Par</h6>
             {holeScore?.hole.par}
           </span>
-          <span className="column has-text-centered">
-            <h6 className="title is-6">Distance</h6>
-            {holeScore?.hole.distance}m
-          </span>
-        </div>
-        <div className="columns is-centered is-mobile">
           <span className="column has-text-centered ">
-            <h6 className="title is-6">Average</h6>
+            <h6 className="title is-6">Avg.</h6>
             {holeScore?.hole.average.toFixed(1)}
           </span>
           <span className="column has-text-centered">

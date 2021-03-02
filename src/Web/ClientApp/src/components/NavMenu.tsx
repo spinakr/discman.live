@@ -35,10 +35,10 @@ const NavMenu = (props: Props) => {
   const [confirmLeaveRound, setConfirmLeaveRound] = useState(false);
   return (
     <>
-      <nav className="navbar is-fixed-bottom is-light py-0 my-0">
-        <div className="navbar-item columns py-0 my-0">
-          {(!props.location.pathname.startsWith("/rounds") ||
-            props.round?.isCompleted) && (
+      {(!props.location.pathname.startsWith("/rounds") ||
+        props.round?.isCompleted) && (
+        <nav className="navbar is-fixed-bottom is-light py-0 my-0">
+          <div className="navbar-item columns py-0 my-0">
             <>
               <div className="column py-0">
                 <Link to="/" className="button is-light pr-1 pl-3">
@@ -75,205 +75,208 @@ const NavMenu = (props: Props) => {
                 </Link>
               </div>
             </>
-          )}
 
-          {props.round &&
-            props.location.pathname.startsWith("/rounds") &&
-            !props.round.isCompleted && (
-              <>
-                <div className="column">
-                  <a
-                    className="button is-light pr-1 pl-3"
-                    onClick={() => props.setScorecardOpen(true)}
-                  >
-                    <span className="icon">
-                      <i
-                        className="fas fa-lg fa-list-ol"
-                        aria-hidden="true"
-                      ></i>
-                    </span>
-                    <span className="is-size-7">Scores</span>
-                  </a>
-                </div>
-                <div className="column">
-                  <RoundStatus />
-                </div>
-              </>
-            )}
-        </div>
+            {props.round &&
+              props.location.pathname.startsWith("/rounds") &&
+              !props.round.isCompleted && (
+                <>
+                  <div className="column">
+                    <a
+                      className="button is-light pr-1 pl-3"
+                      onClick={() => props.setScorecardOpen(true)}
+                    >
+                      <span className="icon">
+                        <i
+                          className="fas fa-lg fa-list-ol"
+                          aria-hidden="true"
+                        ></i>
+                      </span>
+                      <span className="is-size-7">Scores</span>
+                    </a>
+                  </div>
+                  <div className="column">
+                    <RoundStatus />
+                  </div>
+                </>
+              )}
+          </div>
 
-        <div className="navbar-menu tour-score-mode">
-          <div className="navbar-end">
-            <div className="navbar-item py-0">
-              <div className={`dropdown is-up is-right ${open && "is-active"}`}>
-                <div className="dropdown-trigger">
-                  <button
-                    className="button is-light "
-                    aria-haspopup="true"
-                    aria-controls="dropdown-menu7"
-                    onClick={() => setOpen(!open)}
-                  >
-                    <span className="icon">
-                      <i className="fas fa-lg fa-bars" aria-hidden="true"></i>
-                    </span>
-                  </button>
+          <div className="navbar-menu tour-score-mode">
+            <div className="navbar-end">
+              <div className="navbar-item py-0">
+                <div
+                  className={`dropdown is-up is-right ${open && "is-active"}`}
+                >
+                  <div className="dropdown-trigger">
+                    <button
+                      className="button is-light "
+                      aria-haspopup="true"
+                      aria-controls="dropdown-menu7"
+                      onClick={() => setOpen(!open)}
+                    >
+                      <span className="icon">
+                        <i className="fas fa-lg fa-bars" aria-hidden="true"></i>
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className={open ? "modal is-active" : "modal"}>
-          <div
-            onClick={() => {
-              setOpen(false);
-            }}
-          >
-            <div className="modal-background"></div>
-          </div>
-          <div className="modal-card">
-            <header className="modal-card-head">
-              <p className="modal-card-title">Menu</p>
-            </header>
-            <section className="modal-card-body">
-              {props.round && props.location.pathname.startsWith("/rounds") && (
-                <>
-                  <article className="panel">
-                    {props.round.isCompleted && !props.round.courseName && (
-                      <SaveCourseFromRound setOpen={setOpen} />
-                    )}
+          <div className={open ? "modal is-active" : "modal"}>
+            <div
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              <div className="modal-background"></div>
+            </div>
+            <div className="modal-card">
+              <header className="modal-card-head">
+                <p className="modal-card-title">Menu</p>
+              </header>
+              <section className="modal-card-body">
+                {props.round && props.location.pathname.startsWith("/rounds") && (
+                  <>
+                    <article className="panel">
+                      {props.round.isCompleted && !props.round.courseName && (
+                        <SaveCourseFromRound setOpen={setOpen} />
+                      )}
 
-                    <span
-                      className="panel-block has-text-danger"
-                      onClick={() => {
-                        setConfirmLeaveRound(true);
-                      }}
-                    >
-                      <span className="panel-icon">
-                        <i className="fas fa-lg fa-door-open"></i>
+                      <span
+                        className="panel-block has-text-danger"
+                        onClick={() => {
+                          setConfirmLeaveRound(true);
+                        }}
+                      >
+                        <span className="panel-icon">
+                          <i className="fas fa-lg fa-door-open"></i>
+                        </span>
+                        &nbsp; Leave round
                       </span>
-                      &nbsp; Leave round
-                    </span>
 
-                    {props.user?.user?.username === props.round?.createdBy && (
-                      <>
-                        <span
-                          className="panel-block has-text-danger"
-                          onClick={() => setConfirmSkipHole(true)}
-                        >
-                          <span className="panel-icon">
-                            <i className="fas fa-lg fa-forward"></i>
+                      {props.user?.user?.username ===
+                        props.round?.createdBy && (
+                        <>
+                          <span
+                            className="panel-block has-text-danger"
+                            onClick={() => setConfirmSkipHole(true)}
+                          >
+                            <span className="panel-icon">
+                              <i className="fas fa-lg fa-forward"></i>
+                            </span>
+                            &nbsp; Skip hole
                           </span>
-                          &nbsp; Skip hole
-                        </span>
-                        <span
-                          className="panel-block has-text-danger"
-                          onClick={() => setConfirmDelete(true)}
-                        >
-                          <span className="panel-icon">
-                            <i className="fas fa-lg fa-backspace"></i>
+                          <span
+                            className="panel-block has-text-danger"
+                            onClick={() => setConfirmDelete(true)}
+                          >
+                            <span className="panel-icon">
+                              <i className="fas fa-lg fa-backspace"></i>
+                            </span>
+                            &nbsp; Delete round
                           </span>
-                          &nbsp; Delete round
-                        </span>
-                      </>
-                    )}
-                  </article>
-                </>
-              )}
-              <article className="panel">
-                <Link
-                  to="/"
-                  className="panel-block"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-home"></i>
+                        </>
+                      )}
+                    </article>
+                  </>
+                )}
+                <article className="panel">
+                  <Link
+                    to="/"
+                    className="panel-block"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-home"></i>
+                    </span>
+                    &nbsp; Home
+                  </Link>
+                  <Link
+                    to="/courses"
+                    className="panel-block"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-cloud-sun"></i>
+                    </span>
+                    &nbsp; Courses
+                  </Link>
+                  <Link
+                    to="/tournaments"
+                    className="panel-block"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-trophy"></i>
+                    </span>
+                    &nbsp; Tournaments
+                  </Link>
+                  <Link
+                    to="/friends"
+                    className="panel-block"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-user-friends"></i>
+                    </span>
+                    &nbsp; Friends
+                  </Link>
+                  <Link
+                    to="/user"
+                    className="panel-block"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-user"></i>
+                    </span>
+                    &nbsp; Profile
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="panel-block"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-cogs"></i>
+                    </span>
+                    &nbsp; Settings
+                  </Link>
+                  <Link
+                    to="/about"
+                    className="panel-block"
+                    onClick={() => setOpen(false)}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-question-circle"></i>
+                    </span>
+                    &nbsp; About
+                  </Link>
+                </article>
+                <article className="panel">
+                  <span
+                    className="panel-block"
+                    onClick={() => {
+                      props.logout();
+                      setOpen(false);
+                    }}
+                  >
+                    <span className="panel-icon">
+                      <i className="fas fa-lg fa-sign-out-alt"></i>
+                    </span>
+                    &nbsp; Logout
                   </span>
-                  &nbsp; Home
-                </Link>
-                <Link
-                  to="/courses"
-                  className="panel-block"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-cloud-sun"></i>
-                  </span>
-                  &nbsp; Courses
-                </Link>
-                <Link
-                  to="/tournaments"
-                  className="panel-block"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-trophy"></i>
-                  </span>
-                  &nbsp; Tournaments
-                </Link>
-                <Link
-                  to="/friends"
-                  className="panel-block"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-user-friends"></i>
-                  </span>
-                  &nbsp; Friends
-                </Link>
-                <Link
-                  to="/user"
-                  className="panel-block"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-user"></i>
-                  </span>
-                  &nbsp; Profile
-                </Link>
-                <Link
-                  to="/settings"
-                  className="panel-block"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-cogs"></i>
-                  </span>
-                  &nbsp; Settings
-                </Link>
-                <Link
-                  to="/about"
-                  className="panel-block"
-                  onClick={() => setOpen(false)}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-question-circle"></i>
-                  </span>
-                  &nbsp; About
-                </Link>
-              </article>
-              <article className="panel">
-                <span
-                  className="panel-block"
-                  onClick={() => {
-                    props.logout();
-                    setOpen(false);
-                  }}
-                >
-                  <span className="panel-icon">
-                    <i className="fas fa-lg fa-sign-out-alt"></i>
-                  </span>
-                  &nbsp; Logout
-                </span>
-              </article>
-            </section>
-            <footer className="modal-card-foot">
-              <button className="button" onClick={() => setOpen(false)}>
-                Close
-              </button>
-            </footer>
+                </article>
+              </section>
+              <footer className="modal-card-foot">
+                <button className="button" onClick={() => setOpen(false)}>
+                  Close
+                </button>
+              </footer>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
       <div className={`modal ${confirmLeaveRound ? "is-active" : ""}`}>
         <div onClick={() => setConfirmLeaveRound(false)}>

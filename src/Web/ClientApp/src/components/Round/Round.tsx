@@ -4,13 +4,14 @@ import { ApplicationState } from "../../store";
 import * as RoundsStore from "../../store/Rounds";
 import { useParams } from "react-router";
 import RoundScoreCard from "./RoundScoreCard";
-import HoleScoreSelector from "./HoleScoreSelector";
+import HoleScoreSelector from "./HoleScoreSelectorNew";
 import WindowFocusHandler from "./WindowFocusHandler";
 import RoundSummary from "./RoundSummary";
 import { Round } from "../../store/Rounds";
 import HoleScore from "./HoleScore";
 import RoundScoreCardModal from "./RoundScoreCardModal";
 import ScoreAnimations from "./ScoreAnimations";
+import LiveNavMenu from "../LiveNavMenu";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -70,7 +71,7 @@ const RoundComponent = (props: Props) => {
     fetchUserStats,
     finishedRoundStats,
   } = props;
-  let { roundId } = useParams();
+  let { roundId } = useParams<{ roundId: string }>();
   const roundCompleted = round?.isCompleted;
   useEffect(() => {
     if (!roundId) return;
@@ -121,7 +122,6 @@ const RoundComponent = (props: Props) => {
             playersStats={props.playersStats}
           />
         )}
-        <hr />
         <HoleScoreSelector />
         <WindowFocusHandler />
         <ScoreAnimations />
@@ -130,9 +130,11 @@ const RoundComponent = (props: Props) => {
     );
   };
   return round ? (
-    <>
-      {/* <Tour start={round} /> */}
-      <nav className="navbar is-light level is-mobile mb-0">
+    <div
+      className="is-flex is-flex-direction-column "
+      style={{ height: "100%" }}
+    >
+      <nav className="navbar is-light level is-mobile mb-0 is-flex">
         <div className="level-item has-text-centered">
           <div className="is-size-7">
             {toDateString(new Date(round.startTime))} &nbsp;
@@ -144,15 +146,15 @@ const RoundComponent = (props: Props) => {
           </div>
         </div>
         <div className="level-item has-text-centered">
-          <div className="is-size-7">
+          <LiveNavMenu />
+          {/* <div className="is-size-7">
             <i>{calculateDurationString(round)}</i>
-          </div>
+          </div> */}
         </div>
       </nav>
-      <div className="has-text-centered py-0"></div>
 
       {activeHole && renderRound(round, activeHole)}
-    </>
+    </div>
   ) : null;
 };
 

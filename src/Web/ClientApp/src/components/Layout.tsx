@@ -7,7 +7,9 @@ export default (props: { children?: React.ReactNode }) => (
   <React.Fragment>
     <Banner />
     <Notifications />
-    <div className="container pb-10">{props.children}</div>
+    <div className="container pb-2" style={{ height: "100%" }}>
+      {props.children}
+    </div>
     <NavMenu />
   </React.Fragment>
 );

@@ -1,0 +1,11 @@
+.column {
+    text-align: center;
+}
+
+.button.is-large {
+    font-size: 2.2rem;
+}
+
+.scrollable{
+    overflow-y: auto;
+}

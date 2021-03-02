@@ -148,8 +148,8 @@ const getExtra = (item: UserStore.FeedItem) => {
               ))}
             </tr>
             <tr>
-              {item.roundScores.map((s) => (
-                <td key={s} className="is-size-7 px-1 py-0">
+              {item.roundScores.map((s, i) => (
+                <td key={i} className="is-size-7 px-1 py-0">
                   {+s < 0 ? "-" : "+"}
                   {Math.abs(s)}
                 </td>

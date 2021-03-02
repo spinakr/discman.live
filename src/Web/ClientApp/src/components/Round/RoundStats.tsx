@@ -26,7 +26,9 @@ export default ({ stats, username, swipeHandlers }: RoundStatsProps) => {
                   }}
                 >
                   {stats.map((s) => (
-                    <option value={s.username}>{s.username}</option>
+                    <option key={s.username} value={s.username}>
+                      {s.username}
+                    </option>
                   ))}
                 </select>
               </div>
