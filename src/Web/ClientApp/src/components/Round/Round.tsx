@@ -12,6 +12,7 @@ import HoleScore from "./HoleScore";
 import RoundScoreCardModal from "./RoundScoreCardModal";
 import ScoreAnimations from "./ScoreAnimations";
 import LiveNavMenu from "../LiveNavMenu";
+import Colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -134,7 +135,10 @@ const RoundComponent = (props: Props) => {
       className="is-flex is-flex-direction-column "
       style={{ height: "100%" }}
     >
-      <nav className="navbar is-light level is-mobile mb-0 is-flex">
+      <nav
+        className="navbar is-light level is-mobile mb-0 is-flex"
+        style={{ backgroundColor: Colors.navbar }}
+      >
         <div className="level-item has-text-centered">
           <div className="is-size-7">
             {toDateString(new Date(round.startTime))} &nbsp;

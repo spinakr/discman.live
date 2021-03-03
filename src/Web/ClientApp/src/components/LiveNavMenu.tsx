@@ -4,11 +4,8 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import * as UserStore from "../store/User";
-import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
 import SaveCourseFromRound from "./Round/SaveCourseFromRound";
-import RoundStatus from "./Round/RoundStatus";
-import NewRound from "./Round/NewRound";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -35,36 +32,14 @@ const LiveNavMenu = (props: Props) => {
   const [confirmLeaveRound, setConfirmLeaveRound] = useState(false);
   return (
     <>
-      {/* <div className="column">
-        <a
-          className="button is-light pr-1 pl-3"
-          onClick={() => props.setScorecardOpen(true)}
-        >
-          <span className="icon">
-            <i className="fas fa-lg fa-list-ol" aria-hidden="true"></i>
-          </span>
-          <span className="is-size-7">Scores</span>
-        </a>
-      </div>
-      <div className="column">
-        <RoundStatus />
-      </div> */}
-
-      <div className="navbar-menu tour-score-mode">
+      <div className="navbar-menu">
         <div className="navbar-end">
           <div className="navbar-item py-0">
             <div className={`dropdown is-up is-right ${open && "is-active"}`}>
-              <div className="dropdown-trigger">
-                <button
-                  className="button is-light "
-                  aria-haspopup="true"
-                  aria-controls="dropdown-menu7"
-                  onClick={() => setOpen(!open)}
-                >
-                  <span className="icon">
-                    <i className="fas fa-lg fa-bars" aria-hidden="true"></i>
-                  </span>
-                </button>
+              <div className="dropdown-trigger" onClick={() => setOpen(!open)}>
+                <span className="icon">
+                  <i className="fas fa-lg fa-bars" aria-hidden="true"></i>
+                </span>
               </div>
             </div>
           </div>

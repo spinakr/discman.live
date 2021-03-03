@@ -4,11 +4,11 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import * as UserStore from "../store/User";
-import { ScoreMode } from "../store/Rounds";
 import { Link } from "react-router-dom";
 import SaveCourseFromRound from "./Round/SaveCourseFromRound";
 import RoundStatus from "./Round/RoundStatus";
 import NewRound from "./Round/NewRound";
+import Colors from "../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -37,11 +37,18 @@ const NavMenu = (props: Props) => {
     <>
       {(!props.location.pathname.startsWith("/rounds") ||
         props.round?.isCompleted) && (
-        <nav className="navbar is-fixed-bottom is-light py-0 my-0">
+        <nav
+          className="navbar is-fixed-bottom is-light py-0 my-0"
+          style={{ backgroundColor: Colors.navbar }}
+        >
           <div className="navbar-item columns py-0 my-0">
             <>
               <div className="column py-0">
-                <Link to="/" className="button is-light pr-1 pl-3">
+                <Link
+                  to="/"
+                  className="button pr-1 pl-3"
+                  style={{ backgroundColor: Colors.navbar }}
+                >
                   <span className="icon">
                     <i className="fas fa-lg fa-clipboard-list"></i>
                   </span>
@@ -67,7 +74,11 @@ const NavMenu = (props: Props) => {
                 )}
               </div>
               <div className="column py-0">
-                <Link to="/leaders" className="button is-light pr-1 pl-3">
+                <Link
+                  to="/leaders"
+                  className="button is-light pr-1 pl-3"
+                  style={{ backgroundColor: Colors.navbar }}
+                >
                   <span className="icon">
                     <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>
                   </span>

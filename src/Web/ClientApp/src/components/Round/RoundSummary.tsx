@@ -7,6 +7,7 @@ import PlayerCourseImprovments from "./PlayerCourseImprovments";
 import RoundAchievements from "./RoundAchievements";
 import RoundStats from "./RoundStats";
 import { UserStats } from "../../store/User";
+import colors from "../../colors";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -49,7 +50,10 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
     withTotals: boolean
   ) => {
     return (
-      <table className="table is-narrow">
+      <table
+        className="table is-narrow"
+        style={{ backgroundColor: colors.table }}
+      >
         <thead>
           <tr>
             {withTotals && (

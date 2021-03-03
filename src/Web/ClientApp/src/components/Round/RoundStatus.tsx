@@ -5,6 +5,7 @@ import { ApplicationState } from "../../store";
 import * as RoundsStore from "../../store/Rounds";
 import { Chart } from "react-charts";
 import InformationDialogue from "../InformationDialogue";
+import colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -207,8 +208,9 @@ The blue line shows your average round progression based on averages on each hol
       )}
 
       <a
-        className="button is-warning is-light pr-1 pl-3"
+        className="button pr-1 pl-3"
         onClick={() => setShowDialog(true)}
+        style={{ backgroundColor: colors.button }}
       >
         <span className="icon">
           <i className="fas fa-lg fa-chart-line" aria-hidden="true"></i>

@@ -2,14 +2,16 @@ import * as React from "react";
 import NavMenu from "./NavMenu";
 import Notifications from "./Notifications";
 import Banner from "./Banner";
+import colors from "../colors";
 
 export default (props: { children?: React.ReactNode }) => (
-  <React.Fragment>
+  <div
+    className="pb-2"
+    style={{ backgroundColor: colors.background, height: "100%" }}
+  >
     <Banner />
     <Notifications />
-    <div className="container pb-2" style={{ height: "100%" }}>
-      {props.children}
-    </div>
+    {props.children}
     <NavMenu />
-  </React.Fragment>
+  </div>
 );

@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
+import colors from "../../colors";
 import { ApplicationState } from "../../store";
 import { actionCreators as roundsActionCreator } from "../../store/Rounds";
 
@@ -27,7 +28,10 @@ const PlayerCourseImprovments = (props: Props) => {
 
   if (!playersCourseStats || playersCourseStats.length === 0) return null;
   return (
-    <table className="table is-narrow is-striped">
+    <table
+      className="table is-narrow"
+      style={{ backgroundColor: colors.table }}
+    >
       <thead>
         <tr>
           <th>Player</th>

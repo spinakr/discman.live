@@ -3,6 +3,7 @@ import { ApplicationState } from "../store";
 import { actionCreators } from "../store/User";
 import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
+import Colors from "../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -23,7 +24,10 @@ const Banner = (props: Props) => {
           props.location.pathname.startsWith("/tournaments") &&
           props.location.pathname.length > 12
         ) && (
-          <nav className="navbar is-light level is-mobile">
+          <nav
+            className="navbar is-light level is-mobile"
+            style={{ backgroundColor: Colors.navbar }}
+          >
             <div className="level-item has-text-centered">
               <h5 className="title is-5 has-text-weight-semibold	is-family-monospace">
                 discman.live
@@ -31,7 +35,11 @@ const Banner = (props: Props) => {
             </div>
             <div className="navbar-end">
               <div className="navbar-item">
-                <Link to="/user" className="button is-light pr-1 pl-3">
+                <Link
+                  to="/user"
+                  className="button pr-1 pl-3"
+                  style={{ backgroundColor: Colors.navbar }}
+                >
                   <span className="icon">
                     <i
                       className="fas fa-lg fa-user-friends"

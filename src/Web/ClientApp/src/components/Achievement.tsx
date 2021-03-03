@@ -1,6 +1,7 @@
 import * as React from "react";
 import { UserAchievement } from "../store/User";
 import { Link } from "react-router-dom";
+import colors from "../colors";
 
 export interface AchievementsProps {
   achievement: UserAchievement;
@@ -34,7 +35,14 @@ const getImage = (achievement: string) => {
 };
 
 export default ({ achievement, count }: AchievementsProps) => (
-  <div className="box" style={{ maxWidth: "350px", padding: "10px" }}>
+  <div
+    className="box"
+    style={{
+      maxWidth: "350px",
+      padding: "10px",
+      backgroundColor: colors.background,
+    }}
+  >
     {count && <span className="badge is-top-right is-dark">{count}</span>}
     <Link
       to={

@@ -1,4 +1,5 @@
 import React from "react";
+import colors from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
 
 export interface ScoreCardProps {
@@ -65,7 +66,10 @@ const HoleScoreComponent = ({
       </div>
       <br />
       <div className="table-container">
-        <table className="table is-fullwidth is-bordered tour-holeScores">
+        <table
+          className="table is-fullwidth is-bordered tour-holeScores"
+          style={{ backgroundColor: colors.table }}
+        >
           <thead>
             <tr>
               {round.playerScores.map((p) => (
@@ -76,11 +80,7 @@ const HoleScoreComponent = ({
                     overflow: "hidden",
                   }}
                   key={p.playerName}
-                  className={
-                    p.playerName === username
-                      ? "has-background-light has-text-centered"
-                      : "has-text-centered"
-                  }
+                  className="has-text-centered"
                 >
                   {p.playerName}
                   <br />(
@@ -102,14 +102,7 @@ const HoleScoreComponent = ({
             <tr>
               {round.playerScores.map((p) => {
                 return (
-                  <td
-                    key={p.playerName}
-                    className={
-                      p.playerName === username
-                        ? "has-background-light has-text-centered"
-                        : "has-text-centered"
-                    }
-                  >
+                  <td key={p.playerName} className="has-text-centered">
                     {
                       p.scores.find((s) => s.hole.number === activeHole)
                         ?.strokes

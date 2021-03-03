@@ -5,6 +5,7 @@ import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
 import { Link } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
+import colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -138,7 +139,10 @@ const getExtra = (item: UserStore.FeedItem) => {
   ) {
     return (
       <div className="table-container pt-1">
-        <table className="table is-narrow has-text-centered has-background-light  is-bordered">
+        <table
+          className="table is-narrow has-text-centered is-bordered"
+          style={{ backgroundColor: colors.table }}
+        >
           <tbody>
             <tr>
               {item.subjects.map((s) => (
@@ -190,7 +194,7 @@ const Feed = (props: Props) => {
 
   return (
     <section className="">
-      <div className="columns is-mobile">
+      {/* <div className="columns is-mobile">
         <div className="column"> </div>
         <div className="column">
           <h3 className="title is-3 has-text-centered">Feed</h3>
@@ -215,7 +219,7 @@ const Feed = (props: Props) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {feed.feedItems.length > 0 && (
         <div className="">
           <InfiniteScroll
@@ -239,7 +243,11 @@ const Feed = (props: Props) => {
             pullDownToRefreshThreshold={80}
           >
             {feed.feedItems.map((f) => (
-              <div key={f.id} className="box py-1 px-1">
+              <div
+                key={f.id}
+                className="box py-1 px-1"
+                style={{ backgroundColor: colors.background }}
+              >
                 <article className="media">
                   <Link to={getUri(f)}>
                     <div className="media-left">
