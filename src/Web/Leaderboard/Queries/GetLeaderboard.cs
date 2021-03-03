@@ -36,16 +36,16 @@ namespace Web.Leaderboard.Queries
         {
             var username = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
             var playersStats = await _leaderboardCache
-                .GetOrCreate(request.OnlyFriends ? $"{username}-{request.Month}" : request.Month.ToString(), 
+                .GetOrCreate(request.OnlyFriends ? $"{username}-{request.Month}" : request.Month.ToString(),
                     async () => await GetLeaderboardForMonth(request.Month, request.OnlyFriends, username));
 
             return playersStats;
         }
-        
+
         private async Task<List<PlayerStats>> GetLeaderboardForMonth(int month, bool onlyFriends, string username)
         {
             var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == username);
-            var friendsAndMe = user.Friends.Concat(new[] {username}).ToArray();
+            var friendsAndMe = user.Friends.Concat(new[] { username }).ToArray();
 
             var rounds = _documentSession
                 .Query<Round>()
@@ -57,8 +57,8 @@ namespace Web.Leaderboard.Queries
 
             var roundsThisMonth = rounds
                 .Where(r => r.StartTime.Year == DateTime.Now.Year && (month == 0 || r.StartTime.Month == month)).ToList();
-            
-            if(!roundsThisMonth.Any()) return new List<PlayerStats>();
+
+            if (!roundsThisMonth.Any()) return new List<PlayerStats>();
 
             var playersStats = roundsThisMonth
                 .CalculatePlayerStats()

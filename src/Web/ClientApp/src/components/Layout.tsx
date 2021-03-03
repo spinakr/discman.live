@@ -1,5 +1,5 @@
 import * as React from "react";
-import NavMenu from "./NavMenu";
+import NavBar from "./NavBar";
 import Notifications from "./Notifications";
 import Banner from "./Banner";
 import colors from "../colors";
@@ -12,6 +12,6 @@ export default (props: { children?: React.ReactNode }) => (
     <Banner />
     <Notifications />
     {props.children}
-    <NavMenu />
+    <NavBar />
   </div>
 );

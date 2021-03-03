@@ -11,7 +11,7 @@ import { Round } from "../../store/Rounds";
 import HoleScore from "./HoleScore";
 import RoundScoreCardModal from "./RoundScoreCardModal";
 import ScoreAnimations from "./ScoreAnimations";
-import LiveNavMenu from "../LiveNavMenu";
+import NavMenu from "../NavMenu";
 import Colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
@@ -150,7 +150,7 @@ const RoundComponent = (props: Props) => {
           </div>
         </div>
         <div className="level-item has-text-centered">
-          <LiveNavMenu />
+          <NavMenu />
           {/* <div className="is-size-7">
             <i>{calculateDurationString(round)}</i>
           </div> */}

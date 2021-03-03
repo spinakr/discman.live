@@ -2,8 +2,8 @@ import * as React from "react";
 import { ApplicationState } from "../store";
 import { actionCreators } from "../store/User";
 import { connect, ConnectedProps } from "react-redux";
-import { Link } from "react-router-dom";
 import Colors from "../colors";
+import NavMenu from "./NavMenu";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -35,7 +35,7 @@ const Banner = (props: Props) => {
             </div>
             <div className="navbar-end">
               <div className="navbar-item">
-                <Link
+                {/* <Link
                   to="/user"
                   className="button pr-1 pl-3"
                   style={{ backgroundColor: Colors.navbar }}
@@ -47,7 +47,8 @@ const Banner = (props: Props) => {
                     ></i>
                   </span>
                   <span className="is-size-7"></span>
-                </Link>
+                </Link> */}
+                <NavMenu />
               </div>
             </div>
           </nav>

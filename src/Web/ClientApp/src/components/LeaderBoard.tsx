@@ -6,6 +6,7 @@ import { actionCreators as leaderboardActionCreators } from "../store/Leaderboar
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import InformationDialogue from "./InformationDialogue";
+import colors from "../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -21,6 +22,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const months = [
+  "YTD",
   "January",
   "February",
   "March",
@@ -36,31 +38,13 @@ const months = [
 ];
 
 const GlobalLeaderBoard = (props: Props) => {
-  const [activeMonth, setActiveMonth] = useState(new Date().getMonth() + 1);
+  const [activeMonth, setActiveMonth] = useState(0);
   const { fetchLeaderboard } = props;
-  const [onlyFriends, setOnlyFriends] = useState(true);
   useEffect(() => {
-    fetchLeaderboard(onlyFriends, activeMonth);
-  }, [activeMonth, fetchLeaderboard, onlyFriends]);
+    fetchLeaderboard(true, activeMonth);
+  }, [activeMonth, fetchLeaderboard]);
   return (
     <>
-      <div className="tabs is-small is-centered">
-        <ul>
-          <li
-            className={onlyFriends ? "is-active" : ""}
-            onClick={() => setOnlyFriends(true)}
-          >
-            <a>Friends</a>
-          </li>
-          <li
-            className={!onlyFriends ? "is-active" : ""}
-            onClick={() => setOnlyFriends(false)}
-          >
-            <a>Global</a>
-          </li>
-        </ul>
-      </div>
-
       <div className="container">
         <div className="field is-grouped">
           <div className="control has-icons-left">
@@ -68,9 +52,10 @@ const GlobalLeaderBoard = (props: Props) => {
               <select
                 value={activeMonth}
                 onChange={(e) => setActiveMonth(+e.target.value)}
+                style={{ backgroundColor: colors.background }}
               >
                 {months.map((m, i) => (
-                  <option key={m} value={i + 1}>
+                  <option key={m} value={i}>
                     {m}
                   </option>
                 ))}
@@ -85,7 +70,10 @@ const GlobalLeaderBoard = (props: Props) => {
             text="Leader board is calculated based on average score adjusted against the difficulty of the course played. Playing only easy courses will not take you to the top of the leader board."
           />
         </div>
-        <table className="table is-fullwidth ">
+        <table
+          className="table is-fullwidth"
+          style={{ backgroundColor: colors.table }}
+        >
           <thead>
             <tr>
               <td>#</td>
