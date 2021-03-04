@@ -6,6 +6,7 @@ export default {
   background: "#fefae0",
   table: "#faedcd",
   button: "#fefae0",
+  field: "#faedcd",
   circle1: "#d8f3dc",
   circle2: "#cfe1b9",
   rough: "#40916c",

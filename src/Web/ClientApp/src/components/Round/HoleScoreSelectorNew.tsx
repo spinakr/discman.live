@@ -168,7 +168,7 @@ const HoleScoreSelector = (props: Props) => {
         <>
           {props.simpleScoring ? (
             <>
-              <div className="columns is-mobile is-flex">
+              <div className="columns is-mobile is-flex pb-5">
                 <div className="column">
                   <div className="control py-1">
                     <button

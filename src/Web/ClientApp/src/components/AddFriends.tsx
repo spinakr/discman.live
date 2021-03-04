@@ -6,6 +6,7 @@ import { actionCreators as coursesActionCreator } from "../store/Courses";
 import { actionCreators as loginActionCreator } from "../store/User";
 import { actionCreators as roundsActionCreator } from "../store/Rounds";
 import { actionCreators as userActionCreator } from "../store/User";
+import colors from "../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -46,10 +47,16 @@ const AddFriends = (props: Props) => {
           <div className="modal-background"></div>
         </div>
         <div className="modal-card">
-          <header className="modal-card-head">
-            <p className="modal-card-title">Add Friends</p>
+          <header
+            className="modal-card-head"
+            style={{ backgroundColor: colors.background }}
+          >
+            <p className="modal-card-title">Find Friends</p>
           </header>
-          <section className="modal-card-body">
+          <section
+            className="modal-card-body"
+            style={{ backgroundColor: colors.background }}
+          >
             <div className="field has-addons">
               <div className="control ">
                 <input
@@ -58,6 +65,7 @@ const AddFriends = (props: Props) => {
                   onChange={(e) => searchStringChanged(e.target.value)}
                   type="text"
                   placeholder="Username"
+                  style={{ backgroundColor: colors.field }}
                 />
               </div>
             </div>
@@ -87,18 +95,26 @@ const AddFriends = (props: Props) => {
               ))}
             </div>
           </section>
-          <footer className="modal-card-foot">
-            <button className="button" onClick={() => setShowDialog(false)}>
+          <footer
+            className="modal-card-foot"
+            style={{ backgroundColor: colors.background }}
+          >
+            <button
+              className="button"
+              onClick={() => setShowDialog(false)}
+              style={{ backgroundColor: colors.background }}
+            >
               Done
             </button>
           </footer>
         </div>
       </div>
       <button
-        className="button is-information"
+        className="button"
         onClick={() => setShowDialog(true)}
+        style={{ backgroundColor: colors.background }}
       >
-        <strong>Add Friends</strong>
+        <strong>Find Friends</strong>
       </button>
     </>
   );

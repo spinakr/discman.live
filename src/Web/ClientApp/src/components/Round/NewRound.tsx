@@ -13,6 +13,7 @@ import {
 import InformationDialogue from "../InformationDialogue";
 import { useMountEffect } from "../../utils";
 import colors from "../../colors";
+import AddFriends from "../AddFriends";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -35,6 +36,7 @@ type Props = PropsFromRedux & {};
 const NewRound = (props: Props) => {
   const [courseFilter, setCourseFilter] = useState("");
   const [showDialog, setShowDialog] = useState(false);
+  const [showFriendsModal, setShowFriendsModal] = useState(false);
   const [selectedLayout, setSelectedLayout] = useState<Course | undefined>(
     undefined
   );
@@ -137,6 +139,7 @@ After finishing the round, an actuall course can be created from the registered 
                         onChange={(e) => {
                           setCourseFilter(e.target.value);
                         }}
+                        style={{ backgroundColor: colors.field }}
                       />
                       <span className="icon is-left">
                         <i className="fas fa-search" aria-hidden="true"></i>
@@ -170,6 +173,7 @@ After finishing the round, an actuall course can be created from the registered 
                           <div className="select is-grey is-fullwidth">
                             <select
                               onChange={(e) => layoutSelected(e.target.value)}
+                              style={{ backgroundColor: colors.field }}
                             >
                               {availableLayouts?.map((c) => (
                                 <option key={c.id} value={c.id}>
@@ -190,21 +194,28 @@ After finishing the round, an actuall course can be created from the registered 
                       type="text"
                       value={roundName}
                       onChange={(e) => setRoundName(e.target.value)}
+                      style={{ backgroundColor: colors.field }}
                     ></input>
                   </div>
                 </div>
               )}
               <label className="label">Friends</label>
-              <div className="field">
-                <div className="control">
-                  <div className="select is-grey is-fullwidth">
-                    <select onChange={(e) => playerAdded(e.target.value)}>
+              <div className="field is-grouped">
+                <div className="control  is-expanded">
+                  <div className="select is-fullwidth">
+                    <select
+                      onChange={(e) => playerAdded(e.target.value)}
+                      style={{ backgroundColor: colors.field }}
+                    >
                       <option></option>
                       {props.friends?.map((u) => (
                         <option key={u}>{u}</option>
                       ))}
                     </select>
                   </div>
+                </div>
+                <div className="control">
+                  <AddFriends />
                 </div>
               </div>
               {selectedPlayers.map((p) => (
