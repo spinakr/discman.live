@@ -87,7 +87,15 @@ const renderStrokes = (
 };
 
 const HoleScoreSelector = (props: Props) => {
-  const { round, activeHole, setScore, username, setScorecardOpen } = props;
+  const {
+    round,
+    activeHole,
+    setScore,
+    username,
+    setScorecardOpen,
+    simpleScoring,
+    setSimpleScoring,
+  } = props;
   const [strokes, setStrokes] = useState<StrokeOutcome[]>([]);
   const [strokeCount, setStrokeCount] = useState(3);
   const isPartOfRound = round?.playerScores.some(
@@ -138,6 +146,20 @@ const HoleScoreSelector = (props: Props) => {
           <span className="is-size-7">Scores</span>
         </button>
         <RoundStatus />
+        <button
+          className="button pr-1 pl-3"
+          onClick={() => setSimpleScoring(!simpleScoring)}
+          style={{ backgroundColor: colors.button }}
+        >
+          <span className="icon">
+            <i className="fas fa-lg fa-clipboard-list"></i>
+          </span>
+          <span className="is-size-7">
+            {simpleScoring ? "Detailed" : "Simple"}
+            <br />
+            scoring
+          </span>
+        </button>
       </div>
       <div className="is-flex scrollable">
         {renderStrokes(strokes, setStrokes)}
@@ -151,8 +173,8 @@ const HoleScoreSelector = (props: Props) => {
                   <div className="control py-1">
                     <button
                       className="button is-large"
-                      title="Rough"
                       onClick={() => setStrokeCount(strokeCount - 1)}
+                      style={{ backgroundColor: colors.circle1 }}
                     >
                       <span className="icon is-large">
                         <i className="has-text-weight-bold is-family-code">-</i>
@@ -164,11 +186,11 @@ const HoleScoreSelector = (props: Props) => {
                   <div className="control py-1">
                     <button
                       className="button is-large"
-                      title="Rough"
                       onClick={() => {
                         setScore(strokeCount, []);
                         resetStrokeCount();
                       }}
+                      style={{ backgroundColor: colors.background }}
                     >
                       <span className="icon is-large">
                         <i className="has-text-weight-bold is-family-code">
@@ -182,8 +204,8 @@ const HoleScoreSelector = (props: Props) => {
                   <div className="control py-1">
                     <button
                       className="button is-large"
-                      title="Rough"
                       onClick={() => setStrokeCount(strokeCount + 1)}
+                      style={{ backgroundColor: colors.rough }}
                     >
                       <span className="icon is-large">
                         <i className="has-text-weight-bold is-family-code">+</i>

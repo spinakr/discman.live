@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import colors from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
 import RoundScoreCard from "./RoundScoreCard";
 
@@ -34,10 +35,10 @@ const RoundScoreCardModal = ({
         <div className="modal-background"></div>
       </div>
       <div className="modal-card">
-        <header className="modal-card-head">
-          <p className="modal-card-title"></p>
-        </header>
-        <div className="modal-card-body is-marginless is-paddingless">
+        <div
+          className="modal-card-body py-2 px-1"
+          style={{ backgroundColor: colors.background }}
+        >
           <RoundScoreCard
             username={username || ""}
             round={round}
@@ -47,7 +48,6 @@ const RoundScoreCardModal = ({
             playersStats={playersStats}
           />
         </div>
-        <footer className="modal-card-foot"></footer>
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import {
 } from "../../store/Rounds";
 import InformationDialogue from "../InformationDialogue";
 import { useMountEffect } from "../../utils";
+import colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -90,10 +91,13 @@ const NewRound = (props: Props) => {
             <div className="modal-background"></div>
           </div>
           <div className="modal-card has-text-left">
-            <header className="modal-card-head">
+            {/* <header className="modal-card-head">
               <p className="modal-card-title">Start new round</p>
-            </header>
-            <section className="modal-card-body">
+            </header> */}
+            <section
+              className="modal-card-body"
+              style={{ backgroundColor: colors.background }}
+            >
               <label className="label">Scoring</label>
               <div className="field is-grouped">
                 <div className="control">
@@ -214,7 +218,10 @@ After finishing the round, an actuall course can be created from the registered 
                 </span>
               ))}
             </section>
-            <footer className="modal-card-foot">
+            <footer
+              className="modal-card-foot"
+              style={{ backgroundColor: colors.background }}
+            >
               <button
                 className="button is-success is-light is-outlined"
                 onClick={() => {
@@ -233,8 +240,9 @@ After finishing the round, an actuall course can be created from the registered 
                 Start
               </button>
               <button
-                className="button is-outlined"
+                className="button"
                 onClick={() => setShowDialog(false)}
+                style={{ backgroundColor: colors.background }}
               >
                 Cancel
               </button>
@@ -244,7 +252,8 @@ After finishing the round, an actuall course can be created from the registered 
       )}
       <button
         onClick={() => setShowDialog(true)}
-        className="button is-light pr-1 pl-3"
+        className="button pr-1 pl-3"
+        style={{ backgroundColor: colors.navbar }}
       >
         <span className="icon">
           <i className="fas fa-lg fa-play" aria-hidden="true"></i>

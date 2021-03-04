@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import colors from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
 
 export interface ScoreCardProps {
@@ -31,7 +32,10 @@ const RoundScoreCard = ({
   return (
     <div className="columns is-marginless is-paddingless is-mobile">
       <div className="column is-narrow is-marginless is-paddingless">
-        <table className="table is-marginless is-paddingless is-bordered">
+        <table
+          className="table is-marginless is-paddingless is-bordered"
+          style={{ backgroundColor: colors.table }}
+        >
           <thead>
             <tr>
               <th>Hole</th>
@@ -76,7 +80,10 @@ const RoundScoreCard = ({
         className="column table-container is-marginless is-paddingless"
         ref={tableRef}
       >
-        <table className="table is-bordered">
+        <table
+          className="table is-bordered"
+          style={{ backgroundColor: colors.table }}
+        >
           <thead>
             <tr>
               {round.playerScores[0].scores.map((s) => (

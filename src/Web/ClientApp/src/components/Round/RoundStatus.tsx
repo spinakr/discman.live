@@ -84,17 +84,18 @@ const RoundStatus = (props: Props) => {
     (playerStats && playerStats.averagePrediction.length - 1) || 0;
 
   const currentScore =
-    roundScores &&
-    roundScores.reduce((total, score) => {
-      return total + score.relativeToPar;
-    }, 0);
+    (roundScores &&
+      roundScores.reduce((total, score) => {
+        return total + score.relativeToPar;
+      }, 0)) ||
+    0;
 
   const currentAverage =
     playerStats?.averagePrediction[
       lastScoredHoleIndex === 0 ? predLength : lastScoredHoleIndex
     ];
 
-  const versusAverage = Math.ceil((currentScore || 0) - (currentAverage || 0));
+  const versusAverage = Math.ceil(currentScore - (currentAverage || 0));
 
   const predictedFinalScore =
     (lastScoredHoleIndex === 0
@@ -119,25 +120,28 @@ const RoundStatus = (props: Props) => {
             <div className="modal-background"></div>
           </div>
           <div className="modal-card">
-            <header className="modal-card-head">
+            {/* <header className="modal-card-head">
               <p className="modal-card-title">Round Status</p>
-              <InformationDialogue
-                title="Round Status"
-                text={`Shows how the current round compares to your previous rounds on the course.
+            </header> */}
+            <section
+              className="modal-card-body px-2"
+              style={{ backgroundColor: colors.background }}
+            >
+              <div className="has-text-centered">
+                <span className="title is-5">Current Score</span>
+                <InformationDialogue
+                  title="Round Status"
+                  text={`Shows how the current round compares to your previous rounds on the course.
 
 The blue line shows your average round progression based on averages on each hole. The red line is the current round.`}
-              />
-            </header>
-            <section className="modal-card-body">
-              <div className="columns is-centered is-mobile">
-                <span className="column has-text-centered">
-                  <span className="title is-5">Current Score</span> <br />
-                  <p className="is-size-3 has-background-info-light">
-                    {currentScore}
-                  </p>
+                />{" "}
+                <br />
+                <span className="is-size-3">
+                  {currentScore > 0 ? "+" : ""}
+                  {currentScore}
                 </span>
               </div>
-              <div className="columns is-centered is-mobile">
+              <div className="columns is-centered is-marginless is-mobile">
                 <span className="column has-text-centered ">
                   <span className="title is-6 ">Predicted Score</span>
                   <br />
@@ -178,11 +182,11 @@ The blue line shows your average round progression based on averages on each hol
                   {playerStats?.playerCourseRecord}
                 </span>
               </div>
-              <div style={{ width: "350px", height: "200px", padding: "10px" }}>
+              <div style={{ width: "350px", height: "200px" }}>
                 <Chart data={data} axes={axes} tooltip />
               </div>
             </section>
-            <footer className="modal-card-foot">
+            {/* <footer className="modal-card-foot">
               <button className="button" onClick={() => setShowDialog(false)}>
                 Close
               </button>
@@ -202,7 +206,7 @@ The blue line shows your average round progression based on averages on each hol
                   </div>
                 </div>
               )}
-            </footer>
+            </footer> */}
           </div>
         </div>
       )}
