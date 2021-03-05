@@ -62,17 +62,24 @@ const RoundScoreCard = ({
             </tr>
           </thead>
           <tbody>
-            {round.playerScores.map((s) => (
-              <tr key={s.playerName}>
-                <td key={s.playerName}>
-                  {s.playerName}&nbsp;(
-                  {s.scores.reduce((total, score) => {
+            {round.playerScores
+              .map((p) => {
+                return {
+                  name: p.playerName,
+                  totalScore: p.scores.reduce((total, score) => {
                     return total + score.relativeToPar;
-                  }, 0)}
-                  )
-                </td>
-              </tr>
-            ))}
+                  }, 0),
+                };
+              })
+              .sort((a, b) => a.totalScore - b.totalScore)
+              .map((s) => (
+                <tr key={s.totalScore}>
+                  <td key={s.name}>
+                    {s.name}&nbsp;(
+                    {s.totalScore} )
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

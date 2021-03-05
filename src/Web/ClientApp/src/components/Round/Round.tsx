@@ -8,7 +8,7 @@ import HoleScoreSelector from "./HoleScoreSelectorNew";
 import WindowFocusHandler from "./WindowFocusHandler";
 import RoundSummary from "./RoundSummary";
 import { Round } from "../../store/Rounds";
-import HoleScore from "./HoleScore";
+import HoleScore from "./HoleScoreNew";
 import RoundScoreCardModal from "./RoundScoreCardModal";
 import ScoreAnimations from "./ScoreAnimations";
 import NavMenu from "../NavMenu";

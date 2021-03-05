@@ -24,31 +24,32 @@ const UserSettings = (props: Props) => {
 
   return (
     <div>
-      <h2 className="title is-2 has-text-centered">
-        {props.user?.user?.username}
-      </h2>
-
       <div className="section pt-1">
-        <h4 className="subtitle is-4 has-text-centered">Settings</h4>
-        <label className="label">Scoring</label>
-        <div className="field">
-          <div className="control">
-            <input
-              id="simpleScoring"
-              type="checkbox"
-              name="switchExample"
-              className="switch"
-              checked={!props.user?.userDetails?.simpleScoring}
-              onChange={() => {
-                props.setSimpleScoring(!props.user?.userDetails?.simpleScoring);
-              }}
-            />
-            <label htmlFor="simpleScoring">Detailed</label>
+        <div className="field is-horizontal">
+          <div className="field-label">
+            <label className="label">Scoring</label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control">
+                <input
+                  id="simpleScoring"
+                  type="checkbox"
+                  name="switchExample"
+                  className="switch"
+                  checked={!props.user?.userDetails?.simpleScoring}
+                  onChange={() => {
+                    props.setSimpleScoring(
+                      !props.user?.userDetails?.simpleScoring
+                    );
+                  }}
+                />
+                <label htmlFor="simpleScoring">Detailed</label>
+              </div>
+            </div>
           </div>
         </div>
-        <br />
         <EmojiPicker />
-        <br />
         <UpdateEmailForm
           changeEmail={props.changeEmail}
           currentEmail={props.user?.userDetails?.email}

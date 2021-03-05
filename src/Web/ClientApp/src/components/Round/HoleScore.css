@@ -9,3 +9,16 @@
 .scrollable{
     overflow-y: auto;
 }
+
+.narrow-column{
+    padding: ""
+}
+
+.bordered-cell{
+    border-left-width: 2px !important;
+    border-right-width: 2px !important;
+}
+
+td, th {
+    vertical-align: middle !important;
+}
