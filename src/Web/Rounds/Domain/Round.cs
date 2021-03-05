@@ -12,7 +12,7 @@ namespace Web.Rounds
         {
         }
 
-        public Round(Course course, List<string> players, string createdBy, string roundName, ScoreMode scoreMode)
+        public Round(Course course, List<User> players, string createdBy, string roundName, ScoreMode scoreMode)
         {
             Id = Guid.NewGuid();
             CourseName = course.Name;
@@ -25,14 +25,15 @@ namespace Web.Rounds
             ScoreMode = scoreMode;
         }
 
-        public Round(List<string> players, string createdBy, string roundName, ScoreMode scoreMode)
+        public Round(List<User> players, string createdBy, string roundName, ScoreMode scoreMode)
         {
             Id = Guid.NewGuid();
             StartTime = DateTime.Now;
             PlayerScores = players
                 .Select(p => new PlayerScore
                 {
-                    PlayerName = p,
+                    PlayerName = p.Username,
+                    PlayerEmoji = p.Emoji,
                     Scores = new List<HoleScore>()
                 }).ToList();
             RoundName = roundName;
@@ -45,7 +46,7 @@ namespace Web.Rounds
         public List<string> Spectators { get; set; } = new List<string>();
 
         public ScoreMode ScoreMode { get; set; }
-        
+
         /// <summary>
         /// Optional property usually only used when no course is used 
         /// </summary>
@@ -65,13 +66,14 @@ namespace Web.Rounds
 
         public double RoundDuration => IsCompleted ? (CompletedAt - StartTime).TotalMinutes : (DateTime.Now - StartTime).TotalMinutes;
 
-        private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<string> players)
+        private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<User> players)
         {
             return players
                 .Select(p => new PlayerScore
                 {
-                    PlayerName = p,
-                    Scores = courseHoles.Select(h => new HoleScore {Hole = new Hole(h.Number, h.Par, h.Distance, h.Rating, h.Average)}).ToList()
+                    PlayerName = p.Username,
+                    PlayerEmoji = p.Emoji,
+                    Scores = courseHoles.Select(h => new HoleScore { Hole = new Hole(h.Number, h.Par, h.Distance, h.Rating, h.Average) }).ToList()
                 }).ToList();
         }
 
@@ -79,7 +81,7 @@ namespace Web.Rounds
         {
             foreach (var playerScore in PlayerScores)
             {
-                playerScore.Scores.Add(new HoleScore {Hole = new Hole(holeNumber, par, length)});
+                playerScore.Scores.Add(new HoleScore { Hole = new Hole(holeNumber, par, length) });
             }
         }
 
@@ -93,7 +95,7 @@ namespace Web.Rounds
 
         public double RoundAverageScore()
         {
-            return PlayerScores.Sum(ps => ps.Scores.Sum(s => s.RelativeToPar)) / (double) PlayerScores.Count;
+            return PlayerScores.Sum(ps => ps.Scores.Sum(s => s.RelativeToPar)) / (double)PlayerScores.Count;
         }
 
         public void CompleteRound()
@@ -123,6 +125,7 @@ namespace Web.Rounds
     public class PlayerScore
     {
         public string PlayerName { get; set; }
+        public string PlayerEmoji { get; set; }
         public List<HoleScore> Scores { get; set; }
     }
 
@@ -133,8 +136,8 @@ namespace Web.Rounds
             Strokes = strokes;
             var relativeToPar = strokes - Hole.Par;
             RelativeToPar = relativeToPar;
-            StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec {Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome)}).ToList();
-            if(StrokeSpecs != null && StrokeSpecs.Any()) StrokeSpecs.Last().PutDistance = putDistance;
+            StrokeSpecs = strokeOutcomes?.Select(outcome => new StrokeSpec { Outcome = Enum.Parse<StrokeSpec.StrokeOutcome>(outcome) }).ToList();
+            if (StrokeSpecs != null && StrokeSpecs.Any()) StrokeSpecs.Last().PutDistance = putDistance;
             RegisteredAt = DateTime.Now;
             return relativeToPar;
         }

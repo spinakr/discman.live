@@ -7,6 +7,7 @@ import Login from "./Login";
 import Feed from "./Feed/Feed";
 import NewsMessages from "./NewsMessages";
 import About from "./About";
+import InitSettings from "./InitSettings";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -38,6 +39,7 @@ const Home = (props: Props) => {
         {user?.loggedIn && <Feed />}
       </div>
       <NewsMessages />
+      <InitSettings />
     </div>
   );
 };

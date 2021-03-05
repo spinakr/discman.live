@@ -60,15 +60,16 @@ namespace Web.Users
         {
             var authenticatedUser = await _mediator.Send(new AuthenticateUserCommand
             {
-                Username = request.Username, Password = request.Password
+                Username = request.Username,
+                Password = request.Password
             });
 
 
-            if (authenticatedUser is null) return BadRequest(new {message = "Username or password is incorrect"});
+            if (authenticatedUser is null) return BadRequest(new { message = "Username or password is incorrect" });
 
             return Ok(authenticatedUser);
         }
-        
+
         [AllowAnonymous]
         [HttpPost("resetpassword")]
         public async Task<IActionResult> ResetPassword([FromBody] InitiatePasswordResetCommand req)
@@ -76,7 +77,7 @@ namespace Web.Users
             await _mediator.Send(req);
             return Ok();
         }
-        
+
         [AllowAnonymous]
         [HttpPost("setpassword")]
         public async Task<IActionResult> SetPassword([FromBody] ResetPasswordCommand req)
@@ -88,7 +89,7 @@ namespace Web.Users
         [HttpGet]
         public async Task<IActionResult> SearchUsers([FromQuery] string searchString)
         {
-            return Ok(await _mediator.Send(new FindUsersQuery {UsernameSearchString = searchString}));
+            return Ok(await _mediator.Send(new FindUsersQuery { UsernameSearchString = searchString }));
         }
 
         [HttpGet("{username}/stats")]
@@ -108,38 +109,52 @@ namespace Web.Users
         [HttpGet("{username}/achievements")]
         public async Task<IActionResult> GetUserAchievements(string username)
         {
-            var userAchievements = await _mediator.Send(new GetUserAchievementsQuery {Username = username});
+            var userAchievements = await _mediator.Send(new GetUserAchievementsQuery { Username = username });
             return Ok(userAchievements);
         }
-        
+
         [HttpPut("{username}/password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand req)
         {
             await _mediator.Send(req);
             return Ok();
         }
-        
+
         [HttpPut("email")]
         public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailCommand req)
         {
             var user = await _mediator.Send(req);
             return Ok(user);
         }
-        
+
         [HttpPost("newsSeen")]
         public async Task<IActionResult> SetNewsSeen([FromBody] SetNewsSeenCommand req)
         {
             var user = await _mediator.Send(req);
             return Ok(user);
         }
-        
+
         [HttpPost("simpleScoring")]
         public async Task<IActionResult> SetSimpleScoring([FromBody] SetSimpleScoringCommand req)
         {
             var user = await _mediator.Send(req);
             return Ok(user);
         }
-        
+
+        [HttpPost("emoji")]
+        public async Task<IActionResult> SetEmoji([FromBody] SetEmojiCommand req)
+        {
+            var user = await _mediator.Send(req);
+            return Ok(user);
+        }
+
+        [HttpPost("settingsInitialized")]
+        public async Task<IActionResult> SetSettingsInitialized()
+        {
+            var user = await _mediator.Send(new SetSettingsInitializedCommand());
+            return Ok(user);
+        }
+
         [HttpPost("registerPutDistance")]
         public async Task<IActionResult> SetRegisterPutDistance([FromBody] SetRegisterPutDistanceCommand req)
         {
@@ -150,10 +165,10 @@ namespace Web.Users
         [HttpPost("friends")]
         public async Task<IActionResult> AddFriend([FromBody] AddFriendsRequest req)
         {
-            await _mediator.Send(new AddFriendCommand {Username = req.Username});
+            await _mediator.Send(new AddFriendCommand { Username = req.Username });
             return Ok();
         }
-        
+
         [HttpGet("details")]
         public async Task<IActionResult> GetUserDetails()
         {

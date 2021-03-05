@@ -3,6 +3,8 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
 import InformationDialogue from "../InformationDialogue";
+import EmojiPicker from "./EmojiPicker";
+import UpdateEmailForm from "./UpdateEmailForm";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -16,15 +18,9 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-const emailValid = (email: string) => {
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/.test(email)) return true;
-  return false;
-};
-
 const UserSettings = (props: Props) => {
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
-  const [email, setEmail] = useState<string>("");
 
   return (
     <div>
@@ -34,6 +30,7 @@ const UserSettings = (props: Props) => {
 
       <div className="section pt-1">
         <h4 className="subtitle is-4 has-text-centered">Settings</h4>
+        <label className="label">Scoring</label>
         <div className="field">
           <div className="control">
             <input
@@ -46,53 +43,16 @@ const UserSettings = (props: Props) => {
                 props.setSimpleScoring(!props.user?.userDetails?.simpleScoring);
               }}
             />
-            <label htmlFor="simpleScoring">Detailed Scoring</label>
+            <label htmlFor="simpleScoring">Detailed</label>
           </div>
         </div>
         <br />
-
-        <div className="field is-horizontal is-mobile">
-          <div className="field-label is-normal">
-            <label className="label">Email</label>
-          </div>
-          <div className="field-body">
-            <div className="field">
-              <p className="control">
-                <input
-                  className="input is-static"
-                  type="email"
-                  onChange={() => {}}
-                  value={props.user?.userDetails?.email || "Email not present"}
-                />
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="field is-grouped">
-          <div className="control is-expanded">
-            <input
-              className={`input ${!emailValid(email) && "is-danger"}`}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              placeholder="New email"
-            />
-          </div>
-          <div className="control">
-            <button
-              disabled={email === "" || !email || !emailValid(email)}
-              className="button is-success is-light is-outlined"
-              onClick={() => {
-                props.changeEmail(email);
-                setEmail("");
-              }}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-
+        <EmojiPicker />
+        <br />
+        <UpdateEmailForm
+          changeEmail={props.changeEmail}
+          currentEmail={props.user?.userDetails?.email}
+        />
         <br />
         <h4 className="subtitle is-4 has-text-centered">Change password</h4>
         <div className="field">

@@ -35,6 +35,8 @@ export interface UserDetails {
   simpleScoring: boolean;
   newsIdsSeen: string[];
   friends: string[];
+  settingsInitialized: boolean;
+  emoji: string;
   activeRound: string | null;
 }
 
@@ -134,6 +136,11 @@ export interface SimpleScoringUpdatedSuccessACtion {
   simpleScoring: boolean;
 }
 
+export interface EmojiUpdatedSuccessAction {
+  type: "EMOJI_UPDATED_SUCCESS";
+  emoji: string;
+}
+
 export interface SetLoggedInUserAction {
   type: "SET_LOGGEDIN_USER";
   user: User;
@@ -180,6 +187,9 @@ export interface LikeToggledAction {
   type: "LIKE_TOGGLED";
   id: string;
 }
+export interface SetSettingsInitSuccessAction {
+  type: "SET_SETTINGS_INIT_SUCCESS";
+}
 
 export interface ClearFeedAction {
   type: "CLEAR_FEED";
@@ -192,6 +202,7 @@ export type KnownAction =
   | LoginFailedAction
   | LogUserOutAction
   | ConnectToHubAction
+  | SetSettingsInitSuccessAction
   | SetNewsSeenSuccessAction
   | FriendAddedSuccessAction
   | FetchUserStatsSuccessAction
@@ -206,6 +217,7 @@ export type KnownAction =
   | LikeToggledAction
   | SetLoggedInUserAction
   | FetchFeedSuccessAction
+  | EmojiUpdatedSuccessAction
   | ClearFeedAction
   | NewRoundCreatedAction
   | RoundWasDeletedAction
@@ -354,6 +366,35 @@ export const actionCreators = {
         }, 2000);
       });
   },
+  setSettingsInitialized: (): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/settingsInitialized`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((data) => {
+        dispatch({ type: "SET_SETTINGS_INIT_SUCCESS" });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Set settings init failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   setSimpleScoring: (simpleScoring: boolean): AppThunkAction<KnownAction> => (
     dispatch,
     getState
@@ -379,6 +420,36 @@ export const actionCreators = {
       .catch((err: Error) => {
         notificationActions.showNotification(
           `Set news seen failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
+  setEmoji: (emoji: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/emoji`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({ emoji }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((data) => {
+        dispatch({ type: "EMOJI_UPDATED_SUCCESS", emoji });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Set emoji failed: ${err.message}`,
           "error",
           dispatch
         );
@@ -842,6 +913,22 @@ export const reducer: Reducer<UserState> = (
         userDetails: state.userDetails && {
           ...state.userDetails,
           email: action.email,
+        },
+      };
+    case "SET_SETTINGS_INIT_SUCCESS":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          settingsInitialized: true,
+        },
+      };
+    case "EMOJI_UPDATED_SUCCESS":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          emoji: action.emoji,
         },
       };
     case "SIMPLE_SCORING_UPDATED_SUCCESS":

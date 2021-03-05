@@ -82,8 +82,8 @@ const HoleScoreComponent = ({
                   key={p.playerName}
                   className="has-text-centered"
                 >
-                  {p.playerName}
-                  <br />(
+                  <span className="is-size-5">{p.playerEmoji}</span>
+                  {p.playerName} <br />(
                   {p.scores.reduce((total, score) => {
                     return total + score.relativeToPar;
                   }, 0)}

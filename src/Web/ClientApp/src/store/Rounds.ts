@@ -38,6 +38,7 @@ export enum ScoreMode {
 
 export interface PlayerScore {
   playerName: string;
+  playerEmoji: string;
   scores: HoleScore[];
 }
 

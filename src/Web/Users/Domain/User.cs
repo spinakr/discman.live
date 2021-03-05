@@ -35,8 +35,10 @@ namespace Web.Users
         public Achievements Achievements { get; set; }
         public string Email { get; set; }
         public bool SimpleScoring { get; set; } = false;
+        public string Emoji { get; set; }
         public bool RegisterPutDistance { get; set; } = false;
         public List<string> NewsIdsSeen { get; set; } = new List<string>();
+        public bool SettingsInitialized { get; set; } = false;
         public AuthenticatedUser Authenticated(string secret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

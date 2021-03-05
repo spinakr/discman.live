@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Web.Courses;
 using Web.Rounds;
 using Web.Rounds.Notifications;
+using Web.Users;
 
 namespace Web.Rounds.Commands
 {
@@ -38,12 +39,18 @@ namespace Web.Rounds.Commands
         {
             var username = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
 
-            var players = request.Players.Select(p => p.ToLower()).ToList();
-            if (!players.Any()) players.Add(username);
+            var playerNames = request.Players.Select(p => p.ToLower()).ToList();
+            if (!playerNames.Any()) playerNames.Add(username);
 
             var course = _documentSession
                 .Query<Course>()
                 .SingleOrDefault(x => x.Id == request.CourseId);
+
+            var players = _documentSession
+                .Query<User>()
+                .Where(u => u.Username.IsOneOf(playerNames.ToArray()))
+                .ToList();
+
 
             // var justStartedRound = await _documentSession
             //     .Query<Round>()
@@ -60,7 +67,7 @@ namespace Web.Rounds.Commands
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 
-            await _mediator.Publish(new RoundWasStarted {RoundId = round.Id}, cancellationToken);
+            await _mediator.Publish(new RoundWasStarted { RoundId = round.Id }, cancellationToken);
 
             return await Task.FromResult(round);
         }
