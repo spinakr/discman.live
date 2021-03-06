@@ -14,7 +14,7 @@ WORKDIR /build
 RUN dotnet publish --configuration Release -o out 
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/runtime:5.0
+FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /bin
 COPY --from=builder /build/out .
 ENV ASPNETCORE_URLS="http://*:80"

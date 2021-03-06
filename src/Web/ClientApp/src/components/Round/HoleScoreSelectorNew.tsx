@@ -136,7 +136,7 @@ const HoleScoreSelector = (props: Props) => {
     <div className="container mx-0 mt-1 is-flex is-flex-direction-column is-justify-content-space-between">
       <div className="is-flex flex-direction-row is-justify-content-space-evenly">
         <button
-          className="button pr-1 pl-3"
+          className="button pr-1 pl-3 is-small"
           onClick={() => setScorecardOpen(true)}
           style={{ backgroundColor: colors.button }}
         >
@@ -147,7 +147,7 @@ const HoleScoreSelector = (props: Props) => {
         </button>
         <RoundStatus />
         <button
-          className="button pr-1 pl-3"
+          className="button pr-1 pl-3 is-small"
           onClick={() => setSimpleScoring(!simpleScoring)}
           style={{ backgroundColor: colors.button }}
         >
@@ -156,8 +156,6 @@ const HoleScoreSelector = (props: Props) => {
           </span>
           <span className="is-size-7">
             {simpleScoring ? "Detailed" : "Simple"}
-            <br />
-            scoring
           </span>
         </button>
       </div>

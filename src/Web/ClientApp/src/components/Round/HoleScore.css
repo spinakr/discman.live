@@ -21,4 +21,5 @@
 
 td, th {
     vertical-align: middle !important;
+    padding: 0.1em !important;
 }

@@ -212,7 +212,7 @@ The blue line shows your average round progression based on averages on each hol
       )}
 
       <a
-        className="button pr-1 pl-3"
+        className="button pr-1 pl-3 is-small"
         onClick={() => setShowDialog(true)}
         style={{ backgroundColor: colors.button }}
       >

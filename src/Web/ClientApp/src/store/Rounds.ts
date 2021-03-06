@@ -812,7 +812,7 @@ export const reducer: Reducer<RoundsState> = (
       return state;
     case "SET_ACTIVE_HOLE":
       const nextHole = state.round ? getActiveHolde(state.round) : 100;
-      if (action.hole > nextHole) return state;
+      // if (action.hole > nextHole) return state;
       return {
         ...state,
         activeHole: action.hole,

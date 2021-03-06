@@ -36,7 +36,7 @@ const HoleScoreComponent = ({
     playerStats.holeStats.find((s) => s.holeNumber === activeHole);
 
   return (
-    <div className="pt-2">
+    <div className="pt-1 pb-0">
       {/* <h2 className="subtitle has-text-centered">
         {holeStats && holeStats.birdie && (
           <span className="icon is-small">
@@ -46,19 +46,19 @@ const HoleScoreComponent = ({
       </h2> */}
       <div className="tour-stats">
         <div className="columns is-centered is-mobile">
-          <span className="column has-text-centered">
+          <span className="column has-text-centered pb-0">
             <h6 className="title is-6">Hole</h6>
             {holeScore?.hole.number}
           </span>
-          <span className="column has-text-centered">
+          <span className="column has-text-centered pb-0">
             <h6 className="title is-6">Par</h6>
             {holeScore?.hole.par}
           </span>
-          <span className="column has-text-centered ">
+          <span className="column has-text-centered  pb-0">
             <h6 className="title is-6">Avg.</h6>
             {holeScore?.hole.average.toFixed(1)}
           </span>
-          <span className="column has-text-centered">
+          <span className="column has-text-centered pb-0">
             <h6 className="title is-6 ">Rating</h6>
             {holeScore?.hole.rating}
           </span>
@@ -131,7 +131,7 @@ const HoleScoreComponent = ({
                     }
                   </td>
                 )}
-                <td className="has-text-centered bordered-cell is-size-4">
+                <td className="has-text-centered bordered-cell is-size-5">
                   {p.scores.find((s) => s.hole.number === activeHole)?.strokes}
                 </td>
 
