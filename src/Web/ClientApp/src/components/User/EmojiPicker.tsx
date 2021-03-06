@@ -20,9 +20,9 @@ const EmojiPicker = (props: Props) => {
   return (
     <>
       <label className="label">Emoji</label>
-      <text className="is-5 is-italic is-light">
+      <span className="is-5 is-italic is-light">
         Personal emoji, used in scorecards etc.
-      </text>
+      </span>
       <div className="field is-grouped">
         <div className="control is-expanded">
           <div className="select">

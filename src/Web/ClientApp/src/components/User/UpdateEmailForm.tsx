@@ -17,9 +17,9 @@ export default ({ currentEmail, changeEmail }: Props) => {
       <div className="field is-horizontal is-mobile">
         <div className="field-label is-normal">
           <label className="label">Email</label>
-          <text className="is-5 is-italic is-light">
+          <span className="is-5 is-italic is-light">
             Optional. Used to recover user.
-          </text>
+          </span>
         </div>
         <div className="field-body">
           <div className="field">
