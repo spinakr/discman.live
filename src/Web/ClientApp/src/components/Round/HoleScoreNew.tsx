@@ -35,6 +35,16 @@ const HoleScoreComponent = ({
     playerStats?.holeStats &&
     playerStats.holeStats.find((s) => s.holeNumber === activeHole);
 
+  const activePlayerScores = round.playerScores.find(
+    (p) => p.playerName === username
+  );
+
+  //Create spectator view
+  if (!activePlayerScores) return null;
+
+  const playersToDisplay =
+    round.playerScores.length > 4 ? [activePlayerScores] : round.playerScores;
+
   return (
     <div className="pt-1 pb-0">
       {/* <h2 className="subtitle has-text-centered">
@@ -67,7 +77,7 @@ const HoleScoreComponent = ({
       <br />
       <div className="table-container">
         <table
-          className="table is-fullwidth is-narrow"
+          className="table is-fullwidth is-narrower"
           style={{ backgroundColor: colors.table }}
         >
           <thead>
@@ -76,16 +86,18 @@ const HoleScoreComponent = ({
               <td></td>
               {activeHole > 1 && (
                 <th
-                  className="has-text-centered px-1"
+                  className="has-text-centered px-2"
                   onClick={() => setActiveHole(activeHole - 1)}
                 >
                   {activeHole - 1}
                 </th>
               )}
-              <th className="has-text-centered bordered-cell">{activeHole}</th>
+              <th className="has-text-centered bordered-cell px-4">
+                {activeHole}
+              </th>
               {activeHole < round.playerScores[0].scores.length && (
                 <th
-                  className="has-text-centered px-1"
+                  className="has-text-centered px-2"
                   onClick={() => setActiveHole(activeHole + 1)}
                 >
                   {activeHole + 1}
@@ -94,7 +106,7 @@ const HoleScoreComponent = ({
             </tr>
           </thead>
           <tbody>
-            {round.playerScores.map((p, i) => (
+            {playersToDisplay.map((p, i) => (
               <tr key={i}>
                 <th className="px-0 has-text-centered">
                   <span className="is-size-5">{p.playerEmoji}</span>
@@ -122,7 +134,7 @@ const HoleScoreComponent = ({
                 </th>
                 {activeHole > 1 && (
                   <td
-                    className="has-text-centered px-1"
+                    className="has-text-centered px-1 has-text-grey-light"
                     onClick={() => setActiveHole(activeHole - 1)}
                   >
                     {
@@ -137,7 +149,7 @@ const HoleScoreComponent = ({
 
                 {activeHole < round.playerScores[0].scores.length && (
                   <td
-                    className="has-text-centered px-1"
+                    className="has-text-centered px-1 has-text-grey-light"
                     onClick={() => setActiveHole(activeHole + 1)}
                   >
                     {
