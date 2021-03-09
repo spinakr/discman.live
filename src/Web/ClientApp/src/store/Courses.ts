@@ -10,6 +10,12 @@ export interface Course {
   name: string;
   layout: string;
   holes: Hole[];
+  courseStats: CourseStats;
+}
+
+export interface CourseStats {
+  roundsOnCourse: number;
+  previousRound: Date;
 }
 
 export interface CoursesState {

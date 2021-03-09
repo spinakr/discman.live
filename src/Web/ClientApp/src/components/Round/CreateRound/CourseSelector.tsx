@@ -160,7 +160,9 @@ const CourseSelector = (props: Props) => {
               }}
               onClick={() => layoutSelected(l.id)}
             >
-              <h2 className="subtitle is-6 mb-1">{l.layout}</h2>
+              <h2 className="subtitle has-text-weight-bold is-6 mb-1">
+                {l.layout}
+              </h2>
               {chunkArray(l.holes, 9).map((c, i) => {
                 return (
                   <table
@@ -183,6 +185,10 @@ const CourseSelector = (props: Props) => {
                   </table>
                 );
               })}
+              <span className="is-size-7 is-italic">
+                {l.courseStats.roundsOnCourse} rounds on this layout, previously
+                at {new Date(l.courseStats.previousRound).toLocaleDateString()}
+              </span>
             </div>
           ))}
         </div>

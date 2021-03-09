@@ -51,16 +51,16 @@ namespace Web
             services.AddHostedService<AchievementsWorker>();
             services.AddHostedService<ResetPasswordWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            
+
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
-            
+
             services.AddControllersWithViews(options => options.Filters.Add(new ApiExceptionFilter()));
             services.AddHttpContextAccessor();
-            
+
             services.AddSendGrid(options =>
             {
                 options.ApiKey = Configuration.GetValue<string>("SENDGRID_APIKEY");
@@ -74,6 +74,7 @@ namespace Web
             services.AddSingleton<LeaderboardCache>();
             services.AddSingleton<UserStatsCache>();
             services.AddSingleton<TournamentCache>();
+            services.AddSingleton<CourseStatsCache>();
 
             var secret = Configuration.GetValue<string>("TOKEN_SECRET");
             services.AddAuthentication(x =>

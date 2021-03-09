@@ -67,54 +67,6 @@ const PlayersSelector = ({
                   {u}
                 </button>
               ))}
-          {friends &&
-            friends
-              .filter((p) => !selectedPlayers.some((s) => s === p))
-              .map((u) => (
-                <button
-                  className="button px-2 is-primary"
-                  key={u}
-                  onClick={() => togglePlayer(u)}
-                >
-                  {u}
-                </button>
-              ))}
-          {friends &&
-            friends
-              .filter((p) => !selectedPlayers.some((s) => s === p))
-              .map((u) => (
-                <button
-                  className="button px-2 is-primary"
-                  key={u}
-                  onClick={() => togglePlayer(u)}
-                >
-                  {u}
-                </button>
-              ))}
-          {friends &&
-            friends
-              .filter((p) => !selectedPlayers.some((s) => s === p))
-              .map((u) => (
-                <button
-                  className="button px-2 is-primary"
-                  key={u}
-                  onClick={() => togglePlayer(u)}
-                >
-                  {u}
-                </button>
-              ))}
-          {friends &&
-            friends
-              .filter((p) => !selectedPlayers.some((s) => s === p))
-              .map((u) => (
-                <button
-                  className="button px-2 is-primary"
-                  key={u}
-                  onClick={() => togglePlayer(u)}
-                >
-                  {u}
-                </button>
-              ))}
         </div>
         <div className="is-flex">
           <AddFriends />
