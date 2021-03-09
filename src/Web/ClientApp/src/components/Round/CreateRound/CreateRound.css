@@ -1,0 +1,4 @@
+.is-narrower th, td {
+    padding: 0.15em !important;
+    min-width: 25px;
+}

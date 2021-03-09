@@ -230,7 +230,7 @@ if (userString) {
 }
 const initialState: UserState = user
   ? {
-      userDetails: null,
+      userDetails: { settingsInitialized: true } as UserDetails,
       loggedIn: true,
       user,
       failedLoginMessage: null,
@@ -242,7 +242,7 @@ const initialState: UserState = user
     }
   : {
       loggedIn: false,
-      userDetails: null,
+      userDetails: { settingsInitialized: true } as UserDetails,
       user: null,
       failedLoginMessage: null,
       userStats: null,

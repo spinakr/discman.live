@@ -5,6 +5,7 @@ $table-row-active-background-color: #effaf3;
 $table-row-active-color: #257942;
 
 @import "../node_modules/bulma/bulma.sass";
+@import "../node_modules/bulma-steps-component/bulma-steps.sass";
 
 .columns { 
   max-width: 100%; 

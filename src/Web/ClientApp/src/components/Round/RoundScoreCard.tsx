@@ -47,11 +47,6 @@ const RoundScoreCard = ({
             </tr>
             <tr className="lower-row">
               <td>
-                <i className="is-size-7">Distance</i>
-              </td>
-            </tr>
-            <tr className="lower-row">
-              <td>
                 <i className="is-size-7">Average</i>
               </td>
             </tr>
@@ -73,10 +68,10 @@ const RoundScoreCard = ({
               })
               .sort((a, b) => a.totalScore - b.totalScore)
               .map((s) => (
-                <tr key={s.totalScore}>
-                  <td key={s.name}>
+                <tr key={s.name}>
+                  <td>
                     {s.name}&nbsp;(
-                    {s.totalScore} )
+                    {s.totalScore})
                   </td>
                 </tr>
               ))}
@@ -128,20 +123,6 @@ const RoundScoreCard = ({
                   className={s.hole.number === activeHole ? "is-selected" : ""}
                 >
                   <i className="is-size-7">{s.hole.par}</i>
-                </td>
-              ))}
-            </tr>
-            <tr className="lower-row">
-              {round.playerScores[0].scores.map((s) => (
-                <td
-                  key={s.hole.number}
-                  onClick={() => {
-                    setActiveHole(s.hole.number);
-                    closeDialog();
-                  }}
-                  className={s.hole.number === activeHole ? "is-selected" : ""}
-                >
-                  <i className="is-size-7">{s.hole.distance}</i>
                 </td>
               ))}
             </tr>

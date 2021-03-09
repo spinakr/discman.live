@@ -5,7 +5,7 @@ import { ApplicationState } from "../store";
 import * as RoundsStore from "../store/Rounds";
 import * as UserStore from "../store/User";
 import { Link } from "react-router-dom";
-import NewRound from "./Round/NewRound";
+import CreateRound from "./Round/CreateRound/";
 import Colors from "../colors";
 
 const mapState = (state: ApplicationState) => {
@@ -59,7 +59,7 @@ const NavMenu = (props: Props) => {
                 <span className="is-size-7">Live</span>
               </Link>
             ) : (
-              <NewRound />
+              <CreateRound />
             )}
           </div>
           <div className="is-flex py-0">

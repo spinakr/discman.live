@@ -114,7 +114,7 @@ const AddFriends = (props: Props) => {
         onClick={() => setShowDialog(true)}
         style={{ backgroundColor: colors.background }}
       >
-        <strong>Find Friends</strong>
+        <strong>Add friends</strong>
       </button>
     </>
   );
