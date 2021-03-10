@@ -19,7 +19,7 @@ namespace Web.Rounds.Commands
     public class UpdatePlayerScoreCommand : IRequest<Round>
     {
         public Guid RoundId { get; set; }
-        public int Hole { get; set; }
+        public int HoleIndex { get; set; }
         public int Strokes { get; set; }
         public string Username { get; set; }
 
@@ -53,9 +53,7 @@ namespace Web.Rounds.Commands
             if (!round.IsPartOfRound(authenticatedUsername)) throw new UnauthorizedAccessException($"Cannot update round you are not part of");
             if (request.Username != authenticatedUsername) throw new UnauthorizedAccessException($"You can only update scores for yourself");
 
-            var holeScore = round.PlayerScores
-                .Single(p => p.PlayerName == authenticatedUsername).Scores
-                .Single(s => s.Hole.Number == request.Hole);
+            var holeScore = round.PlayerScores.Single(p => p.PlayerName == authenticatedUsername).Scores[request.HoleIndex];
 
             var holeAlreadyRegistered = holeScore.Strokes != 0;
 
@@ -67,8 +65,11 @@ namespace Web.Rounds.Commands
             {
                 foreach (var playerScore in round.PlayerScores)
                 {
-                    var firstHoleIndex = playerScore.Scores.FindIndex(x => x.Hole.Number == request.Hole);
-                    playerScore.Scores = playerScore.Scores.Skip(firstHoleIndex).Concat(playerScore.Scores.Take(firstHoleIndex)).ToList();
+                    // var firstHoleIndex = playerScore.Scores.FindIndex(x => x.Hole.Number == request.Hole);
+                    playerScore.Scores = playerScore.Scores
+                        .Skip(request.HoleIndex)
+                        .Concat(playerScore.Scores.Take(request.HoleIndex))
+                        .ToList();
                 }
             }
 
@@ -81,7 +82,7 @@ namespace Web.Rounds.Commands
                 RoundId = round.Id,
                 Username = authenticatedUsername,
                 CourseName = round.CourseName,
-                HoleNumber = request.Hole,
+                HoleNumber = holeScore.Hole.Number,
                 RelativeScore = relativeScore,
                 ScoreWasChanged = holeAlreadyRegistered
             }, cancellationToken);

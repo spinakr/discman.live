@@ -21,23 +21,25 @@ const HoleScoreComponent = ({
     round.playerScores.find((p) => p.playerName === username)?.scores ||
     round.playerScores[0].scores;
 
-  const holeScore = playerScores.find((s) => s.hole.number === activeHole);
+  const holeScore = playerScores[activeHole];
 
-  const playerStats = playersStats.find((s) => s.playerName === username);
   const playersBirdies = playersStats.map((p) => {
     return {
       name: p.playerName,
-      holeBirdied: p.holeStats.find((h) => h.holeNumber === activeHole)?.birdie,
+      holeBirdied: p.holeStats[activeHole].birdie,
     };
   });
-
-  const holeStats =
-    playerStats?.holeStats &&
-    playerStats.holeStats.find((s) => s.holeNumber === activeHole);
 
   const activePlayerScores = round.playerScores.find(
     (p) => p.playerName === username
   );
+  const courseHoles = playerScores;
+  const currentHole = courseHoles[activeHole];
+  const nextHole =
+    courseHoles.length - 1 >= activeHole + 1
+      ? courseHoles[activeHole + 1]
+      : null;
+  const prevHole = activeHole - 1 > -1 ? courseHoles[activeHole - 1] : null;
 
   //Create spectator view
   if (!activePlayerScores) return null;
@@ -84,82 +86,86 @@ const HoleScoreComponent = ({
             <tr>
               <td></td>
               <td></td>
-              {activeHole > 1 && (
+              {prevHole && (
                 <th
                   className="has-text-centered px-2"
                   onClick={() => setActiveHole(activeHole - 1)}
                 >
-                  {activeHole - 1}
+                  {prevHole.hole.number}
                 </th>
               )}
               <th className="has-text-centered bordered-cell px-4">
-                {activeHole}
+                {currentHole.hole.number}
               </th>
-              {activeHole < round.playerScores[0].scores.length && (
+              {nextHole && (
                 <th
                   className="has-text-centered px-2"
                   onClick={() => setActiveHole(activeHole + 1)}
                 >
-                  {activeHole + 1}
+                  {nextHole.hole.number}
                 </th>
               )}
             </tr>
           </thead>
           <tbody>
-            {playersToDisplay.map((p, i) => (
-              <tr key={i}>
-                <th className="px-0 has-text-centered">
-                  <span className="is-size-5">{p.playerEmoji}</span>
-                </th>
-                <th
-                  style={{
-                    minWidth: "75px",
-                    maxWidth: "75px",
-                    overflow: "hidden",
-                  }}
-                  className="has-text-centered"
-                >
-                  &nbsp;
-                  {p.playerName} (
-                  {p.scores.reduce((total, score) => {
-                    return total + score.relativeToPar;
-                  }, 0)}
-                  )
-                  {playersBirdies.find((x) => x.name === p.playerName)
-                    ?.holeBirdied && (
-                    <span className="icon is-small">
-                      <i className="fas fa-dove"></i>
-                    </span>
-                  )}
-                </th>
-                {activeHole > 1 && (
-                  <td
-                    className="has-text-centered px-1 has-text-grey-light"
-                    onClick={() => setActiveHole(activeHole - 1)}
-                  >
-                    {
-                      p.scores.find((s) => s.hole.number === activeHole - 1)
-                        ?.strokes
-                    }
-                  </td>
-                )}
-                <td className="has-text-centered bordered-cell is-size-5">
-                  {p.scores.find((s) => s.hole.number === activeHole)?.strokes}
-                </td>
+            {playersToDisplay.map((p, i) => {
+              const currentHole = p.scores[activeHole];
+              const nextHole =
+                p.scores.length - 1 >= activeHole + 1
+                  ? p.scores[activeHole + 1]
+                  : null;
+              const prevHole =
+                activeHole - 1 > -1 ? p.scores[activeHole - 1] : null;
 
-                {activeHole < round.playerScores[0].scores.length && (
-                  <td
-                    className="has-text-centered px-1 has-text-grey-light"
-                    onClick={() => setActiveHole(activeHole + 1)}
+              return (
+                <tr key={i}>
+                  <th className="px-0 has-text-centered">
+                    <span className="is-size-5">{p.playerEmoji}</span>
+                  </th>
+                  <th
+                    style={{
+                      minWidth: "75px",
+                      maxWidth: "75px",
+                      overflow: "hidden",
+                    }}
+                    className="has-text-centered"
                   >
-                    {
-                      p.scores.find((s) => s.hole.number === activeHole + 1)
-                        ?.strokes
-                    }
+                    &nbsp;
+                    {p.playerName} (
+                    {p.scores.reduce((total, score) => {
+                      return total + score.relativeToPar;
+                    }, 0)}
+                    )
+                    {playersBirdies.find((x) => x.name === p.playerName)
+                      ?.holeBirdied && (
+                      <span className="icon is-small">
+                        <i className="fas fa-dove"></i>
+                      </span>
+                    )}
+                  </th>
+                  {prevHole && (
+                    <td
+                      className="has-text-centered px-1 has-text-grey-light"
+                      onClick={() => setActiveHole(activeHole - 1)}
+                    >
+                      {prevHole.strokes}
+                    </td>
+                  )}
+                  <td className="has-text-centered bordered-cell is-size-5">
+                    {currentHole.strokes}
                   </td>
-                )}
-              </tr>
-            ))}
+
+                  {nextHole && (
+                    <td
+                      className="has-text-centered px-1 has-text-grey-light"
+                      onClick={() => setActiveHole(activeHole + 1)}
+                    >
+                      {nextHole.strokes}
+                    </td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

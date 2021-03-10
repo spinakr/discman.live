@@ -20,7 +20,8 @@ const mapState = (state: ApplicationState) => {
     round: state.rounds?.round,
     playersStats: state.rounds?.playerCourseStats || [],
     scoreCardOpen: state.rounds?.scoreCardOpen,
-    activeHole: state.rounds?.activeHole,
+    // activeHole: state.rounds?.activeHole,
+    activeHoleIndex: state.rounds?.activeHoleIndex,
     finishedRoundStats: state.rounds?.finishedRoundStats || [],
   };
 };
@@ -66,7 +67,7 @@ const toDateString = (date: Date) => {
 const RoundComponent = (props: Props) => {
   const {
     round,
-    activeHole,
+    activeHoleIndex,
     fetchRound,
     fetchStatsOnCourse,
     fetchUserStats,
@@ -93,7 +94,7 @@ const RoundComponent = (props: Props) => {
     }
     return (
       <>
-        {props.activeHole === 100 ? (
+        {activeHole === -1 ? (
           <div className="has-text-centered pt-6">
             <RoundScoreCard
               username={props.user?.user?.username || ""}
@@ -157,7 +158,7 @@ const RoundComponent = (props: Props) => {
         </div>
       </nav>
 
-      {activeHole && renderRound(round, activeHole)}
+      {renderRound(round, activeHoleIndex || 0)}
     </div>
   ) : null;
 };

@@ -79,7 +79,6 @@ const CourseSelector = (props: Props) => {
     setSelectedCourse(courseName);
     const layouts = props.courses.find((c) => c[0] === courseName);
     if (!layouts || layouts[1].length === 0) return;
-    console.log(layouts[1]);
     layouts && setAvailableLayouts(layouts[1]);
     layouts && setSelectedLayout(layouts[1][0]);
   };

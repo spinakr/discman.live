@@ -11,7 +11,6 @@ const mapState = (state: ApplicationState) => {
   return {
     user: state.user,
     round: state.rounds?.round,
-    activeHole: state.rounds?.activeHole,
     stats: state.rounds?.playerCourseStats,
   };
 };

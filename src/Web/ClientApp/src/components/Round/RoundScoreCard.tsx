@@ -22,9 +22,9 @@ const RoundScoreCard = ({
   const tableRef = React.createRef<HTMLDivElement>();
   useEffect(() => {
     if (tableRef.current) {
-      if (activeHole > 5) tableRef.current.scrollLeft = 200;
-      if (activeHole > 10) tableRef.current.scrollLeft = 400;
-      if (activeHole > 15) tableRef.current.scrollLeft = 600;
+      if (activeHole > 4) tableRef.current.scrollLeft = 200;
+      if (activeHole > 9) tableRef.current.scrollLeft = 400;
+      if (activeHole > 14) tableRef.current.scrollLeft = 600;
     }
   });
   const playerStats = playersStats.find((s) => s.playerName === username);
@@ -88,16 +88,16 @@ const RoundScoreCard = ({
         >
           <thead>
             <tr>
-              {round.playerScores[0].scores.map((s) => (
+              {round.playerScores[0].scores.map((s, holeIndex) => (
                 <th
                   key={s.hole.number}
                   onClick={() => {
-                    setActiveHole(s.hole.number);
+                    setActiveHole(holeIndex);
                     closeDialog();
                   }}
                   style={{ whiteSpace: "nowrap" }}
                   className={
-                    s.hole.number === activeHole ? "is-selected pr-0" : "pr-0"
+                    holeIndex === activeHole ? "is-selected pr-0" : "pr-0"
                   }
                 >
                   {s.hole.number}
@@ -113,42 +113,42 @@ const RoundScoreCard = ({
               ))}
             </tr>
             <tr className="lower-row">
-              {round.playerScores[0].scores.map((s) => (
+              {round.playerScores[0].scores.map((s, holeIndex) => (
                 <td
                   key={s.hole.number}
                   onClick={() => {
-                    setActiveHole(s.hole.number);
+                    setActiveHole(holeIndex);
                     closeDialog();
                   }}
-                  className={s.hole.number === activeHole ? "is-selected" : ""}
+                  className={holeIndex === activeHole ? "is-selected" : ""}
                 >
                   <i className="is-size-7">{s.hole.par}</i>
                 </td>
               ))}
             </tr>
             <tr className="lower-row">
-              {round.playerScores[0].scores.map((s) => (
+              {round.playerScores[0].scores.map((s, holeIndex) => (
                 <td
                   key={s.hole.number}
                   onClick={() => {
-                    setActiveHole(s.hole.number);
+                    setActiveHole(holeIndex);
                     closeDialog();
                   }}
-                  className={s.hole.number === activeHole ? "is-selected" : ""}
+                  className={holeIndex === activeHole ? "is-selected" : ""}
                 >
                   <i className="is-size-7">{s.hole.average.toFixed(1)}</i>
                 </td>
               ))}
             </tr>
             <tr className="lower-row">
-              {round.playerScores[0].scores.map((s) => (
+              {round.playerScores[0].scores.map((s, holeIndex) => (
                 <td
                   key={s.hole.number}
                   onClick={() => {
-                    setActiveHole(s.hole.number);
+                    setActiveHole(holeIndex);
                     closeDialog();
                   }}
-                  className={s.hole.number === activeHole ? "is-selected" : ""}
+                  className={holeIndex === activeHole ? "is-selected" : ""}
                 >
                   <i className="is-size-7">{s.hole.rating}</i>
                 </td>
@@ -165,11 +165,9 @@ const RoundScoreCard = ({
                     : ""
                 }
               >
-                {playerScore.scores.map((s) => (
+                {playerScore.scores.map((s, holeIndex) => (
                   <td
-                    className={
-                      s.hole.number === activeHole ? "is-selected" : ""
-                    }
+                    className={holeIndex === activeHole ? "is-selected" : ""}
                     key={s.hole.number}
                   >
                     {s.strokes}

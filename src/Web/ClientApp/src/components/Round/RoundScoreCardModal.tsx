@@ -23,9 +23,9 @@ const RoundScoreCardModal = ({
   const tableRef = React.createRef<HTMLDivElement>();
   useEffect(() => {
     if (tableRef.current) {
-      if (activeHole > 5) tableRef.current.scrollLeft = 200;
-      if (activeHole > 10) tableRef.current.scrollLeft = 400;
-      if (activeHole > 15) tableRef.current.scrollLeft = 600;
+      if (activeHole > 4) tableRef.current.scrollLeft = 200;
+      if (activeHole > 9) tableRef.current.scrollLeft = 400;
+      if (activeHole > 14) tableRef.current.scrollLeft = 600;
     }
   });
 

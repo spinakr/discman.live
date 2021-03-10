@@ -345,12 +345,6 @@ const initialState: ActiveRoundState = {
 };
 
 export const getActiveHole = (round: Round, user: string) => {
-  // const activeHole = round.playerScores
-  //   .map((p) => p.scores.find((s) => s.strokes === 0))
-  //   .sort((a, b) => {
-  //     return a && b ? a.hole.number - b.hole.number : 0;
-  //   })
-  //   .find(() => true);
   const activeHole = round.playerScores.find(p => p.playerName == user)?.scores.find(s => s.strokes === 0);
   const activeHoleIndex = activeHole && round.playerScores[0].scores.findIndex((x) => x.hole.number === activeHole.hole.number);
   return activeHoleIndex !== undefined ? activeHoleIndex : round.playerScores[0].scores.length - 1;

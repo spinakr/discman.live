@@ -15,7 +15,7 @@ const mapState = (state: ApplicationState) => {
     round: state.rounds && state.rounds.round,
     username: state.user?.user?.username || "",
     simpleScoring: state.user?.userDetails?.simpleScoring,
-    activeHole: state.rounds && state.rounds.activeHole,
+    activeHoleIndex: state.rounds && state.rounds.activeHoleIndex,
   };
 };
 
@@ -89,7 +89,7 @@ const renderStrokes = (
 const HoleScoreSelector = (props: Props) => {
   const {
     round,
-    activeHole,
+    activeHoleIndex,
     setScore,
     username,
     setScorecardOpen,
@@ -103,13 +103,15 @@ const HoleScoreSelector = (props: Props) => {
   );
   const [completeActive, setCompleteActive] = useState(true);
   const resetStrokeCount = () => {
-    const activeholeDetailes = (round?.playerScores[0].scores || []).find(
-      (s) => s.hole.number === activeHole
-    );
+    const activeholeDetailes = (round?.playerScores[0].scores || [])[
+      activeHoleIndex || 0
+    ];
     setStrokeCount(activeholeDetailes?.hole.par || 3);
   };
-
-  if (activeHole === 100 && !round?.isCompleted) {
+  const allScoresSet = round?.playerScores.every((p) =>
+    p.scores.every((s) => s.strokes !== 0)
+  );
+  if (allScoresSet && !round?.isCompleted) {
     return (
       <div className="columns has-text-centered">
         <div className="column">{!round?.courseName && <NewHole />}</div>

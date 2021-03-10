@@ -48,7 +48,7 @@ const NavMenu = (props: Props) => {
             </Link>
           </div>
           <div className="is-flex py-0">
-            {props.roundInProgress ? (
+            {props.roundInProgress && !props.round?.isCompleted ? (
               <Link
                 to={`/rounds/${props.roundInProgress}`}
                 className="button is-primary waggle pr-1 pl-3"
