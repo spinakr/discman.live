@@ -3,6 +3,7 @@ import * as React from "react";
 import { Course } from "../../store/Courses";
 import { Hole } from "../../store/Rounds";
 import { useState } from "react";
+import colors from "../../colors";
 
 interface CourseDetailsProps {
   course: Course;
@@ -86,7 +87,11 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
       <div className="table-container">
         {chunks.map((c, i) => {
           return (
-            <table key={i} className="table is-fullwidth is-narrow is-bordered">
+            <table
+              key={i}
+              className="table is-fullwidth is-narrow is-bordered"
+              style={{ backgroundColor: colors.table }}
+            >
               <thead>
                 <tr>
                   <th>Hole</th>
@@ -136,10 +141,16 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
           <div className="modal-background"></div>{" "}
         </div>
         <div className="modal-card">
-          <header className="modal-card-head">
+          <header
+            className="modal-card-head"
+            style={{ backgroundColor: colors.navbar }}
+          >
             <p className="modal-card-title">Edit hole {editHole?.number}</p>
           </header>
-          <section className="modal-card-body">
+          <section
+            className="modal-card-body"
+            style={{ backgroundColor: colors.background }}
+          >
             <div className="field">
               <label className="label">Par</label>
               <div className="control">
@@ -154,6 +165,7 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
                         par: +e.target.value,
                       })
                     }
+                    style={{ backgroundColor: colors.field }}
                   ></input>
                 )}
               </div>
@@ -172,14 +184,18 @@ export default ({ course, updateCourse }: CourseDetailsProps) => {
                         distance: +e.target.value,
                       })
                     }
+                    style={{ backgroundColor: colors.field }}
                   ></input>
                 )}
               </div>
             </div>
           </section>
-          <footer className="modal-card-foot">
+          <footer
+            className="modal-card-foot"
+            style={{ backgroundColor: colors.navbar }}
+          >
             <button
-              className="button is-success is-light is-outlined"
+              className="button"
               onClick={() => {
                 const nextHole = currentCourse.holes.find(
                   (h) => h.number === (editHole?.number || 0) + 1

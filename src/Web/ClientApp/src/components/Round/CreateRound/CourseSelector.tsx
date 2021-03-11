@@ -8,6 +8,7 @@ import {
 } from "../../../store/Courses";
 import { Hole } from "../../../store/Rounds";
 import { useMountEffect } from "../../../utils";
+import NewCourse from "../../Courses/NewCourse";
 import "./CreateRound.css";
 
 const mapState = (state: ApplicationState) => {
@@ -101,32 +102,44 @@ const CourseSelector = (props: Props) => {
   return (
     <div>
       {selectedCourse ? (
-        <span
-          onClick={() => {
-            setSelectedCourse(undefined);
-            setAvailableLayouts(undefined);
-          }}
-          className="tag is-large mb-2"
-        >
-          {selectedCourse}
-          <button className="delete ml-3"></button>
-        </span>
+        <div className="is-flex">
+          <div className="is-flex ml-2">
+            <span
+              onClick={() => {
+                setSelectedCourse(undefined);
+                setAvailableLayouts(undefined);
+              }}
+              className="tag is-large mb-2"
+            >
+              {selectedCourse}
+              <button className="delete ml-3"></button>
+            </span>
+          </div>
+          <div className="is-flex ml-2">
+            <NewCourse currentCourseName={selectedCourse} />
+          </div>
+        </div>
       ) : (
         <>
-          <div className="field">
-            <div className="control has-icons-left">
-              <input
-                className="input"
-                type="text"
-                placeholder="Search"
-                onChange={(e) => {
-                  setCourseFilter(e.target.value);
-                }}
-                style={{ backgroundColor: colors.field }}
-              />
-              <span className="icon is-left">
-                <i className="fas fa-search" aria-hidden="true"></i>
-              </span>
+          <div className="is-flex is-flex-direction-row is-justify-content-space-around is-align-content-space-around">
+            <div className="field is-flex">
+              <div className="control has-icons-left">
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="Search"
+                  onChange={(e) => {
+                    setCourseFilter(e.target.value);
+                  }}
+                  style={{ backgroundColor: colors.field }}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-search" aria-hidden="true"></i>
+                </span>
+              </div>
+            </div>
+            <div className="is-flex ml-2">
+              <NewCourse currentCourseName={undefined} />
             </div>
           </div>
           <div className="panel">
@@ -184,10 +197,13 @@ const CourseSelector = (props: Props) => {
                   </table>
                 );
               })}
-              <span className="is-size-7 is-italic">
-                {l.courseStats.roundsOnCourse} rounds on this layout, previously
-                at {new Date(l.courseStats.previousRound).toLocaleDateString()}
-              </span>
+              {l.courseStats?.roundsOnCourse ? (
+                <span className="is-size-7 is-italic">
+                  {l.courseStats.roundsOnCourse} rounds on this layout,
+                  previously at{" "}
+                  {new Date(l.courseStats.previousRound).toLocaleDateString()}
+                </span>
+              ) : null}
             </div>
           ))}
         </div>

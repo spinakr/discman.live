@@ -83,10 +83,10 @@ namespace Web.Courses.Queries
             if (courseId == default) return new CourseStats { RoundsOnCourse = 0 };
             var roundsCount = _documentSession
                 .Query<Round>()
-                .Count(r => r.CompletedAt > DateTime.Now.AddMonths(-3) && r.CourseId == courseId);
+                .Count(r => r.CourseId == courseId);
             var previousRound = _documentSession
                 .Query<Round>()
-                .Where(r => r.CompletedAt > DateTime.Now.AddMonths(-3) && r.CourseId == courseId)
+                .Where(r => r.CompletedAt > DateTime.Now.AddYears(-1) && r.CourseId == courseId)
                 .OrderByDescending(r => r.CompletedAt)
                 .FirstOrDefault();
 

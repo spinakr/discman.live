@@ -16,7 +16,11 @@ $table-row-active-color: #257942;
 }
 
 .lower-row{
-    line-height: 0.5
+    line-height: 0.9
+}
+
+.scrollable{
+    overflow-y: auto;
 }
 
 .box {

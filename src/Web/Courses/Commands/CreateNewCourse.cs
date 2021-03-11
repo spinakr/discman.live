@@ -18,6 +18,8 @@ namespace Web.Courses.Commands
         public List<int> HolePars { get; set; }
         public List<int> HoleDistances { get; set; }
         public int NumberOfHoles { get; set; }
+        public int[] Par4s { get; set; }
+        public int[] Par5s { get; set; }
     }
 
     public class CreateNewCourseCommandHandler : IRequestHandler<CreateNewCourseCommand, Course>
@@ -43,6 +45,15 @@ namespace Web.Courses.Commands
                 request.HolePars = new int[request.NumberOfHoles].Populate(3).ToList();
             }
 
+            if (request.Par4s != null && request.Par4s.Length > 0)
+            {
+                request.HolePars = request.HolePars.Select((holePar, holeIndex) => request.Par4s.Any(p => p == holeIndex + 1) ? 4 : holePar).ToList();
+            }
+            if (request.Par5s != null && request.Par5s.Length > 0)
+            {
+                request.HolePars = request.HolePars.Select((holePar, holeIndex) => request.Par5s.Any(p => p == holeIndex + 1) ? 5 : holePar).ToList();
+            }
+
             var existingLayouts = await _documentSession.Query<Course>().Where(c => c.Name == request.CourseName).ToListAsync();
             if (existingLayouts.Any(l => l.Layout == request.LayoutName))
             {
@@ -56,6 +67,8 @@ namespace Web.Courses.Commands
             }
 
             var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+
+
             var newCourse = new Course(request.CourseName, request.LayoutName, authenticatedUsername, request.HolePars, request.HoleDistances);
 
             _documentSession.Store(newCourse);

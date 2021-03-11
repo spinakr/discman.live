@@ -18,7 +18,7 @@ namespace Web.Courses
             Id = Guid.NewGuid();
             Name = courseName;
             Holes = holePars.Select((h, i) => new Hole(i + 1, h, holeDistances[i])).ToList();
-            Admins = new List<string>{admin, "kofoed"};
+            Admins = new List<string> { admin, "kofoed" };
             Layout = layoutName;
             CreatedAt = DateTime.Now;
         }

@@ -3,6 +3,7 @@ import { Course } from "../../store/Courses";
 import CourseDetails from "./CourseDetails";
 import { useParams, useHistory } from "react-router";
 import NewCourse from "./NewCourse";
+import colors from "../../colors";
 
 interface CourseProps {
   layouts: Course[];
@@ -30,6 +31,7 @@ const CourseComponent = ({ layouts, updateCourse }: CourseProps) => {
                   onChange={(e) =>
                     history.push(`/courses/${courseName}/${e.target.value}`)
                   }
+                  style={{ backgroundColor: colors.field }}
                 >
                   {layouts.map((l) => (
                     <option key={l.id} value={l.layout}>

@@ -44,7 +44,9 @@ const NewRound = (props: Props) => {
     undefined
   );
 
-  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState<string[]>([
+    props.username,
+  ]);
   const [manualReg, setManualReg] = useState<boolean>(false);
   const [roundName, setRoundName] = useState<string>("");
 
@@ -113,6 +115,17 @@ const NewRound = (props: Props) => {
               style={{ backgroundColor: colors.navbar }}
             >
               <div className="field is-grouped">
+                <p className="control is-right">
+                  <button
+                    className="button"
+                    onClick={() => {
+                      cancel();
+                    }}
+                    style={{ backgroundColor: colors.background }}
+                  >
+                    Cancel
+                  </button>
+                </p>
                 <p className="control">
                   {activeStep === 3 ? (
                     <button
@@ -143,17 +156,6 @@ const NewRound = (props: Props) => {
                       Next
                     </button>
                   )}
-                </p>
-                <p className="control is-right">
-                  <button
-                    className="button"
-                    onClick={() => {
-                      cancel();
-                    }}
-                    style={{ backgroundColor: colors.background }}
-                  >
-                    Cancel
-                  </button>
                 </p>
               </div>
             </footer>

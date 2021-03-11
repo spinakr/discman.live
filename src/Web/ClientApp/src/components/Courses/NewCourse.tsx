@@ -4,6 +4,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as CoursesStore from "../../store/Courses";
 import { useHistory } from "react-router";
+import colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -23,11 +24,12 @@ type Props = PropsFromRedux & NewCourseProps;
 
 const NewCourse = (props: Props) => {
   const { createCourse, currentCourseName } = props;
-  const history = useHistory();
   const [showDialog, setShowDialog] = useState(false);
   const [layoutName, setLayoutName] = useState<string>("");
   const [courseName, setCourseName] = useState<string>(currentCourseName || "");
   const [numberOfHoles, setNumberOfHoles] = useState<number>(0);
+  const [par4s, setPar4s] = useState<number[]>([]);
+  const [par5s, setPar5s] = useState<number[]>([]);
 
   return (
     <>
@@ -37,64 +39,136 @@ const NewCourse = (props: Props) => {
           <div className="modal-background"></div>{" "}
         </div>
         <div className="modal-card">
-          <header className="modal-card-head">
-            <p className="modal-card-title">New Course Layout</p>
-          </header>
-          <section className="modal-card-body">
-            <div className="field">
-              <label className="label">Course name</label>
-              <input
-                className="input"
-                type="text"
-                value={courseName}
-                onChange={(e) => setCourseName(e.target.value)}
-                disabled={!!currentCourseName}
-              ></input>
+          <section
+            className="modal-card-body"
+            style={{ backgroundColor: colors.background }}
+          >
+            <div className="is-flex is-flex-direction-row">
+              <div className="is-flex mr-1 is-flex-direction-column">
+                <div className="field">
+                  <label className="label">Course name</label>
+                  <input
+                    className="input"
+                    type="text"
+                    value={courseName}
+                    onChange={(e) => setCourseName(e.target.value)}
+                    disabled={!!currentCourseName}
+                    style={{ backgroundColor: colors.field }}
+                  ></input>
+                </div>
+                {props.currentCourseName && (
+                  <div className="field">
+                    <input
+                      className="input"
+                      placeholder={"Layout name"}
+                      type="text"
+                      value={layoutName}
+                      onChange={(e) => setLayoutName(e.target.value)}
+                      style={{ backgroundColor: colors.field }}
+                    ></input>
+                    <div className="control"></div>
+                  </div>
+                )}
+              </div>
+              <div className="is-flex">
+                <div className="select">
+                  <label className="label">Hole count</label>
+                  <select
+                    onChange={(e) => setNumberOfHoles(+e.target.value)}
+                    style={{ backgroundColor: colors.field }}
+                  >
+                    <option>{""}</option>
+                    {new Array(25).fill(null).map((x, i) => (
+                      <option key={i}>{i + 5}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="field mt-1">
+              <label className="label">Par 4?</label>
+              <div className="scrollable">
+                {new Array(numberOfHoles).fill(null).map((x, i) => {
+                  if (par5s.some((x) => x === i + 1)) return null;
+                  return (
+                    <button
+                      key={i}
+                      className={`button is-small is-success mr-1 mt-1 ${
+                        par4s.some((p) => p === i + 1) ? "" : "is-inverted"
+                      }`}
+                      onClick={() => {
+                        if (par4s.some((p) => p === i + 1)) {
+                          setPar4s(par4s.filter((y) => y !== i + 1));
+                        } else {
+                          setPar4s([...par4s, i + 1]);
+                        }
+                      }}
+                    >
+                      {i + 1}
+                    </button>
+                  );
+                })}
+              </div>
               <div className="control"></div>
             </div>
-            {props.currentCourseName && (
-              <div className="field">
-                <label className="label">Layout Name</label>
-                <input
-                  className="input"
-                  type="text"
-                  value={layoutName}
-                  onChange={(e) => setLayoutName(e.target.value)}
-                ></input>
-                <div className="control"></div>
+            <div className="field mt-1">
+              <label className="label">Par 5?</label>
+              <div className="scrollable">
+                {new Array(numberOfHoles).fill(null).map((x, i) => {
+                  if (par4s.some((x) => x === i + 1)) return null;
+                  return (
+                    <button
+                      key={i}
+                      className={`button is-small is-success mr-1 mt-1 ${
+                        par5s.some((p) => p === i + 1) ? "" : "is-inverted"
+                      }`}
+                      onClick={() => {
+                        if (par5s.some((p) => p === i + 1)) {
+                          setPar5s(par5s.filter((y) => y !== i + 1));
+                        } else {
+                          setPar5s([...par5s, i + 1]);
+                        }
+                      }}
+                    >
+                      {i + 1}
+                    </button>
+                  );
+                })}
               </div>
-            )}
-            <div className="field">
-              <label className="label">Number of holes</label>
-              <input
-                className="input"
-                type="number"
-                onChange={(e) => setNumberOfHoles(+e.target.value)}
-              ></input>
               <div className="control"></div>
             </div>
           </section>
-          <footer className="modal-card-foot">
+          <footer
+            className="modal-card-foot"
+            style={{ backgroundColor: colors.background }}
+          >
+            <button className="button" onClick={() => setShowDialog(false)}>
+              Cancel
+            </button>
             <button
               className="button is-success is-light is-outlined"
               onClick={() => {
-                createCourse(courseName, layoutName, numberOfHoles);
+                createCourse(
+                  courseName,
+                  layoutName,
+                  numberOfHoles,
+                  par4s,
+                  par5s
+                );
                 setShowDialog(false);
-                history.push(`/courses/${courseName}/${layoutName}`);
+                // history.push(`/courses/${courseName}/${layoutName}`);
               }}
               disabled={!courseName || !numberOfHoles}
             >
               Save
             </button>
-            <button className="button" onClick={() => setShowDialog(false)}>
-              Cancel
-            </button>
           </footer>
         </div>
       </div>
       <button
-        className=" button is-primary is-light is-outlined"
+        className=" button px-1"
         onClick={() => setShowDialog(true)}
+        style={{ backgroundColor: colors.button }}
       >
         <strong>{currentCourseName ? "New Layout" : "New Course"}</strong>
       </button>

@@ -110,7 +110,7 @@ const AddFriends = (props: Props) => {
         </div>
       </div>
       <button
-        className="button"
+        className="button ml-1"
         onClick={() => setShowDialog(true)}
         style={{ backgroundColor: colors.background }}
       >

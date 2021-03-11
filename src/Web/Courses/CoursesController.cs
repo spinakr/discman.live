@@ -25,26 +25,18 @@ namespace Web.Courses
         [HttpGet]
         public async Task<IActionResult> GetCourses([FromQuery] string filter)
         {
-            return Ok(await _mediator.Send(new GetCoursesQuery {Filter = filter}));
+            return Ok(await _mediator.Send(new GetCoursesQuery { Filter = filter }));
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCourse(CourseRequest request)
+        public async Task<IActionResult> CreateCourse(CreateNewCourseCommand request)
         {
-            var newCourse = await _mediator.Send(new CreateNewCourseCommand
-            {
-                CourseName = request.CourseName,
-                HoleDistances = request.HoleDistances,
-                HolePars = request.HolePars,
-                LayoutName = request.LayoutName,
-                NumberOfHoles = request.NumberOfHoles
-            });
-
+            var newCourse = await _mediator.Send(request);
             return Ok(newCourse);
         }
 
         [HttpPut("{courseId}")]
-        public async Task<IActionResult> UpdateCourse(Guid courseId, [FromBody] CourseRequest request)
+        public async Task<IActionResult> UpdateCourse(Guid courseId, [FromBody] UpdateCourseCommand request)
         {
             var course = await _mediator.Send(new UpdateCourseCommand
             {
@@ -58,12 +50,4 @@ namespace Web.Courses
     }
 
 
-    public class CourseRequest
-    {
-        public string LayoutName { get; set; }
-        public string CourseName { get; set; }
-        public List<int> HolePars { get; set; }
-        public List<int> HoleDistances { get; set; }
-        public int NumberOfHoles { get; set; }
-    }
 }

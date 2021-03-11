@@ -85,7 +85,9 @@ export const actionCreators = {
   createCourse: (
     courseName: string,
     layoutName: string,
-    numberOfHoles: number
+    numberOfHoles: number,
+    par4s: number[],
+    par5s: number[]
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
@@ -100,6 +102,8 @@ export const actionCreators = {
         courseName,
         layoutName,
         numberOfHoles,
+        par4s,
+        par5s,
       }),
     })
       .then((res) => {
@@ -220,7 +224,7 @@ export const reducer: Reducer<CoursesState> = (
           courses: [
             ...state.courses.map((c) => {
               if (c[0] === action.course.name) {
-                return [c[0], [...c[1], action.course]] as [string, Course[]];
+                return [c[0], [action.course, ...c[1]]] as [string, Course[]];
               }
               return c;
             }),
@@ -230,8 +234,8 @@ export const reducer: Reducer<CoursesState> = (
         return {
           ...state,
           courses: [
-            ...state.courses,
             [action.course.name, [action.course]] as [string, Course[]],
+            ...state.courses,
           ],
         };
       }
