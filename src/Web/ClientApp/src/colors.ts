@@ -1,3 +1,5 @@
+import { StrokeSpec } from "./store/Rounds";
+
 export default {
   // navbar: "#cfe1b9",
   // background: "#e9f5db",
@@ -12,4 +14,30 @@ export default {
   rough: "#40916c",
   fairway: "#74c69d",
   ob: "#e07a5f",
+};
+
+export const scoreColorStyle = (mark: number, specs: StrokeSpec[]) => {
+  var style = "";
+  switch (mark) {
+    case 0:
+      style += "";
+      break;
+    case -1:
+    case -2:
+    case -3:
+      style += " under-par-cell";
+      break;
+    case 1:
+      style += " bogey-cell";
+      break;
+    default:
+      style += " dobble-cell";
+      break;
+  }
+  console.log(specs);
+  if (specs && specs.some((s) => ((s.outcome as unknown) as number) === 2)) {
+    style += " ob-cell";
+  }
+
+  return style;
 };

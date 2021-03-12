@@ -7,7 +7,7 @@ import PlayerCourseImprovments from "./PlayerCourseImprovments";
 import RoundAchievements from "./RoundAchievements";
 import RoundStats from "./RoundStats";
 import { UserStats } from "../../store/User";
-import colors from "../../colors";
+import colors, { scoreColorStyle } from "../../colors";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -27,21 +27,6 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
     const btotal = playerTotal(b);
     return atotal === btotal ? 0 : atotal < btotal ? -1 : 1;
   });
-
-  const scoreColorStyle = (mark: number) => {
-    switch (mark) {
-      case 0:
-        return "";
-      case -1:
-      case -2:
-      case -3:
-        return "has-background-success";
-      case 1:
-        return "has-background-warning";
-      default:
-        return "has-background-danger";
-    }
-  };
 
   const renderScores = (
     playerScores: PlayerScore[],
@@ -90,7 +75,10 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
 
   const renderPlayerHoleScore = (s: HoleScore) => {
     return (
-      <td className={scoreColorStyle(s.relativeToPar)} key={s.hole.number}>
+      <td
+        className={scoreColorStyle(s.relativeToPar, s.strokeSpecs)}
+        key={s.hole.number}
+      >
         {s.strokes}
       </td>
     );

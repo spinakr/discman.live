@@ -13,6 +13,7 @@ import RoundScoreCardModal from "./RoundScoreCardModal";
 import ScoreAnimations from "./ScoreAnimations";
 import NavMenu from "../NavMenu";
 import Colors from "../../colors";
+import CompleteRoundButton from "./CompleteRoundButton";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -82,56 +83,12 @@ const RoundComponent = (props: Props) => {
     roundCompleted && fetchUserStats(roundId);
   }, [fetchRound, fetchStatsOnCourse, fetchUserStats, roundCompleted, roundId]);
 
-  const renderRound = (round: Round, activeHole: number) => {
-    if (roundCompleted) {
-      return (
-        <RoundSummary
-          round={round}
-          finishedRoundStats={finishedRoundStats}
-          username={props.user?.user?.username || ""}
-        />
-      );
-    }
-    return (
-      <>
-        {activeHole === -1 ? (
-          <div className="has-text-centered pt-6">
-            <RoundScoreCard
-              username={props.user?.user?.username || ""}
-              round={round}
-              activeHole={activeHole}
-              setActiveHole={props.setActiveHole}
-              closeDialog={() => props.setScorecardOpen(false)}
-              playersStats={props.playersStats}
-            />
-          </div>
-        ) : (
-          <HoleScore
-            username={props.user?.user?.username || ""}
-            round={round}
-            activeHole={activeHole}
-            setActiveHole={props.setActiveHole}
-            playersStats={props.playersStats}
-          />
-        )}
-        {props.scoreCardOpen && (
-          <RoundScoreCardModal
-            username={props.user?.user?.username || ""}
-            round={round}
-            activeHole={activeHole}
-            setActiveHole={props.setActiveHole}
-            closeDialog={() => props.setScorecardOpen(false)}
-            playersStats={props.playersStats}
-          />
-        )}
-        <HoleScoreSelector />
-        <WindowFocusHandler />
-        <ScoreAnimations />
-        {/* <Spectators spectators={round.spectators} /> */}
-      </>
-    );
-  };
-  return round ? (
+  const allScoresSet = round?.playerScores.every((p) =>
+    p.scores.every((s) => s.strokes !== 0)
+  );
+  if (!round) return null;
+
+  return (
     <div
       className="is-flex is-flex-direction-column "
       style={{ height: "100%" }}
@@ -152,15 +109,57 @@ const RoundComponent = (props: Props) => {
         </div>
         <div className="level-item has-text-centered">
           <NavMenu />
-          {/* <div className="is-size-7">
-            <i>{calculateDurationString(round)}</i>
-          </div> */}
         </div>
       </nav>
-
-      {renderRound(round, activeHoleIndex || 0)}
+      <>
+        {roundCompleted && (
+          <RoundSummary
+            round={round}
+            finishedRoundStats={finishedRoundStats}
+            username={props.user?.user?.username || ""}
+          />
+        )}
+        {activeHoleIndex === -1 ? ( //all holes registered
+          <div className="has-text-centered pt-6 mx-1">
+            <RoundScoreCard
+              username={props.user?.user?.username || ""}
+              round={round}
+              activeHole={activeHoleIndex}
+              setActiveHole={props.setActiveHole}
+              closeDialog={() => props.setScorecardOpen(false)}
+              playersStats={props.playersStats}
+            />
+            {allScoresSet && (
+              <CompleteRoundButton completeRound={props.completeRound} />
+            )}
+          </div>
+        ) : (
+          <>
+            <HoleScore
+              username={props.user?.user?.username || ""}
+              round={round}
+              activeHole={activeHoleIndex || 0}
+              setActiveHole={props.setActiveHole}
+              playersStats={props.playersStats}
+            />
+            <HoleScoreSelector />
+          </>
+        )}
+        {props.scoreCardOpen && (
+          <RoundScoreCardModal
+            username={props.user?.user?.username || ""}
+            round={round}
+            activeHole={activeHoleIndex || 0}
+            setActiveHole={props.setActiveHole}
+            closeDialog={() => props.setScorecardOpen(false)}
+            playersStats={props.playersStats}
+          />
+        )}
+        <WindowFocusHandler />
+        <ScoreAnimations />
+      </>
     </div>
-  ) : null;
+  );
 };
 
 export default connector(RoundComponent);

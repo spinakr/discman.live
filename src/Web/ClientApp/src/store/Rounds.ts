@@ -20,7 +20,7 @@ export interface Hole {
   average: number;
 }
 export interface StrokeSpec {
-  strokeOutcome: StrokeOutcome;
+  outcome: StrokeOutcome;
 }
 
 export type StrokeOutcome =

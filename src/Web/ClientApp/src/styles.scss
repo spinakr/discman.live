@@ -11,6 +11,24 @@ $table-row-active-color: #257942;
   max-width: 100%; 
 }
 
+.under-par-cell{
+ background-color: #74c69d;
+}
+
+.bogey-cell{
+ background-color: #e9c46a;
+}
+
+.dobble-cell{
+ background-color: #f4a261;
+}
+
+.ob-cell{
+  text-decoration: underline;
+  text-decoration-color: red;
+  text-decoration-style: solid;
+}
+
 .columns-full {
   width: 100%; 
 }

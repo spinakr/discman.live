@@ -101,7 +101,6 @@ const HoleScoreSelector = (props: Props) => {
   const isPartOfRound = round?.playerScores.some(
     (s) => s.playerName === username
   );
-  const [completeActive, setCompleteActive] = useState(true);
   const resetStrokeCount = () => {
     const activeholeDetailes = (round?.playerScores[0].scores || [])[
       activeHoleIndex || 0
@@ -111,28 +110,28 @@ const HoleScoreSelector = (props: Props) => {
   const allScoresSet = round?.playerScores.every((p) =>
     p.scores.every((s) => s.strokes !== 0)
   );
-  if (allScoresSet && !round?.isCompleted) {
-    return (
-      <div className="columns has-text-centered">
-        <div className="column">{!round?.courseName && <NewHole />}</div>
-        <div className="column">
-          <button
-            className="button"
-            onClick={() => {
-              if (window.confirm("Do you want to complete the round?")) {
-                props.completeRound();
-                setCompleteActive(false);
-              }
-            }}
-            disabled={!completeActive}
-          >
-            {" "}
-            Complete Round{" "}
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // if (allScoresSet && activeHoleIndex === -1 && !round?.isCompleted) {
+  //   return (
+  //     <div className="columns has-text-centered">
+  //       <div className="column">{!round?.courseName && <NewHole />}</div>
+  //       <div className="column">
+  //         <button
+  //           className="button"
+  //           onClick={() => {
+  //             if (window.confirm("Do you want to complete the round?")) {
+  //               props.completeRound();
+  //               setCompleteActive(false);
+  //             }
+  //           }}
+  //           disabled={!completeActive}
+  //         >
+  //           {" "}
+  //           Complete Round{" "}
+  //         </button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return round ? (
     <div className="container mx-0 mt-1 is-flex is-flex-direction-column is-justify-content-space-between">

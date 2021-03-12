@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import colors from "../../colors";
+import colors, { scoreColorStyle } from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
+import "./RoundScoreCard.css";
 
 export interface ScoreCardProps {
   username: string;
@@ -29,14 +30,26 @@ const RoundScoreCard = ({
   });
   const playerStats = playersStats.find((s) => s.playerName === username);
 
+  const sortedPlayerScores = round.playerScores
+    .map((p) => {
+      return {
+        name: p.playerName,
+        scores: p.scores,
+        totalScore: p.scores.reduce((total, score) => {
+          return total + score.relativeToPar;
+        }, 0),
+      };
+    })
+    .sort((a, b) => a.totalScore - b.totalScore);
+
   return (
     <div className="columns is-marginless is-paddingless is-mobile">
       <div className="column is-narrow is-marginless is-paddingless">
         <table
-          className="table is-marginless is-paddingless is-bordered"
+          className="table is-marginless is-paddingless mb-2"
           style={{ backgroundColor: colors.table }}
         >
-          <thead>
+          <tbody>
             <tr>
               <th>Hole</th>
             </tr>
@@ -50,31 +63,22 @@ const RoundScoreCard = ({
                 <i className="is-size-7">Average</i>
               </td>
             </tr>
-            <tr className="lower-row">
+            <tr className="lower-row score-card-divider-row">
               <td>
                 <i className="is-size-7">Rating</i>
               </td>
             </tr>
-          </thead>
-          <tbody>
-            {round.playerScores
-              .map((p) => {
-                return {
-                  name: p.playerName,
-                  totalScore: p.scores.reduce((total, score) => {
-                    return total + score.relativeToPar;
-                  }, 0),
-                };
-              })
-              .sort((a, b) => a.totalScore - b.totalScore)
-              .map((s) => (
-                <tr key={s.name}>
-                  <td>
-                    {s.name}&nbsp;(
-                    {s.totalScore})
-                  </td>
-                </tr>
-              ))}
+            {sortedPlayerScores.map((s) => (
+              <tr
+                key={s.name}
+                className={s.name === username ? "active-user-row" : ""}
+              >
+                <td>
+                  {s.name}&nbsp;(
+                  {s.totalScore})
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
@@ -82,11 +86,8 @@ const RoundScoreCard = ({
         className="column table-container is-marginless is-paddingless"
         ref={tableRef}
       >
-        <table
-          className="table is-bordered"
-          style={{ backgroundColor: colors.table }}
-        >
-          <thead>
+        <table className="table mb-2" style={{ backgroundColor: colors.table }}>
+          <tbody>
             <tr>
               {round.playerScores[0].scores.map((s, holeIndex) => (
                 <th
@@ -140,7 +141,7 @@ const RoundScoreCard = ({
                 </td>
               ))}
             </tr>
-            <tr className="lower-row">
+            <tr className="lower-row score-card-divider-row">
               {round.playerScores[0].scores.map((s, holeIndex) => (
                 <td
                   key={s.hole.number}
@@ -154,20 +155,19 @@ const RoundScoreCard = ({
                 </td>
               ))}
             </tr>
-          </thead>
-          <tbody>
-            {round.playerScores.map((playerScore) => (
+            {sortedPlayerScores.map((playerScore) => (
               <tr
-                key={playerScore.playerName}
+                key={playerScore.name}
                 className={
-                  playerScore.playerName === username
-                    ? "has-background-grey-lighter"
-                    : ""
+                  playerScore.name === username ? "active-user-row" : ""
                 }
               >
                 {playerScore.scores.map((s, holeIndex) => (
                   <td
-                    className={holeIndex === activeHole ? "is-selected" : ""}
+                    className={`${scoreColorStyle(
+                      s.relativeToPar,
+                      s.strokeSpecs
+                    )} ${holeIndex === activeHole ? "is-selected" : ""}`}
                     key={s.hole.number}
                   >
                     {s.strokes}

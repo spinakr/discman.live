@@ -1,0 +1,10 @@
+tr.score-card-divider-row th, 
+tr.score-card-divider-row td{
+    border-bottom: 1px solid black !important;
+}
+
+
+tr.active-user-row td{
+    line-height: 2  ;
+    font-weight: bold;
+}
