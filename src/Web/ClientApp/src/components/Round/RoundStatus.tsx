@@ -26,8 +26,6 @@ const RoundStatus = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [showPlayer, setShowPlayer] = useState(user?.user?.username);
 
-  const playersInRound = round?.playerScores.map((s) => s.playerName);
-
   const playerStats = stats && stats.find((s) => s.playerName === showPlayer);
 
   const playerRoundScores =

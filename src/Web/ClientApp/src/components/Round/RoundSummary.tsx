@@ -8,6 +8,7 @@ import RoundAchievements from "./RoundAchievements";
 import RoundStats from "./RoundStats";
 import { UserStats } from "../../store/User";
 import colors, { scoreColorStyle } from "../../colors";
+import RoundLeaderboard from "./RoundLeaderboard";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -28,62 +29,6 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
     return atotal === btotal ? 0 : atotal < btotal ? -1 : 1;
   });
 
-  const renderScores = (
-    playerScores: PlayerScore[],
-    from: number,
-    to: number,
-    withTotals: boolean
-  ) => {
-    return (
-      <table
-        className="table is-narrow"
-        style={{ backgroundColor: colors.table }}
-      >
-        <thead>
-          <tr>
-            {withTotals && (
-              <th>
-                Hole
-                <br />
-                Par
-              </th>
-            )}
-            {playerScores[0].scores.slice(from, to).map((s) => (
-              <th key={s.hole.number}>
-                {s.hole.number} <br />
-                <i>{s.hole.par}</i>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {playerScores.map((p) => (
-            <tr key={p.playerName}>
-              {withTotals && (
-                <td>
-                  {p.playerName}&nbsp;(
-                  {playerTotal(p)})
-                </td>
-              )}
-              {p.scores.slice(from, to).map((s) => renderPlayerHoleScore(s))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  };
-
-  const renderPlayerHoleScore = (s: HoleScore) => {
-    return (
-      <td
-        className={scoreColorStyle(s.relativeToPar, s.strokeSpecs)}
-        key={s.hole.number}
-      >
-        {s.strokes}
-      </td>
-    );
-  };
-
   const [active, setActive] = useState(1);
 
   const config = {};
@@ -103,7 +48,7 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
 
   return (
     <div className="has-text-centered">
-      <div className="tabs is-centered">
+      <div className="tabs my-0 is-centered">
         <ul>
           <li
             className={active === 1 ? "is-active" : ""}
@@ -133,21 +78,7 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
         </ul>
       </div>
 
-      {active === 1 && (
-        <div>
-          <div
-            className="table-container"
-            style={{ paddingTop: "0px", marginTop: "0px", paddingLeft: "15px" }}
-          >
-            {renderScores(round.playerScores, 0, 8, true)}
-            {renderScores(round.playerScores, 8, 18, false)}
-            {renderScores(round.playerScores, 19, 30, false)}
-            <hr />
-            <PlayerCourseImprovments />
-          </div>
-          <div style={{ height: "300px", width: "auto" }} {...handlers}></div>
-        </div>
-      )}
+      {active === 1 && <RoundLeaderboard round={round} username={username} />}
       {active === 2 && (
         <RoundStats
           stats={finishedRoundStats}
@@ -158,9 +89,9 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
 
       {active === 3 && <RoundChart round={round} swipeHandlers={handlers} />}
 
-      {active === 4 && (
+      {/* {active === 4 && (
         <RoundAchievements round={round} swipeHandlers={handlers} />
-      )}
+      )} */}
     </div>
   );
 };

@@ -17,9 +17,12 @@ const HoleScoreComponent = ({
   setActiveHole,
   playersStats,
 }: ScoreCardProps) => {
+  const activePlayerScores = round.playerScores.find(
+    (p) => p.playerName === username
+  );
+  if (!activePlayerScores) return null;
   const playerScores =
-    round.playerScores.find((p) => p.playerName === username)?.scores ||
-    round.playerScores[0].scores;
+    activePlayerScores?.scores || round.playerScores[0].scores;
 
   const holeScore = playerScores[activeHole];
 
@@ -30,9 +33,6 @@ const HoleScoreComponent = ({
     };
   });
 
-  const activePlayerScores = round.playerScores.find(
-    (p) => p.playerName === username
-  );
   const courseHoles = playerScores;
   const currentHole = courseHoles[activeHole];
   const nextHole =
@@ -41,21 +41,11 @@ const HoleScoreComponent = ({
       : null;
   const prevHole = activeHole - 1 > -1 ? courseHoles[activeHole - 1] : null;
 
-  //Create spectator view
-  if (!activePlayerScores) return null;
-
   const playersToDisplay =
     round.playerScores.length > 4 ? [activePlayerScores] : round.playerScores;
 
   return (
     <div className="pt-1 pb-0">
-      {/* <h2 className="subtitle has-text-centered">
-        {holeStats && holeStats.birdie && (
-          <span className="icon is-small">
-            <i className="fas fa-dove"></i>
-          </span>
-        )}
-      </h2> */}
       <div className="tour-stats">
         <div className="columns is-centered is-mobile">
           <span className="column has-text-centered pb-0">
@@ -118,11 +108,14 @@ const HoleScoreComponent = ({
                 activeHole - 1 > -1 ? p.scores[activeHole - 1] : null;
 
               return (
-                <tr key={i}>
-                  <th className="px-0 has-text-centered">
+                <tr
+                  key={i}
+                  className={p.playerName === username ? "active-user-row" : ""}
+                >
+                  <td className="px-0 has-text-centered">
                     <span className="is-size-5">{p.playerEmoji}</span>
-                  </th>
-                  <th
+                  </td>
+                  <td
                     style={{
                       minWidth: "75px",
                       maxWidth: "75px",
@@ -142,7 +135,7 @@ const HoleScoreComponent = ({
                         <i className="fas fa-dove"></i>
                       </span>
                     )}
-                  </th>
+                  </td>
                   {prevHole && (
                     <td
                       className="has-text-centered px-1 has-text-grey-light"

@@ -34,7 +34,6 @@ export const scoreColorStyle = (mark: number, specs: StrokeSpec[]) => {
       style += " dobble-cell";
       break;
   }
-  console.log(specs);
   if (specs && specs.some((s) => ((s.outcome as unknown) as number) === 2)) {
     style += " ob-cell";
   }

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import colors, { scoreColorStyle } from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
-import "./RoundScoreCard.css";
 
 export interface ScoreCardProps {
   username: string;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../../store";
 import {
@@ -8,13 +8,9 @@ import {
 import { actionCreators as loginActionCreator } from "../../../store/User";
 import {
   actionCreators as roundsActionCreator,
-  Hole,
   ScoreMode,
 } from "../../../store/Rounds";
-import InformationDialogue from "../../InformationDialogue";
-import { useMountEffect } from "../../../utils";
 import colors from "../../../colors";
-import AddFriends from "../../AddFriends";
 import Steps from "./Steps";
 import CourseSelector from "./CourseSelector";
 import PlayersSelector from "./PlayersSelector";
@@ -47,12 +43,12 @@ const NewRound = (props: Props) => {
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([
     props.username,
   ]);
-  const [manualReg, setManualReg] = useState<boolean>(false);
-  const [roundName, setRoundName] = useState<string>("");
+  // const [manualReg, setManualReg] = useState<boolean>(false);
+  // const [roundName, setRoundName] = useState<string>("");
 
   const cancel = () => {
     setSelectedPlayers([]);
-    setRoundName("");
+    // setRoundName("");
     setSelectedLayout(undefined);
     setActiveStep(1);
     setShowDialog(false);
@@ -134,15 +130,12 @@ const NewRound = (props: Props) => {
                         props.newRound(
                           selectedLayout?.id,
                           selectedPlayers,
-                          roundName,
+                          "",
                           ScoreMode.DetailedLive
                         );
                         setShowDialog(false);
                       }}
-                      disabled={
-                        (!selectedLayout && !manualReg) ||
-                        (manualReg && !roundName)
-                      }
+                      disabled={!selectedLayout}
                     >
                       Start
                     </button>

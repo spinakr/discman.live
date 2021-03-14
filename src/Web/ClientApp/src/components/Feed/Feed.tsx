@@ -181,11 +181,10 @@ const getUri = (item: UserStore.FeedItem) => {
 
 const Feed = (props: Props) => {
   const { fetchFeed, feed } = props;
-  const [itemType, setItemType] = useState<string>("");
   const [page, setPage] = useState<number>(1);
   React.useEffect(() => {
-    fetchFeed(itemType, page);
-  }, [fetchFeed, itemType, page]);
+    fetchFeed("", page);
+  }, [fetchFeed, page]);
   const next = () => {
     setPage(page + 1);
   };

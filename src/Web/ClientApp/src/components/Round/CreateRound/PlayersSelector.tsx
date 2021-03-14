@@ -1,11 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { connect, ConnectedProps } from "react-redux";
-import colors from "../../../colors";
 import { ApplicationState } from "../../../store";
-import {
-  actionCreators as coursesActionCreator,
-  Course,
-} from "../../../store/Courses";
+import { actionCreators as coursesActionCreator } from "../../../store/Courses";
 import AddFriends from "../../AddFriends";
 
 const mapState = (state: ApplicationState) => {

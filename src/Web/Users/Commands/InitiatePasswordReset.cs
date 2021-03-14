@@ -1,13 +1,8 @@
 using System;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
-using Marten.Linq;
 using MediatR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Serilog;
@@ -47,14 +42,14 @@ namespace Web.Users.Commands
                 Log.Information("Email {Email} does not exist {ResetId}", request.Email, resetId);
                 return Unit.Value;
             }
-            
+
             var ongoing = await _documentSession.Query<ResetPasswordRequest>().SingleOrDefaultAsync(u => u.Email == request.Email, token: cancellationToken);
             if (ongoing != null)
             {
                 Log.Information("Already ongoing reset processes for {Email} exists {ResetId}", request.Email, ongoing.Id);
                 return Unit.Value;
             }
-            
+
             var resetRequest = new ResetPasswordRequest
             {
                 Id = resetId,

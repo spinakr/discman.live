@@ -101,37 +101,13 @@ const HoleScoreSelector = (props: Props) => {
   const isPartOfRound = round?.playerScores.some(
     (s) => s.playerName === username
   );
+  if (!isPartOfRound) return null;
   const resetStrokeCount = () => {
     const activeholeDetailes = (round?.playerScores[0].scores || [])[
       activeHoleIndex || 0
     ];
     setStrokeCount(activeholeDetailes?.hole.par || 3);
   };
-  const allScoresSet = round?.playerScores.every((p) =>
-    p.scores.every((s) => s.strokes !== 0)
-  );
-  // if (allScoresSet && activeHoleIndex === -1 && !round?.isCompleted) {
-  //   return (
-  //     <div className="columns has-text-centered">
-  //       <div className="column">{!round?.courseName && <NewHole />}</div>
-  //       <div className="column">
-  //         <button
-  //           className="button"
-  //           onClick={() => {
-  //             if (window.confirm("Do you want to complete the round?")) {
-  //               props.completeRound();
-  //               setCompleteActive(false);
-  //             }
-  //           }}
-  //           disabled={!completeActive}
-  //         >
-  //           {" "}
-  //           Complete Round{" "}
-  //         </button>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return round ? (
     <div className="container mx-0 mt-1 is-flex is-flex-direction-column is-justify-content-space-between">
@@ -163,150 +139,143 @@ const HoleScoreSelector = (props: Props) => {
       <div className="is-flex scrollable">
         {renderStrokes(strokes, setStrokes)}
       </div>
-      {isPartOfRound && (
+      {props.simpleScoring ? (
         <>
-          {props.simpleScoring ? (
-            <>
-              <div className="columns is-mobile is-flex pb-5">
-                <div className="column">
-                  <div className="control py-1">
-                    <button
-                      className="button is-large"
-                      onClick={() => setStrokeCount(strokeCount - 1)}
-                      style={{ backgroundColor: colors.circle1 }}
-                    >
-                      <span className="icon is-large">
-                        <i className="has-text-weight-bold is-family-code">-</i>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-                <div className="column">
-                  <div className="control py-1">
-                    <button
-                      className="button is-large"
-                      onClick={() => {
-                        setScore(strokeCount, []);
-                        resetStrokeCount();
-                      }}
-                      style={{ backgroundColor: colors.background }}
-                    >
-                      <span className="icon is-large">
-                        <i className="has-text-weight-bold is-family-code">
-                          {strokeCount}
-                        </i>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-                <div className="column">
-                  <div className="control py-1">
-                    <button
-                      className="button is-large"
-                      onClick={() => setStrokeCount(strokeCount + 1)}
-                      style={{ backgroundColor: colors.rough }}
-                    >
-                      <span className="icon is-large">
-                        <i className="has-text-weight-bold is-family-code">+</i>
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </>
-          ) : (
-            //Detailed scoring
-            <div className="columns is-gapless is-mobile is-flex mx-0">
-              <div className="column">
-                <div className="control py-1">
-                  <button
-                    className="button is-large"
-                    title="Rough"
-                    onClick={() => setStrokes([...strokes, "Rough"])}
-                    style={{ backgroundColor: colors.rough }}
-                  >
-                    <span className="icon is-large">
-                      <i className="has-text-weight-bold is-family-code">R</i>
-                    </span>
-                  </button>
-                </div>
-                <div className="control py-1">
-                  <button
-                    className="button is-large tour-score-fairway"
-                    title="Fairway"
-                    onClick={() => setStrokes([...strokes, "Fairway"])}
-                    style={{ backgroundColor: colors.fairway }}
-                  >
-                    <span className="icon is-large">
-                      <i className="has-text-weight-bold is-family-code">F</i>
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <div className="column">
-                <div className="control py-1">
-                  <button
-                    className="button is-large tour-score-circle2"
-                    title="Circle 2 - 20 meters"
-                    onClick={() => setStrokes([...strokes, "Circle2"])}
-                    style={{ backgroundColor: colors.circle2 }}
-                  >
-                    <span className="icon is-large">
-                      <i className="has-text-weight-bold is-family-code">20m</i>
-                    </span>
-                  </button>
-                </div>
-                <div className="control py-1">
-                  <button
-                    className="button is-large tour-score-circle1"
-                    title="Circle 1 - 10 meters"
-                    onClick={() => setStrokes([...strokes, "Circle1"])}
-                    style={{ backgroundColor: colors.circle1 }}
-                  >
-                    <span className="icon is-large">
-                      <i className="has-text-weight-bold is-family-code">10m</i>
-                    </span>
-                  </button>
-                </div>
-              </div>
-              <div className="column">
-                <div className="control py-1">
-                  <button
-                    className="button is-large tour-score-ob"
-                    title="In basket"
-                    onClick={() => setStrokes([...strokes, "OB"])}
-                    style={{ backgroundColor: colors.ob }}
-                  >
-                    <span className="icon is-large icon has-text-danger">
-                      <i className="has-text-weight-bold is-family-code">OB</i>
-                    </span>
-                  </button>
-                </div>
-                <div className="control py-1">
-                  <button
-                    className="button is-large tour-score-basket"
-                    title="In basket"
-                    onClick={() => {
-                      const newStrokes: StrokeOutcome[] = [
-                        ...strokes,
-                        "Basket",
-                      ];
-                      setScore(countScore(newStrokes), strokes);
-                      setStrokes([]);
-                    }}
-                    style={{ backgroundColor: colors.background }}
-                  >
-                    <span className="icon is-large has-text-primary">
-                      <i className="fas fa-shopping-basket">
-                        &nbsp;{countScore(strokes) + 1}&nbsp;
-                      </i>
-                    </span>
-                  </button>
-                </div>
+          <div className="columns is-mobile is-flex pb-5">
+            <div className="column">
+              <div className="control py-1">
+                <button
+                  className="button is-large"
+                  onClick={() => setStrokeCount(strokeCount - 1)}
+                  style={{ backgroundColor: colors.circle1 }}
+                >
+                  <span className="icon is-large">
+                    <i className="has-text-weight-bold is-family-code">-</i>
+                  </span>
+                </button>
               </div>
             </div>
-          )}
+            <div className="column">
+              <div className="control py-1">
+                <button
+                  className="button is-large"
+                  onClick={() => {
+                    setScore(strokeCount, []);
+                    resetStrokeCount();
+                  }}
+                  style={{ backgroundColor: colors.background }}
+                >
+                  <span className="icon is-large">
+                    <i className="has-text-weight-bold is-family-code">
+                      {strokeCount}
+                    </i>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div className="column">
+              <div className="control py-1">
+                <button
+                  className="button is-large"
+                  onClick={() => setStrokeCount(strokeCount + 1)}
+                  style={{ backgroundColor: colors.rough }}
+                >
+                  <span className="icon is-large">
+                    <i className="has-text-weight-bold is-family-code">+</i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
         </>
+      ) : (
+        //Detailed scoring
+        <div className="columns is-gapless is-mobile is-flex mx-0">
+          <div className="column">
+            <div className="control py-1">
+              <button
+                className="button is-large"
+                title="Rough"
+                onClick={() => setStrokes([...strokes, "Rough"])}
+                style={{ backgroundColor: colors.rough }}
+              >
+                <span className="icon is-large">
+                  <i className="has-text-weight-bold is-family-code">R</i>
+                </span>
+              </button>
+            </div>
+            <div className="control py-1">
+              <button
+                className="button is-large tour-score-fairway"
+                title="Fairway"
+                onClick={() => setStrokes([...strokes, "Fairway"])}
+                style={{ backgroundColor: colors.fairway }}
+              >
+                <span className="icon is-large">
+                  <i className="has-text-weight-bold is-family-code">F</i>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div className="column">
+            <div className="control py-1">
+              <button
+                className="button is-large tour-score-circle2"
+                title="Circle 2 - 20 meters"
+                onClick={() => setStrokes([...strokes, "Circle2"])}
+                style={{ backgroundColor: colors.circle2 }}
+              >
+                <span className="icon is-large">
+                  <i className="has-text-weight-bold is-family-code">20m</i>
+                </span>
+              </button>
+            </div>
+            <div className="control py-1">
+              <button
+                className="button is-large tour-score-circle1"
+                title="Circle 1 - 10 meters"
+                onClick={() => setStrokes([...strokes, "Circle1"])}
+                style={{ backgroundColor: colors.circle1 }}
+              >
+                <span className="icon is-large">
+                  <i className="has-text-weight-bold is-family-code">10m</i>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div className="column">
+            <div className="control py-1">
+              <button
+                className="button is-large tour-score-ob"
+                title="In basket"
+                onClick={() => setStrokes([...strokes, "OB"])}
+                style={{ backgroundColor: colors.ob }}
+              >
+                <span className="icon is-large icon has-text-danger">
+                  <i className="has-text-weight-bold is-family-code">OB</i>
+                </span>
+              </button>
+            </div>
+            <div className="control py-1">
+              <button
+                className="button is-large tour-score-basket"
+                title="In basket"
+                onClick={() => {
+                  const newStrokes: StrokeOutcome[] = [...strokes, "Basket"];
+                  setScore(countScore(newStrokes), strokes);
+                  setStrokes([]);
+                }}
+                style={{ backgroundColor: colors.background }}
+              >
+                <span className="icon is-large has-text-primary">
+                  <i className="fas fa-shopping-basket">
+                    &nbsp;{countScore(strokes) + 1}&nbsp;
+                  </i>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   ) : null;
