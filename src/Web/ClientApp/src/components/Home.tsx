@@ -23,6 +23,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & RouteComponentProps & {};
 
 const Home = (props: Props) => {
+  React.useEffect(() => {});
   const { user } = props;
   return (
     <div>

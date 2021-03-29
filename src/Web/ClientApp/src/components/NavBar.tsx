@@ -30,52 +30,53 @@ const NavMenu = (props: Props) => {
   return (
     <>
       {(!props.location.pathname.startsWith("/rounds") ||
-        props.round?.isCompleted) && (
-        <nav
-          className="navbar is-flex is-flex-direction-row is-justify-content-space-evenly is-align-items-center is-fixed-bottom py-0 my-0"
-          style={{ backgroundColor: Colors.navbar }}
-        >
-          <div className="is-flex py-0">
-            <Link
-              to="/"
-              className="button pr-1 pl-3"
-              style={{ backgroundColor: Colors.navbar }}
-            >
-              <span className="icon">
-                <i className="fas fa-lg fa-clipboard-list"></i>
-              </span>
-              <span className="is-size-7">Feed</span>
-            </Link>
-          </div>
-          <div className="is-flex py-0">
-            {props.roundInProgress && !props.round?.isCompleted ? (
+        props.round?.isCompleted) &&
+        props.user?.loggedIn && (
+          <nav
+            className="navbar is-flex is-flex-direction-row is-justify-content-space-evenly is-align-items-center is-fixed-bottom py-0 my-0"
+            style={{ backgroundColor: Colors.navbar }}
+          >
+            <div className="is-flex py-0">
               <Link
-                to={`/rounds/${props.roundInProgress}`}
-                className="button is-primary waggle pr-1 pl-3"
+                to="/"
+                className="button pr-1 pl-3"
+                style={{ backgroundColor: Colors.navbar }}
               >
                 <span className="icon">
-                  <i className="fas fa-lg fa-spinner" aria-hidden="true"></i>
+                  <i className="fas fa-lg fa-clipboard-list"></i>
                 </span>
-                <span className="is-size-7">Live</span>
+                <span className="is-size-7">Feed</span>
               </Link>
-            ) : (
-              <CreateRound />
-            )}
-          </div>
-          <div className="is-flex py-0">
-            <Link
-              to="/leaders"
-              className="button pr-1 pl-3"
-              style={{ backgroundColor: Colors.navbar }}
-            >
-              <span className="icon">
-                <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>
-              </span>
-              <span className="is-size-7">Leaders</span>
-            </Link>
-          </div>
-        </nav>
-      )}
+            </div>
+            <div className="is-flex py-0">
+              {props.roundInProgress && !props.round?.isCompleted ? (
+                <Link
+                  to={`/rounds/${props.roundInProgress}`}
+                  className="button is-primary waggle pr-1 pl-3"
+                >
+                  <span className="icon">
+                    <i className="fas fa-lg fa-spinner" aria-hidden="true"></i>
+                  </span>
+                  <span className="is-size-7">Live</span>
+                </Link>
+              ) : (
+                <CreateRound />
+              )}
+            </div>
+            <div className="is-flex py-0">
+              <Link
+                to="/leaders"
+                className="button pr-1 pl-3"
+                style={{ backgroundColor: Colors.navbar }}
+              >
+                <span className="icon">
+                  <i className="fas fa-lg fa-trophy" aria-hidden="true"></i>
+                </span>
+                <span className="is-size-7">Leaders</span>
+              </Link>
+            </div>
+          </nav>
+        )}
     </>
   );
 };

@@ -3,6 +3,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
 import InformationDialogue from "../InformationDialogue";
+import CountryPicker from "./CountryPicker";
 import EmojiPicker from "./EmojiPicker";
 import UpdateEmailForm from "./UpdateEmailForm";
 
@@ -50,6 +51,7 @@ const UserSettings = (props: Props) => {
           </div>
         </div>
         <EmojiPicker />
+        <CountryPicker />
         <UpdateEmailForm
           changeEmail={props.changeEmail}
           currentEmail={props.user?.userDetails?.email}

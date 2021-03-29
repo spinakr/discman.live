@@ -37,6 +37,7 @@ export interface UserDetails {
   friends: string[];
   settingsInitialized: boolean;
   emoji: string;
+  country: string;
   activeRound: string | null;
 }
 
@@ -191,6 +192,11 @@ export interface SetSettingsInitSuccessAction {
   type: "SET_SETTINGS_INIT_SUCCESS";
 }
 
+export interface SetCountrySuccessAction {
+  type: "COUNTRY_UPDATED_SUCCESS";
+  country: string;
+}
+
 export interface ClearFeedAction {
   type: "CLEAR_FEED";
 }
@@ -200,6 +206,7 @@ export type KnownAction =
   | SimpleScoringUpdatedSuccessACtion
   | LoginSuccessAction
   | LoginFailedAction
+  | SetCountrySuccessAction
   | LogUserOutAction
   | ConnectToHubAction
   | SetSettingsInitSuccessAction
@@ -420,6 +427,36 @@ export const actionCreators = {
       .catch((err: Error) => {
         notificationActions.showNotification(
           `Set news seen failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
+  setCountry: (country: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+    fetch(`api/users/country`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+      body: JSON.stringify({ country }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        return res;
+      })
+      .then((data) => {
+        dispatch({ type: "COUNTRY_UPDATED_SUCCESS", country });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Set coutnry failed: ${err.message}`,
           "error",
           dispatch
         );
@@ -921,6 +958,14 @@ export const reducer: Reducer<UserState> = (
         userDetails: state.userDetails && {
           ...state.userDetails,
           settingsInitialized: true,
+        },
+      };
+    case "COUNTRY_UPDATED_SUCCESS":
+      return {
+        ...state,
+        userDetails: state.userDetails && {
+          ...state.userDetails,
+          country: action.country,
         },
       };
     case "EMOJI_UPDATED_SUCCESS":

@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
+import colors from "../colors";
 import { ApplicationState } from "../store";
 import * as LoginStore from "../store/User";
 import "./Login.css";
@@ -34,6 +35,7 @@ const Login = (props: Props) => {
             <p className="control has-icons-left has-icons-right">
               <input
                 className="input"
+                style={{ backgroundColor: colors.field }}
                 type="text"
                 placeholder="Username"
                 value={login.username}
@@ -53,6 +55,7 @@ const Login = (props: Props) => {
             <p className="control has-icons-left">
               <input
                 className="input"
+                style={{ backgroundColor: colors.field }}
                 type="password"
                 placeholder="Password"
                 value={login.password}
@@ -77,7 +80,8 @@ const Login = (props: Props) => {
             <div className="control">
               <button
                 disabled={isFormValid(login.username, login.password)}
-                className="button is-success is-light is-outlined"
+                className="button is-outlined"
+                style={{ backgroundColor: colors.button }}
                 onClick={() =>
                   props.requestLogin(login.username, login.password)
                 }
@@ -88,7 +92,8 @@ const Login = (props: Props) => {
             <div className="control">
               <button
                 disabled={isFormValid(login.username, login.password)}
-                className="button is-warning is-light is-outlined"
+                className="button is-outlined"
+                style={{ backgroundColor: colors.button }}
                 onClick={() => props.createUser(login.username, login.password)}
               >
                 Register

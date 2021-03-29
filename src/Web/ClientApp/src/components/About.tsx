@@ -42,39 +42,6 @@ const About = () => {
             for detailed stats about a players game.
           </div>
         </div>
-        <div className="columns is-mobile">
-          <div className="column is-half">
-            Simple statistics are used to calculate how your round is going -
-            including predicted final score and scoring average (requires
-            multiple rounds on the same course).
-          </div>
-          <div className="column is-half">
-            <img width="128" height="260" src="screenshot7.png" />
-          </div>
-        </div>
-        <div className="columns is-mobile">
-          <div className="column is-half">
-            <img width="128" height="260" src="screenshot3.png" />
-          </div>
-          <div className="column is-half">
-            Leaderboards both among friends and globally, as well as
-            achievements makes playing practice rounds more fun. Your ace or
-            turkey will appear in your friends' feed!
-          </div>
-        </div>
-        <p>
-          Tournaments in discman is a set of courses from which the best round
-          on each course count towards the tournament leaderbaord. A fun and
-          simple way to compete against your friends.
-        </p>
-        <div className="columns is-mobile">
-          <div className="column is-half">
-            <img width="128" height="260" src="screenshot4.png" />
-          </div>
-          <div className="column is-half">
-            <img width="128" height="260" src="screenshot5.png" />
-          </div>
-        </div>
       </div>
     </>
   );

@@ -148,6 +148,13 @@ namespace Web.Users
             return Ok(user);
         }
 
+        [HttpPost("country")]
+        public async Task<IActionResult> SetCountry([FromBody] SetCountryCommand req)
+        {
+            var user = await _mediator.Send(req);
+            return Ok(user);
+        }
+
         [HttpPost("settingsInitialized")]
         public async Task<IActionResult> SetSettingsInitialized()
         {

@@ -8,6 +8,7 @@ import UserRounds from "./UserRounds";
 import { useParams } from "react-router";
 import UserAchievements from "./UserAchievements";
 import Tournaments from "../Tournaments/Tournaments";
+import { countries } from "./CountryPicker";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -22,13 +23,15 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserComponent = (props: Props) => {
-  const { username } = useParams();
+  const { username } = useParams<{ username: string }>();
   const [active, setActive] = useState(1);
   return (
     <div>
-      <h2 className="title is-2 has-text-centered">
-        {username || props.user?.user?.username}
-      </h2>
+      <h3 className="title is-3 has-text-centered">
+        {countries[props.user?.userDetails?.country || "unknown"]} &nbsp;
+        {username || props.user?.user?.username}&nbsp;
+        {props.user?.userDetails?.emoji}
+      </h3>
 
       <div className="tabs is-small is-fullwidth is-centered">
         <ul>

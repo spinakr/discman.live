@@ -36,6 +36,8 @@ namespace Web.Users
         public string Email { get; set; }
         public bool SimpleScoring { get; set; } = false;
         public string Emoji { get; set; }
+        public string Country { get; set; }
+        public string Flag { get; set; }
         public bool RegisterPutDistance { get; set; } = false;
         public List<string> NewsIdsSeen { get; set; } = new List<string>();
         public bool SettingsInitialized { get; set; } = false;
