@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as UserStore from "../../store/User";
@@ -23,14 +23,22 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserComponent = (props: Props) => {
-  const { username } = useParams<{ username: string }>();
+  const { usernameParam } = useParams<{ usernameParam: string }>();
   const [active, setActive] = useState(1);
+  const username = usernameParam || props.user?.user?.username;
+  useEffect(() => {
+    username && props.fetchMoreUserDetails(username);
+  });
+  const userDetails =
+    props.user?.usersDetails &&
+    props.user.usersDetails.find((d) => d.username === username);
+
   return (
     <div>
       <h3 className="title is-3 has-text-centered">
-        {countries[props.user?.userDetails?.country || "unknown"]} &nbsp;
-        {username || props.user?.user?.username}&nbsp;
-        {props.user?.userDetails?.emoji}
+        {countries[(userDetails && userDetails.country) || "unknown"]} &nbsp;
+        {username}&nbsp;
+        {userDetails?.emoji}
       </h3>
 
       <div className="tabs is-small is-fullwidth is-centered">

@@ -10,6 +10,7 @@ namespace Web.Users.Queries
     public class UserDetails : IMapFrom<User>
     {
         public string Email { get; set; }
+        public string Username { get; set; }
         public bool SimpleScoring { get; set; }
         public string Emoji { get; set; }
         public string Country { get; set; }

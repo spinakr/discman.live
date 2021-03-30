@@ -19,7 +19,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserRounds = (props: Props) => {
-  const { username } = useParams();
+  const { username } = useParams<{ username: string }>();
   const [page, setPage] = useState(1);
   const { fetchUserRounds } = props;
   React.useEffect(() => {

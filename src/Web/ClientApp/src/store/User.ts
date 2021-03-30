@@ -32,6 +32,7 @@ export interface UserStats {
 
 export interface UserDetails {
   email: string;
+  username: string;
   simpleScoring: boolean;
   newsIdsSeen: string[];
   friends: string[];
@@ -55,6 +56,7 @@ export interface UserState {
   loggedIn: boolean;
   user: User | null;
   userDetails: UserDetails | null;
+  usersDetails: UserDetails[] | null;
   failedLoginMessage: string | null;
   userStats: UserStats | null;
   userRounds: PagedRounds | null;
@@ -179,6 +181,11 @@ export interface SetNewsSeenSuccessAction {
   newsId: string;
 }
 
+export interface FetchMoreUserDetailsSuccessAction {
+  type: "FETCH_MORE_USER_DETAILS_SUCCESS";
+  userDetails: UserDetails;
+}
+
 export interface FetchUserDetailsSuccessAction {
   type: "FETCH_USER_DETAILS_SUCCESS";
   userDetails: UserDetails;
@@ -221,6 +228,7 @@ export type KnownAction =
   | SpectatorJoindAction
   | FetchUserDetailsSuccessAction
   | ChangePasswordSuccessAction
+  | FetchMoreUserDetailsSuccessAction
   | LikeToggledAction
   | SetLoggedInUserAction
   | FetchFeedSuccessAction
@@ -238,6 +246,7 @@ if (userString) {
 const initialState: UserState = user
   ? {
       userDetails: { settingsInitialized: true } as UserDetails,
+      usersDetails: [],
       loggedIn: true,
       user,
       failedLoginMessage: null,
@@ -250,6 +259,7 @@ const initialState: UserState = user
   : {
       loggedIn: false,
       userDetails: { settingsInitialized: true } as UserDetails,
+      usersDetails: [],
       user: null,
       failedLoginMessage: null,
       userStats: null,
@@ -821,6 +831,44 @@ export const actionCreators = {
   connectToHub: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: "CONNECT_TO_HUB" });
   },
+  fetchMoreUserDetails: (username: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+
+    if (appState.user.usersDetails?.some((u) => u.username === username))
+      return;
+
+    fetch(`api/users/${username}/details`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<UserDetails>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        dispatch({
+          type: "FETCH_MORE_USER_DETAILS_SUCCESS",
+          userDetails: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch user details failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   fetchUserDetails: (
     onlyIfDisconnected?: boolean
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
@@ -835,7 +883,6 @@ export const actionCreators = {
       return;
     }
 
-    const user = appState.user.user.username;
     fetch(`api/users/details`, {
       method: "GET",
       headers: {
@@ -1050,6 +1097,16 @@ export const reducer: Reducer<UserState> = (
       return {
         ...state,
         userDetails: action.userDetails,
+        usersDetails: state.usersDetails
+          ? [...state.usersDetails, action.userDetails]
+          : [action.userDetails],
+      };
+    case "FETCH_MORE_USER_DETAILS_SUCCESS":
+      return {
+        ...state,
+        usersDetails: state.usersDetails
+          ? [...state.usersDetails, action.userDetails]
+          : [action.userDetails],
       };
     case "NEW_ROUND_CREATED":
       return {

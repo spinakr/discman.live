@@ -176,6 +176,12 @@ namespace Web.Users
             return Ok();
         }
 
+        [HttpGet("{username}/details")]
+        public async Task<IActionResult> GetUserDetails(string username)
+        {
+            return Ok(await _mediator.Send(new GetUserDetailsQuery { Username = username }));
+        }
+
         [HttpGet("details")]
         public async Task<IActionResult> GetUserDetails()
         {

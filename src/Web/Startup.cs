@@ -1,26 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using FluentValidation;
-using Marten.Util;
 using MediatR;
-using MediatR.Pipeline;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using SendGrid.Extensions.DependencyInjection;
-using Serilog;
 using Web.Common.Behaviours;
 using Web.Courses;
 using Web.Infrastructure;
@@ -48,7 +39,7 @@ namespace Web
             services.AddHostedService<UpdateCourseRatingsWorker>();
             services.AddHostedService<UpdateInActiveRoundsWorker>();
             services.AddHostedService<LeaderboardWorker>();
-            services.AddHostedService<AchievementsWorker>();
+            services.AddHostedService<UserCleanupWorker>();
             services.AddHostedService<ResetPasswordWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
