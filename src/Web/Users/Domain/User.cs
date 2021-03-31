@@ -15,13 +15,14 @@ namespace Web.Users
         {
         }
 
-        public User(string requestUsername, SaltSeasonedHashedPassword hashedPw)
+        public User(string requestUsername, string email, SaltSeasonedHashedPassword hashedPw)
         {
             Id = Guid.NewGuid();
             Username = requestUsername;
             Password = hashedPw.Hash;
             Salt = hashedPw.Salt;
             SimpleScoring = true;
+            Email = email;
             NewsIdsSeen = new List<string>();
             Friends = new List<string>();
             Achievements = new Achievements();

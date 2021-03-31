@@ -41,14 +41,13 @@ namespace Web.Courses
             //     documentSession.Store(featureToggles);
             // }
 
-            // if (featureToggles.CleanOldUsersDone) return;
-            // featureToggles.CleanOldUsersDone = true;
+            // if (featureToggles.CleanOldUsersDone2) return;
+            // featureToggles.CleanOldUsersDone2 = true;
             // documentSession.Update(featureToggles);
             // _logger.LogInformation("Cleaning old users");
 
-            // var activeUsers = documentSession.Query<User>().Where(u => u.ModifiedSince(DateTime.Today.AddMonths(-5))).ToList();
             // var users = documentSession.Query<User>().ToList();
-            // foreach (var user in users.Where(u => !activeUsers.Any(a => a.Username == u.Username)))
+            // foreach (var user in users)
             // {
             //     var rounds = documentSession
             //         .Query<Round>()

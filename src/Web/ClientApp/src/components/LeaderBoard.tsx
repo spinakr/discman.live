@@ -67,7 +67,7 @@ const GlobalLeaderBoard = (props: Props) => {
           </div>
           <InformationDialogue
             title="Leaderboard"
-            text="Leader board is calculated based on average score adjusted against the difficulty of the course played. Playing only easy courses will not take you to the top of the leader board."
+            text="The leaderboard is calculated based on average score adjusted against the difficulty of the course played. Playing only easy courses will not take you to the top of the leaderboard!"
           />
         </div>
         <table

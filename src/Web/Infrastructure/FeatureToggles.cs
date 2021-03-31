@@ -9,5 +9,6 @@ namespace Web.Infrastructure
         public bool CleanAchievements { get; set; }
         public bool CleanAchievements2 { get; set; }
         public bool CleanOldUsersDone { get; set; }
+        public bool CleanOldUsersDone2 { get; set; }
     }
 }

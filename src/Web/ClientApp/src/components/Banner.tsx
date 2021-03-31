@@ -4,6 +4,7 @@ import { actionCreators } from "../store/User";
 import { connect, ConnectedProps } from "react-redux";
 import Colors from "../colors";
 import NavMenu from "./NavMenu";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -30,7 +31,7 @@ const Banner = (props: Props) => {
           >
             <div className="level-item has-text-centered">
               <h5 className="title is-5 has-text-weight-semibold	is-family-monospace">
-                discman.live
+                <Link to="">discman.live</Link>
               </h5>
             </div>
             <div className="navbar-end">

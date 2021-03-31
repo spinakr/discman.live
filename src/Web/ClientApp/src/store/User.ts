@@ -298,14 +298,15 @@ export const actionCreators = {
 
   createUser: (
     username: string,
-    password: string
+    password: string,
+    email?: string
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     fetch(`api/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password, email }),
     })
       .then((response) => {
         if (response.ok) {
@@ -320,6 +321,7 @@ export const actionCreators = {
         });
         localStorage.setItem("user", JSON.stringify(data));
         actionCreators.fetchUserDetails()(dispatch, getState);
+        dispatch(push("/"));
       })
       .catch((err: Error) => {
         dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });
@@ -351,6 +353,7 @@ export const actionCreators = {
           user: data,
         });
         localStorage.setItem("user", JSON.stringify(data));
+        dispatch(push("/"));
       })
       .catch((err: Error) => {
         dispatch({ type: "LOGIN_FAILED", errorMessage: err.message });

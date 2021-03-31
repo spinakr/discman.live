@@ -4,42 +4,54 @@ import React from "react";
 const About = () => {
   return (
     <>
-      <h3 className="title is-3 has-text-centered">About</h3>
-      <div className="section pt-0">
-        <strong>discman.live</strong> is an app for keeping score and tracking
-        stats when playing disc golf with your friends. The app is not supposed
-        to replace the other more "professional" apps often used at PDGA
-        tournaments, but more as an alternative when playing and practicing with
-        friends. discman makes playing casual rounds with friends more fun, and
-        introduces some interesting competition aspects.
+      <div className="container pt-0">
+        <p>
+          Welcome to <strong>discman.live</strong>, the discgolf app the makes
+          playing with your friends even more fun!
+        </p>
         <br />
+        <p></p>
         <br />
-        <div className="columns is-mobile">
-          <div className="column is-half">
-            <img width="128" height="260" src="screenshot1.png" />
+        <div className="columns is-mobile px-0">
+          <div className="column is-half px-0">
+            <img
+              className="bordered"
+              width="128"
+              height="260"
+              src="screenshot-live.jpeg"
+            />
           </div>
-          <div className="column is-half">
-            Scores are registered on each player's own phone, and synced live to
-            players in the round.
+          <div className="column is-half px-0">
+            Everyone registeres their own scores, no more arguing at the first
+            tee.
           </div>
         </div>
         <br />
         <div className="columns is-mobile">
-          <div className="column is-half">
-            discman is also a social platform. Rounds and scores are shared with
-            your friends in each user's feed.
+          <div className="column is-half px-0">
+            Follow your friends and get updates on their rounds in the feed.
           </div>
-          <div className="column is-half">
-            <img width="128" height="260" src="screenshot2.png" />
+          <div className="column is-half px-0">
+            <img
+              className="bordered"
+              width="128"
+              height="260"
+              src="screenshot-feed.jpeg"
+            />
           </div>
         </div>
         <div className="columns is-mobile">
-          <div className="column is-half">
-            <img width="128" height="260" src="screenshot6.png" />
+          <div className="column is-half px-0">
+            <img
+              className="bordered"
+              width="128"
+              height="260"
+              src="screenshot-lb.jpeg"
+            />
           </div>
-          <div className="column is-half">
-            Scores are registered with details (fairway, rough, green), allowing
-            for detailed stats about a players game.
+          <div className="column is-half px-0">
+            The leaderboard keeps track of who is playing the best throught the
+            season.
           </div>
         </div>
       </div>

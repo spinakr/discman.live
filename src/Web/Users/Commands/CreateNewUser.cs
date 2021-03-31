@@ -19,6 +19,7 @@ namespace Web.Users.Commands
         }
 
         public string Password { get; set; }
+        public string Email { get; set; }
     }
 
     public class CreateNewUserCommandHandler : IRequestHandler<CreateNewUserCommand, AuthenticatedUser>
@@ -37,12 +38,12 @@ namespace Web.Users.Commands
         public async Task<AuthenticatedUser> Handle(CreateNewUserCommand request, CancellationToken cancellationToken)
         {
             var hashedPw = new SaltSeasonedHashedPassword(request.Password);
-            var newUser = new User(request.Username, hashedPw);
+            var newUser = new User(request.Username, request.Email, hashedPw);
 
             _documentSession.Store(newUser);
             await _documentSession.SaveChangesAsync(cancellationToken);
             var authenticatedUser = newUser.Authenticated(_tokenSecret);
-            await _mediator.Publish(new NewUserWasCreated {Username = newUser.Username}, cancellationToken);
+            await _mediator.Publish(new NewUserWasCreated { Username = newUser.Username }, cancellationToken);
             return authenticatedUser;
         }
     }

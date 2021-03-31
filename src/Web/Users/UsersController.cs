@@ -42,13 +42,9 @@ namespace Web.Users
         [AllowAnonymous]
         [HttpPost]
         [Consumes("application/json")]
-        public async Task<IActionResult> CreateNewUser(NewUserRequest request)
+        public async Task<IActionResult> CreateNewUser(CreateNewUserCommand request)
         {
-            var authenticatedUser = await _mediator.Send(new CreateNewUserCommand
-            {
-                Username = request.Username,
-                Password = request.Password
-            });
+            var authenticatedUser = await _mediator.Send(request);
 
             return Ok(authenticatedUser);
         }

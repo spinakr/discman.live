@@ -567,6 +567,7 @@ export const actionCreators = {
     })
       .then((res) => {
         if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        dispatch(push("/"));
         return res;
       })
       .catch((err: Error) => {

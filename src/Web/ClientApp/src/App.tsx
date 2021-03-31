@@ -17,6 +17,8 @@ import { ApplicationState } from "./store";
 import { actionCreators as usersActionCreators } from "./store/User";
 import { connect, ConnectedProps } from "react-redux";
 import queryString from "query-string";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 
 export interface AppCompProps {
   token: string | undefined;
@@ -115,6 +117,8 @@ export class App extends React.PureComponent<Props, AppCompState> {
               component={Courses}
             />
             <Route exact path="/user" component={User} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/signup" component={Signup} />
             <Route exact path="/settings" component={UserSettings} />
             <Route exact path="/leaders" component={Leaders} />
             <Route exact path="/users/:usernameParam" component={User} />

@@ -45,11 +45,6 @@ const InitSettings = (props: Props) => {
           }}
           className="modal-card-body"
         >
-          <UpdateEmailForm
-            changeEmail={props.changeEmail}
-            currentEmail={props.user?.userDetails?.email}
-          />
-          <br />
           <CountryPicker />
           <br />
           <EmojiPicker />

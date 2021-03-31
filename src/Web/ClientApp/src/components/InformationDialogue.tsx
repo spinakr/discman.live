@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
+import colors from "../colors";
 
 type InformationDialogueProps = {
   text: string;
@@ -19,20 +20,21 @@ const InformationDialogue = (props: InformationDialogueProps) => {
           <div className="modal-background"></div>
         </div>
         <div className="modal-card">
-          <header className="modal-card-head">
+          <header
+            className="modal-card-head"
+            style={{ backgroundColor: colors.background }}
+          >
             <p className="modal-card-title">{props.title}</p>
           </header>
           <section
-            style={{ whiteSpace: "pre-wrap" }}
+            style={{
+              whiteSpace: "pre-wrap",
+              backgroundColor: colors.background,
+            }}
             className="modal-card-body"
           >
             {props.text}
           </section>
-          <footer className="modal-card-foot">
-            <button className="button" onClick={() => setShowDialog(false)}>
-              Close
-            </button>
-          </footer>
         </div>
       </div>
       <span className="icon is-large has-text-info">
