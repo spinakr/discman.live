@@ -65,7 +65,7 @@ const renderCoursesList = (
 
 const CoursesComponent = (props: Props) => {
   const { fetchCourses } = props;
-  let { courseName } = useParams();
+  let { courseName } = useParams<{ courseName: string }>();
   useEffect(() => {
     fetchCourses("");
   }, [fetchCourses]);

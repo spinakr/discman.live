@@ -1,10 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as CoursesStore from "../../store/Courses";
 import { useHistory } from "react-router";
+import { Draggable, Map, Marker, Point } from "pigeon-maps";
 import colors from "../../colors";
+import { Coordinates } from "../../store/Courses";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -31,6 +33,31 @@ const NewCourse = (props: Props) => {
   const [par4s, setPar4s] = useState<number[]>([]);
   const [par5s, setPar5s] = useState<number[]>([]);
 
+  const [mapAvailable, setMapAvailable] = useState(true);
+  const [center, setCenter] = useState([
+    59.91614272103729,
+    10.746863315787369,
+  ] as Point);
+  const [zoom, setZoom] = useState(13);
+  const [courseLocation, setCourseLocation] = useState([
+    59.91614272103729,
+    10.746863315787369,
+  ] as Point);
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setMapAvailable(false);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (r) => {
+        setCenter([r.coords.latitude, r.coords.longitude]);
+        setCourseLocation([r.coords.latitude, r.coords.longitude]);
+      },
+      (err) => console.log(err)
+    );
+  }, []);
+
   return (
     <>
       <div className={showDialog ? "modal is-active" : "modal"}>
@@ -43,6 +70,30 @@ const NewCourse = (props: Props) => {
             className="modal-card-body"
             style={{ backgroundColor: colors.background }}
           >
+            {mapAvailable && (
+              <Map
+                height={200}
+                center={center}
+                zoom={zoom}
+                onBoundsChanged={({ center, zoom }) => {
+                  setCenter(center);
+                  setZoom(zoom);
+                }}
+              >
+                <Draggable
+                  offset={[60, 87]}
+                  anchor={courseLocation}
+                  onDragEnd={setCourseLocation}
+                >
+                  <img
+                    src="discgolfbasket.svg"
+                    height={60}
+                    width={60}
+                    alt="Basket"
+                  />
+                </Draggable>
+              </Map>
+            )}
             <div className="is-flex is-flex-direction-row">
               <div className="is-flex mr-1 is-flex-direction-column">
                 <div className="field">
@@ -151,6 +202,7 @@ const NewCourse = (props: Props) => {
                 createCourse(
                   courseName,
                   layoutName,
+                  courseLocation,
                   numberOfHoles,
                   par4s,
                   par5s

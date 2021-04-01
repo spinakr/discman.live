@@ -9,6 +9,7 @@ import {
 import { Hole } from "../../../store/Rounds";
 import { useMountEffect } from "../../../utils";
 import NewCourse from "../../Courses/NewCourse";
+import CoursesMap from "./CoursesMap";
 import "./CreateRound.css";
 
 const mapState = (state: ApplicationState) => {
@@ -101,6 +102,13 @@ const CourseSelector = (props: Props) => {
 
   return (
     <div>
+      <CoursesMap
+        selectedCourse={
+          availableLayouts && availableLayouts.length > 0
+            ? availableLayouts[0]
+            : undefined
+        }
+      />
       {selectedCourse ? (
         <div className="is-flex">
           <div className="is-flex ml-2">
@@ -127,7 +135,7 @@ const CourseSelector = (props: Props) => {
                 <input
                   className="input"
                   type="text"
-                  placeholder="Search"
+                  placeholder="Course name"
                   onChange={(e) => {
                     setCourseFilter(e.target.value);
                   }}

@@ -4,6 +4,7 @@ import { CallHistoryMethodAction } from "connected-react-router";
 import { Hole } from "./Rounds";
 import { actionCreators as notificationActions } from "./Notifications";
 import { actionCreators as UserActions } from "./User";
+import { Point } from "pigeon-maps";
 
 export interface Course {
   id: string;
@@ -11,6 +12,12 @@ export interface Course {
   layout: string;
   holes: Hole[];
   courseStats: CourseStats;
+  country: string;
+  coordinates: Coordinates;
+}
+export interface Coordinates {
+  longitude: number;
+  latitude: number;
 }
 
 export interface CourseStats {
@@ -85,6 +92,7 @@ export const actionCreators = {
   createCourse: (
     courseName: string,
     layoutName: string,
+    courseLocation: Point,
     numberOfHoles: number,
     par4s: number[],
     par5s: number[]
@@ -101,6 +109,8 @@ export const actionCreators = {
       body: JSON.stringify({
         courseName,
         layoutName,
+        latitude: courseLocation[0],
+        longitude: courseLocation[1],
         numberOfHoles,
         par4s,
         par5s,

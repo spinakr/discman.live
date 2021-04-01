@@ -13,7 +13,7 @@ namespace Web.Courses
         {
         }
 
-        public Course(string courseName, string layoutName, string admin, List<int> holePars, List<int> holeDistances)
+        public Course(string courseName, string layoutName, string admin, List<int> holePars, List<int> holeDistances, decimal latitude, decimal longitude)
         {
             Id = Guid.NewGuid();
             Name = courseName;
@@ -21,6 +21,7 @@ namespace Web.Courses
             Admins = new List<string> { admin, "kofoed" };
             Layout = layoutName;
             CreatedAt = DateTime.Now;
+            Coordinates = new Coordinates { Latitude = latitude, Longitude = longitude };
         }
 
         public Course(string courseName, List<Hole> holes)
@@ -35,6 +36,8 @@ namespace Web.Courses
         public DateTime CreatedAt { get; set; }
 
         public string Layout { get; set; }
+        public Coordinates Coordinates { get; set; }
+        public string Country { get; set; }
 
         public List<Hole> Holes { get; set; }
         public List<string> Admins { get; set; }
@@ -43,6 +46,12 @@ namespace Web.Courses
         {
             Holes = Holes.Select(h => new Hole(h.Number, holePars[h.Number - 1], holeDistances[h.Number - 1], h.Rating, h.Average)).ToList();
         }
+    }
+
+    public class Coordinates
+    {
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
     }
 
     public class Hole

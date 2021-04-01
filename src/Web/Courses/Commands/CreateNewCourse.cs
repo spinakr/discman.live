@@ -15,6 +15,8 @@ namespace Web.Courses.Commands
     {
         public string LayoutName { get; set; }
         public string CourseName { get; set; }
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
         public List<int> HolePars { get; set; }
         public List<int> HoleDistances { get; set; }
         public int NumberOfHoles { get; set; }
@@ -69,7 +71,7 @@ namespace Web.Courses.Commands
             var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
 
 
-            var newCourse = new Course(request.CourseName, request.LayoutName, authenticatedUsername, request.HolePars, request.HoleDistances);
+            var newCourse = new Course(request.CourseName, request.LayoutName, authenticatedUsername, request.HolePars, request.HoleDistances, request.Latitude, request.Longitude);
 
             _documentSession.Store(newCourse);
             await _documentSession.SaveChangesAsync(cancellationToken);

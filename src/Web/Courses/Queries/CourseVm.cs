@@ -12,6 +12,7 @@ namespace Web.Courses.Queries
         public DateTime CreatedAt { get; set; }
 
         public string Layout { get; set; }
+        public CoordinatesVm Coordinates { get; set; }
 
         public List<CourseHoleVm> Holes { get; set; }
         public List<string> Admins { get; set; }
@@ -23,5 +24,11 @@ namespace Web.Courses.Queries
             profile.CreateMap<Course, CourseVm>().ForMember(d => d.CourseStats, opt => opt.Ignore());
         }
 
+    }
+
+    public class CoordinatesVm : IMapFrom<Coordinates>
+    {
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }
     }
 }

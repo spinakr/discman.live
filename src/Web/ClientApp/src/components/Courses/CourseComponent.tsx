@@ -11,7 +11,10 @@ interface CourseProps {
 }
 
 const CourseComponent = ({ layouts, updateCourse }: CourseProps) => {
-  let { courseName, courseLayout } = useParams();
+  let { courseName, courseLayout } = useParams<{
+    courseName: string;
+    courseLayout: string;
+  }>();
   const history = useHistory();
   if (!layouts || layouts.length === 0) return null;
   const selectedLayout = courseLayout
