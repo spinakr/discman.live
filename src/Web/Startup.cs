@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -135,6 +137,24 @@ namespace Web
                 endpoints.MapControllers();
             });
 
+
+
+            // var adminAppHostName = env.IsDevelopment() ? "admin.localhost" : "admin.discman.live";
+            // app.MapWhen(o => o.Request.Host.Host == adminAppHostName &&
+            //                  o.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value == "kofoed",
+            //             adminApp =>
+            // {
+            //     adminApp.UseSpa(spa =>
+            //           {
+            //               spa.Options.SourcePath = "AdminApp";
+
+            //               if (env.IsDevelopment())
+            //               {
+            //                   spa.UseReactDevelopmentServer(npmScript: "start");
+            //               }
+            //           });
+            // });
+
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
@@ -144,6 +164,7 @@ namespace Web
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
         }
     }
 }

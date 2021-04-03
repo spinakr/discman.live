@@ -1,0 +1,59 @@
+GET http://localhost:5000/api/users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjkyZGUzOTYzLWRhMTItNDUzOS05ZWI1LTQ0MTgyOTFmOWJmMyIsIm5iZiI6MTU4NzM4MzYxMywiZXhwIjoxNTg3OTg4NDEzLCJpYXQiOjE1ODczODM2MTN9.VXOKAvCK-F6n9kUdDCOGMOzvr-F8xMpZAiC2l5UqA0I
+
+
+###
+POST http://localhost:5000/api/users/authenticate
+content-type: application/json
+
+{
+    "username": "kofoed",
+    "password": "password"
+}
+
+
+###
+POST http://localhost:5000/api/rounds
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjkyZGUzOTYzLWRhMTItNDUzOS05ZWI1LTQ0MTgyOTFmOWJmMyIsIm5iZiI6MTU4NzM4MzYxMywiZXhwIjoxNTg3OTg4NDEzLCJpYXQiOjE1ODczODM2MTN9.VXOKAvCK-F6n9kUdDCOGMOzvr-F8xMpZAiC2l5UqA0I
+
+{
+    "course": "Ekeberg",
+    "players": [
+        "kofoed",
+        "cbg"
+    ]
+}
+
+###
+GET http://localhost:5000/api/rounds/kofoed
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjkyZGUzOTYzLWRhMTItNDUzOS05ZWI1LTQ0MTgyOTFmOWJmMyIsIm5iZiI6MTU4NzM4MzYxMywiZXhwIjoxNTg3OTg4NDEzLCJpYXQiOjE1ODczODM2MTN9.VXOKAvCK-F6n9kUdDCOGMOzvr-F8xMpZAiC2l5UqA0I
+
+###
+GET http://localhost:5000/api/rounds/acc02ea9-4172-4bd2-8f6e-1e7087548bdd
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImtvZm9lZCIsIm5iZiI6MTU4NzgyMjgwNCwiZXhwIjoxNTg4NDI3NjA0LCJpYXQiOjE1ODc4MjI4MDR9.JdyEA7k16aLuxxijIzoLLe4hui0jcz8Ot0wt_PN5vZY
+
+
+###
+POST http://localhost:5000/api/rounds/acc02ea9-4172-4bd2-8f6e-1e7087548bdd
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjkyZGUzOTYzLWRhMTItNDUzOS05ZWI1LTQ0MTgyOTFmOWJmMyIsIm5iZiI6MTU4NzM4MzYxMywiZXhwIjoxNTg3OTg4NDEzLCJpYXQiOjE1ODczODM2MTN9.VXOKAvCK-F6n9kUdDCOGMOzvr-F8xMpZAiC2l5UqA0I
+
+{
+    "course": "Ekeberg",
+    "players": [
+        "kofoed",
+        "cbg"
+    ]
+}
+
+
+###
+POST http://test.discman.live/api/courses
+content-type: application/json
+Authorization: Bearer adf
+
+{
+    "courseName": "Ekeberg",
+    "holePars": [3,3,4,3,3,3,3,3,3,3,3,3,3,3,3,4,3,3]
+}
