@@ -1,14 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSwipeable } from "react-swipeable";
-import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
+import { Round, PlayerScore } from "../../store/Rounds";
 import RoundChart from "./RoundChart";
-import PlayerCourseImprovments from "./PlayerCourseImprovments";
-import RoundAchievements from "./RoundAchievements";
 import RoundStats from "./RoundStats";
 import { UserStats } from "../../store/User";
-import colors, { scoreColorStyle } from "../../colors";
 import RoundLeaderboard from "./RoundLeaderboard";
+import SignaturePad from "react-signature-canvas";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -47,7 +45,7 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
   });
 
   return (
-    <div className="has-text-centered">
+    <div className="has-text-centered" style={{ paddingBottom: 50 }}>
       <div className="tabs my-0 is-centered">
         <ul>
           <li
@@ -88,6 +86,26 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
       )}
 
       {active === 3 && <RoundChart round={round} swipeHandlers={handlers} />}
+
+      <div className="is-flex is-flex-direction-column">
+        {round.signatures.map((s) => {
+          return (
+            <div key={s.username} className="is-flex is-flex-direction-row">
+              <div className="is-flex px-5 mt-2">
+                <span className="is-size-5">{s.username}</span>
+              </div>
+              <div className="is-flex">
+                <img
+                  key={s.username}
+                  className="signatureImage"
+                  src={`${s.base64Signature}`}
+                  alt="Signature"
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
       {/* {active === 4 && (
         <RoundAchievements round={round} swipeHandlers={handlers} />

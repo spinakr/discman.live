@@ -12,7 +12,7 @@ import RoundScoreCardModal from "./RoundScoreCardModal";
 import ScoreAnimations from "./ScoreAnimations";
 import NavMenu from "../NavMenu";
 import Colors from "../../colors";
-import CompleteRoundButton from "./CompleteRoundButton";
+import SignRound from "./SignRound";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -134,7 +134,11 @@ const RoundComponent = (props: Props) => {
                   playersStats={props.playersStats}
                 />
                 {allScoresSet && isPartOfRound && (
-                  <CompleteRoundButton completeRound={props.completeRound} />
+                  <SignRound
+                    completeRound={props.completeRound}
+                    signatures={round.signatures}
+                    username={props.user?.user?.username || ""}
+                  />
                 )}
               </div>
             ) : (

@@ -88,8 +88,15 @@ export interface Round {
   isCompleted: boolean;
   scoreMode: ScoreMode;
   playerScores: PlayerScore[];
+  signatures: PlayerSignature[];
   achievements: UserAchievement[];
   spectators: string[];
+}
+
+export interface PlayerSignature {
+  username: string;
+  base64Signature: string;
+  signedAt: Date;
 }
 
 export interface RoundsState {
@@ -670,7 +677,10 @@ export const actionCreators = {
         );
       });
   },
-  completeRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+  completeRound: (base64Signature: string): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
     const appState = getState();
     const loggedInUser = appState?.user?.user;
 
@@ -683,6 +693,7 @@ export const actionCreators = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${loggedInUser.token}`,
       },
+      body: JSON.stringify({ base64Signature }),
     })
       .then((res) => {
         if (res.status === 401) {

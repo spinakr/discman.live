@@ -7,17 +7,16 @@ using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Web.Infrastructure;
-using Web.Rounds;
 using Web.Rounds.Notifications;
+using Web.Users;
 
 namespace Web.Rounds.Commands
 {
     public class CompleteRoundCommand : IRequest
     {
         public Guid RoundId { get; set; }
+        public string Base64Signature { get; set; }
     }
 
     public class CompleteRoundCommandHandler : IRequestHandler<CompleteRoundCommand>
@@ -42,14 +41,13 @@ namespace Web.Rounds.Commands
             var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == request.RoundId, token: cancellationToken);
             if (!round.IsPartOfRound(authenticatedUsername)) throw new UnauthorizedAccessException("You can only complete rounds you are part of");
             if (round.IsCompleted) return new Unit();
-            
 
-            round.CompleteRound();
+            round.SignRound(authenticatedUsername, request.Base64Signature);
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
             await _roundsHub.NotifyPlayersOnUpdatedRound(authenticatedUsername, round);
-            await _mediator.Publish(new RoundWasCompleted {RoundId = round.Id}, cancellationToken);
+            if (round.IsCompleted) await _mediator.Publish(new RoundWasCompleted { RoundId = round.Id }, cancellationToken);
 
             return new Unit();
         }

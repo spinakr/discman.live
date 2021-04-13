@@ -15,7 +15,7 @@ namespace Web.Users.Commands
             _documentSession = documentSession;
 
             RuleFor(v => v.Password)
-                .MinimumLength(6)
+                .MinimumLength(5)
                 .MaximumLength(200)
                 .NotEmpty()
                 .WithMessage("Password must be between 6 and 200 characters long");
@@ -28,18 +28,13 @@ namespace Web.Users.Commands
 
             RuleFor(c => c.Username).Must(NotExist).WithMessage("Not a valid request");
 
-            RuleFor(v => v.Email)
-                .MinimumLength(5)
-                .MaximumLength(200)
-                .NotEmpty()
-                .WithMessage("Must be a valid email");
-
             RuleFor(c => c.Email).Must(ValidEmail).WithMessage("Not a valid email");
             RuleFor(c => c.Email).Must(EmailNotExist).WithMessage("Email already used");
         }
 
         private bool ValidEmail(string email)
         {
+            if (string.IsNullOrWhiteSpace(email)) return true;
             try
             {
                 var mail = new MailAddress(email);
@@ -53,6 +48,7 @@ namespace Web.Users.Commands
 
         private bool EmailNotExist(string email)
         {
+            if (string.IsNullOrWhiteSpace(email)) return true;
             return _documentSession.Query<User>().SingleOrDefault(u => u.Email == email) is null;
         }
 

@@ -6,7 +6,7 @@ const About = () => {
     <>
       <div className="container pt-0">
         <p>
-          Welcome to <strong>discman.live</strong>, the discgolf app the makes
+          Welcome to <strong>discman.live</strong>, the discgolf app that makes
           playing with your friends even more fun!
         </p>
         <br />
@@ -22,7 +22,7 @@ const About = () => {
             />
           </div>
           <div className="column is-half px-0">
-            Everyone registeres their own scores, no more arguing at the first
+            Everyone registers their own scores, no more arguing at the first
             tee.
           </div>
         </div>

@@ -55,6 +55,7 @@ namespace Web.Rounds
         public string CourseLayout { get; set; }
         public Guid CourseId { get; set; }
         public DateTime StartTime { get; set; }
+        public List<PlayerSignature> Signatures { get; set; } = new List<PlayerSignature>();
         public bool IsCompleted { get; set; }
         public DateTime CompletedAt { get; set; }
         public string CreatedBy { get; set; }
@@ -98,10 +99,21 @@ namespace Web.Rounds
             return PlayerScores.Sum(ps => ps.Scores.Sum(s => s.RelativeToPar)) / (double)PlayerScores.Count;
         }
 
-        public void CompleteRound()
+        public void SignRound(string username, string base64Signature)
         {
-            IsCompleted = true;
-            CompletedAt = DateTime.Now;
+            Signatures.Add(new PlayerSignature
+            {
+                Username = username,
+                Base64Signature = base64Signature,
+                SignedAt = DateTime.Now
+            });
+            var playersInRound = PlayerScores.Select(s => s.PlayerName);
+            if (playersInRound.All(pr => Signatures.Any(s => s.Username == pr)))
+            {
+
+                IsCompleted = true;
+                CompletedAt = DateTime.Now;
+            }
         }
 
         public bool IsPartOfRound(string username)
@@ -120,6 +132,13 @@ namespace Web.Rounds
         DetailedLive = 0,
         StrokesLive = 1,
         OneForAll = 2
+    }
+
+    public class PlayerSignature
+    {
+        public string Username { get; set; }
+        public string Base64Signature { get; set; }
+        public DateTime SignedAt { get; set; }
     }
 
     public class PlayerScore

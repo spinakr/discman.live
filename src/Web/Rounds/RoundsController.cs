@@ -27,14 +27,14 @@ namespace Web.Rounds
         [HttpGet("{roundId}")]
         public async Task<IActionResult> GetRound(Guid roundId)
         {
-            var round = await _mediator.Send(new GetRoundQuery {RoundId = roundId});
+            var round = await _mediator.Send(new GetRoundQuery { RoundId = roundId });
             return Ok(round);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUserRounds([FromQuery] string username, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var rounds = await _mediator.Send(new GetUserRoundsQuery {Username = username, Page = page, PageSize = pageSize});
+            var rounds = await _mediator.Send(new GetUserRoundsQuery { Username = username, Page = page, PageSize = pageSize });
             return Ok(rounds);
         }
 
@@ -64,28 +64,28 @@ namespace Web.Rounds
                 Par = request.Par,
                 RoundId = roundId
             });
-            
+
             return Ok(round);
         }
 
         [HttpDelete("{roundId}/users")]
         public async Task<IActionResult> LeaveRound(Guid roundId)
         {
-            await _mediator.Send(new LeaveRoundCommand {RoundId = roundId});
+            await _mediator.Send(new LeaveRoundCommand { RoundId = roundId });
             return Ok();
         }
 
         [HttpDelete("{roundId}")]
         public async Task<IActionResult> DeleteRound(Guid roundId)
         {
-            await _mediator.Send(new DeleteRoundCommand {RoundId = roundId});
+            await _mediator.Send(new DeleteRoundCommand { RoundId = roundId });
             return Ok();
         }
 
         [HttpDelete("{roundId}/holes/{holeNumber}")]
         public async Task<IActionResult> DeleteHole(Guid roundId, int holeNumber)
         {
-            await _mediator.Send(new DeleteHoleCommand {RoundId = roundId, HoleNumber = holeNumber});
+            await _mediator.Send(new DeleteHoleCommand { RoundId = roundId, HoleNumber = holeNumber });
             return Ok();
         }
 
@@ -99,9 +99,10 @@ namespace Web.Rounds
 
 
         [HttpPut("{roundId}/complete")]
-        public async Task<IActionResult> CompleteRound(Guid roundId)
+        public async Task<IActionResult> CompleteRound(Guid roundId, [FromBody] CompleteRoundCommand req)
         {
-            await _mediator.Send(new CompleteRoundCommand {RoundId = roundId});
+            req.RoundId = roundId;
+            await _mediator.Send(req);
             return Ok();
         }
 
@@ -113,20 +114,20 @@ namespace Web.Rounds
                 RoundId = roundId,
                 CourseName = request.CourseName
             });
-                
+
             return Ok(newCourse);
         }
-        
+
         [HttpGet("{roundId}/stats")]
         public async Task<IActionResult> GetRoundStats(Guid roundId)
         {
-            return Ok(await _mediator.Send(new GetRoundStatsQuery {RoundId = roundId}));
+            return Ok(await _mediator.Send(new GetRoundStatsQuery { RoundId = roundId }));
         }
-        
+
         [HttpGet("{roundId}/courseStats")]
         public async Task<IActionResult> GetCourseStatsForRound(Guid roundId)
         {
-            return Ok(await _mediator.Send(new GetPlayersCourseStatsQuery {RoundId = roundId}));
+            return Ok(await _mediator.Send(new GetPlayersCourseStatsQuery { RoundId = roundId }));
         }
 
         [HttpPut("{roundId}/scoremode")]
@@ -137,7 +138,7 @@ namespace Web.Rounds
                 RoundId = roundId,
                 ScoreMode = req.ScoreMode
             });
-            
+
             return Ok();
         }
 
