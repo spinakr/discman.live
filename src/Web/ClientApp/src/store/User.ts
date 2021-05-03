@@ -1076,7 +1076,8 @@ export const reducer: Reducer<UserState> = (
     case "FRIEND_ADDED":
       return {
         ...state,
-        searchedUsers: state.searchedUsers.filter((u) => u !== action.friend),
+        // searchedUsers: state.searchedUsers.filter((u) => u !== action.friend),
+        searchedUsers: [],
         userDetails: state.userDetails
           ? {
               ...state.userDetails,

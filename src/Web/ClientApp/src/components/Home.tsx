@@ -11,6 +11,7 @@ import InitSettings from "./InitSettings";
 import Signup from "./Signup";
 import colors from "../colors";
 import { Link } from "react-router-dom";
+import AddFriends from "./AddFriends";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -52,6 +53,14 @@ const Home = (props: Props) => {
           </>
         )}
         {user?.loggedIn && <Feed />}
+
+        {user?.userDetails?.friends && user?.userDetails?.friends.length < 2 && (
+          <div className="is-flex is-flex-direction-row is-justify-content-space-evenly">
+            <div className="is-flex">
+              <AddFriends />
+            </div>
+          </div>
+        )}
       </div>
       <NewsMessages />
       <InitSettings />
