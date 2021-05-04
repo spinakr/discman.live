@@ -21,7 +21,7 @@ namespace Web.Courses
             Admins = new List<string> { admin, "kofoed" };
             Layout = layoutName;
             CreatedAt = DateTime.Now;
-            Coordinates = new Coordinates { Latitude = latitude, Longitude = longitude };
+            Coordinates = new Coordinates(latitude, longitude);
         }
 
         public Course(string courseName, List<Hole> holes)
@@ -48,11 +48,7 @@ namespace Web.Courses
         }
     }
 
-    public class Coordinates
-    {
-        public decimal Latitude { get; set; }
-        public decimal Longitude { get; set; }
-    }
+    public record Coordinates(decimal Latitude, decimal Longitude);
 
     public class Hole
     {

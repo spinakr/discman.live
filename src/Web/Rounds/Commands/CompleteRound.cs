@@ -41,6 +41,7 @@ namespace Web.Rounds.Commands
             var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == request.RoundId, token: cancellationToken);
             if (!round.IsPartOfRound(authenticatedUsername)) throw new UnauthorizedAccessException("You can only complete rounds you are part of");
             if (round.IsCompleted) return new Unit();
+            if (round.Signatures.Any(s => s.Username == authenticatedUsername)) return new Unit();
 
             round.SignRound(authenticatedUsername, request.Base64Signature);
 

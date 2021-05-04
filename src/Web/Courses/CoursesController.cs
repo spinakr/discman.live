@@ -23,9 +23,9 @@ namespace Web.Courses
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCourses([FromQuery] string filter)
+        public async Task<IActionResult> GetCourses([FromQuery] string filter, [FromQuery] decimal latitude, [FromQuery] decimal longitude)
         {
-            return Ok(await _mediator.Send(new GetCoursesQuery { Filter = filter }));
+            return Ok(await _mediator.Send(new GetCoursesQuery { Filter = filter, Latitude = latitude, Longitude = longitude }));
         }
 
         [HttpPost]

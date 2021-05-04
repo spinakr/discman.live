@@ -14,6 +14,7 @@ export interface Course {
   courseStats: CourseStats;
   country: string;
   coordinates: Coordinates;
+  distance: number;
 }
 export interface Coordinates {
   longitude: number;
@@ -53,20 +54,25 @@ export type KnownAction =
 const initialState: CoursesState = { courses: [] };
 
 export const actionCreators = {
-  fetchCourses: (filter: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
+  fetchCourses: (
+    filter: string,
+    position?: Coordinates | undefined
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     if (!appState.user || !appState.user.loggedIn || !appState.user.user)
       return;
-    fetch(`api/courses?filter=${filter}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
+    fetch(
+      `api/courses?filter=${filter}&longitude=${
+        position?.longitude || 0
+      }&latitude=${position?.latitude || 0}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
+      }
+    )
       .then((res) => {
         if (res.status === 401) {
           UserActions.logout()(dispatch);

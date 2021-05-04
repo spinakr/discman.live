@@ -41,7 +41,6 @@ namespace Web
             services.AddHostedService<UpdateCourseRatingsWorker>();
             services.AddHostedService<UpdateInActiveRoundsWorker>();
             services.AddHostedService<LeaderboardWorker>();
-            services.AddHostedService<UpdateCourseLocationsWorker>();
             services.AddHostedService<UserCleanupWorker>();
             services.AddHostedService<ResetPasswordWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());

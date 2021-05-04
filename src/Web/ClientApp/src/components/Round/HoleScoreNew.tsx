@@ -41,8 +41,8 @@ const HoleScoreComponent = ({
       : null;
   const prevHole = activeHole - 1 > -1 ? courseHoles[activeHole - 1] : null;
 
-  const playersToDisplay =
-    round.playerScores.length > 4 ? [activePlayerScores] : round.playerScores;
+  const playersToDisplay = round.playerScores; //consider not showing all players
+    // round.playerScores.length > 4 ? [activePlayerScores] : round.playerScores;
 
   return (
     <div className="pt-1 pb-0">

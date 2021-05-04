@@ -1,9 +1,11 @@
+import { Point } from "pigeon-maps";
 import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import colors from "../../../colors";
 import { ApplicationState } from "../../../store";
 import {
   actionCreators as coursesActionCreator,
+  Coordinates,
   Course,
 } from "../../../store/Courses";
 import { Hole } from "../../../store/Rounds";
@@ -90,19 +92,39 @@ const CourseSelector = (props: Props) => {
     layout && setSelectedLayout(layout);
   };
 
+  const [position, setPosition] = useState<Coordinates | undefined>(undefined);
+
   useMountEffect(() => {
-    fetchCourses(courseFilter);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (r) => {
+          setPosition({
+            latitude: r.coords.latitude,
+            longitude: r.coords.longitude,
+          });
+        },
+        (err) => console.log(err)
+      );
+    }
   });
 
   useEffect(() => {
-    courseFilter.length > 2 && fetchCourses(courseFilter);
-  }, [courseFilter, fetchCourses]);
+    if (courseFilter.length > 2) {
+      fetchCourses(courseFilter);
+    } else if (position) {
+      fetchCourses("", position);
+    }
+  }, [courseFilter, fetchCourses, position]);
 
   //   var chunks = chunkArray(currentCourse.holes, 6, setEditHole);
+
+  const courses = props.courses?.slice(0, 5);
 
   return (
     <div>
       <CoursesMap
+        coursesAvailable={courses?.map((c) => c[1][0])}
+        currentPosition={position}
         selectedCourse={
           availableLayouts && availableLayouts.length > 0
             ? availableLayouts[0]
@@ -151,20 +173,24 @@ const CourseSelector = (props: Props) => {
             </div>
           </div>
           <div className="panel">
-            {props.courses?.slice(0, 5).map((c) => (
-              <span
-                onClick={() => courseSelected(c[0])}
-                key={c[0]}
-                className={`panel-block ${
-                  selectedCourse === c[0] && "is-active"
-                }`}
-              >
-                <span className="panel-icon">
-                  <i className="fas fa-cloud-sun" aria-hidden="true"></i>
+            {courses &&
+              courses.map((c) => (
+                <span
+                  onClick={() => courseSelected(c[0])}
+                  key={c[0]}
+                  className={`panel-block ${
+                    selectedCourse === c[0] && "is-active"
+                  }`}
+                >
+                  <span className="panel-icon">
+                    <i className="fas fa-cloud-sun" aria-hidden="true"></i>
+                  </span>
+                  {c[0]}{" "}
+                  <span className="is-size-7">
+                    - {c[1][0].distance.toFixed(0)} meters
+                  </span>
                 </span>
-                {c[0]}
-              </span>
-            ))}
+              ))}
           </div>
         </>
       )}

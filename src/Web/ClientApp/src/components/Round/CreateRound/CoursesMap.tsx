@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Map, Marker, Point } from "pigeon-maps";
-import { Course } from "../../../store/Courses";
+import { Coordinates, Course } from "../../../store/Courses";
 
 export interface CoursesMapProps {
   selectedCourse: Course | undefined;
+  currentPosition: Coordinates | undefined;
+  coursesAvailable: Course[] | undefined;
 }
 
-const CoursesMap = ({ selectedCourse }: CoursesMapProps) => {
+const CoursesMap = ({
+  selectedCourse,
+  currentPosition,
+  coursesAvailable,
+}: CoursesMapProps) => {
   const [mapAvailable, setMapAvailable] = useState(true);
   const [center, setCenter] = useState([
     59.91614272103729,
@@ -16,12 +22,8 @@ const CoursesMap = ({ selectedCourse }: CoursesMapProps) => {
     59.91614272103729,
     10.746863315787369,
   ] as Point);
-  const [zoom, setZoom] = useState(10);
+  const [zoom, setZoom] = useState(12);
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setMapAvailable(false);
-      return;
-    }
     if (selectedCourse?.coordinates) {
       setCenter([
         selectedCourse.coordinates.latitude,
@@ -31,17 +33,16 @@ const CoursesMap = ({ selectedCourse }: CoursesMapProps) => {
         selectedCourse.coordinates.latitude,
         selectedCourse.coordinates.longitude,
       ]);
+      setMapAvailable(true);
+    } else if (currentPosition && currentPosition?.latitude !== 0) {
+      setCenter([currentPosition.latitude, currentPosition.longitude]);
+      setMapAvailable(true);
     } else {
-      navigator.geolocation.getCurrentPosition(
-        (r) => {
-          setCenter([r.coords.latitude, r.coords.longitude]);
-        },
-        (err) => console.log(err)
-      );
+      setMapAvailable(false);
     }
-  }, [selectedCourse]);
+  }, [selectedCourse, currentPosition]);
 
-  if (!mapAvailable || !selectedCourse?.coordinates) return null;
+  if (!mapAvailable) return null;
   return (
     <Map
       height={selectedCourse ? 100 : 200}
@@ -52,7 +53,15 @@ const CoursesMap = ({ selectedCourse }: CoursesMapProps) => {
         setZoom(zoom);
       }}
     >
-      <Marker width={50} anchor={course} />
+      <Marker width={40} color="black" anchor={center} />
+      {coursesAvailable &&
+        coursesAvailable.map((c) => (
+          <Marker
+            key={c.id}
+            width={30}
+            anchor={[c.coordinates.latitude, c.coordinates.longitude] as Point}
+          />
+        ))}
     </Map>
   );
 };

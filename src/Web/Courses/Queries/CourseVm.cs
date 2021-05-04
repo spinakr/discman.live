@@ -18,10 +18,12 @@ namespace Web.Courses.Queries
         public List<string> Admins { get; set; }
 
         public CourseStats CourseStats { get; set; }
+        public double Distance { get; set; }
 
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Course, CourseVm>().ForMember(d => d.CourseStats, opt => opt.Ignore());
+            profile.CreateMap<Course, CourseVm>().ForMember(d => d.Distance, opt => opt.Ignore());
         }
 
     }

@@ -29,7 +29,7 @@ const NewCourse = (props: Props) => {
   const [showDialog, setShowDialog] = useState(false);
   const [layoutName, setLayoutName] = useState<string>("");
   const [courseName, setCourseName] = useState<string>(currentCourseName || "");
-  const [numberOfHoles, setNumberOfHoles] = useState<number>(0);
+  const [numberOfHoles, setNumberOfHoles] = useState<number>(18);
   const [par4s, setPar4s] = useState<number[]>([]);
   const [par5s, setPar5s] = useState<number[]>([]);
 
@@ -127,6 +127,7 @@ const NewCourse = (props: Props) => {
                   <select
                     onChange={(e) => setNumberOfHoles(+e.target.value)}
                     style={{ backgroundColor: colors.field }}
+                    value={numberOfHoles}
                   >
                     <option>{""}</option>
                     {new Array(25).fill(null).map((x, i) => (
