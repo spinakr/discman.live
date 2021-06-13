@@ -54,8 +54,6 @@ namespace Web.Courses.Queries
             }
             else if (request.Latitude != 0 && request.Longitude != 0)
             {
-
-                System.Console.WriteLine(("HERER"));
                 var latUpper = request.Latitude + 0.1m;
                 var latLower = request.Latitude - 0.1m;
                 var longUpper = request.Longitude + 0.1m;

@@ -76,6 +76,7 @@ const NewRound = (props: Props) => {
                 <CourseSelector
                   setSelectedLayout={setSelectedLayout}
                   selectedLayout={selectedLayout}
+                  closeDialog={() => setShowDialog(false)}
                 />
               )}
               {activeStep === 2 && (

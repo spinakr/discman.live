@@ -1,6 +1,7 @@
 import { Point } from "pigeon-maps";
 import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
+import { Link } from "react-router-dom";
 import colors from "../../../colors";
 import { ApplicationState } from "../../../store";
 import {
@@ -31,6 +32,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {
   setSelectedLayout: React.Dispatch<React.SetStateAction<Course | undefined>>;
   selectedLayout: Course | undefined;
+  closeDialog: () => void;
 };
 
 interface Chunk {
@@ -72,7 +74,12 @@ const chunkArray = (holes: Hole[], chunk_size: number) => {
 };
 
 const CourseSelector = (props: Props) => {
-  const { fetchCourses, setSelectedLayout, selectedLayout } = props;
+  const {
+    fetchCourses,
+    setSelectedLayout,
+    selectedLayout,
+    closeDialog,
+  } = props;
   const [courseFilter, setCourseFilter] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<string>();
   const [availableLayouts, setAvailableLayouts] = useState<
@@ -146,7 +153,14 @@ const CourseSelector = (props: Props) => {
             </span>
           </div>
           <div className="is-flex ml-2">
-            <NewCourse currentCourseName={selectedCourse} />
+            <Link
+              to="/courses"
+              className="button px-1"
+              style={{ backgroundColor: colors.button }}
+              onClick={() => closeDialog()}
+            >
+              New Layout
+            </Link>
           </div>
         </div>
       ) : (
@@ -169,7 +183,14 @@ const CourseSelector = (props: Props) => {
               </div>
             </div>
             <div className="is-flex ml-2">
-              <NewCourse currentCourseName={undefined} />
+              <Link
+                to="/courses"
+                className="button px-1"
+                style={{ backgroundColor: colors.button }}
+                onClick={() => closeDialog()}
+              >
+                New Course
+              </Link>
             </div>
           </div>
           <div className="panel">

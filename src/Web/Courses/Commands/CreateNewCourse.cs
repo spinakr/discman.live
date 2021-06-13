@@ -4,14 +4,16 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Web.Courses.Queries;
 using Web.Users;
 
 namespace Web.Courses.Commands
 {
-    public class CreateNewCourseCommand : IRequest<Course>
+    public class CreateNewCourseCommand : IRequest<CourseVm>
     {
         public string LayoutName { get; set; }
         public string CourseName { get; set; }
@@ -24,18 +26,20 @@ namespace Web.Courses.Commands
         public int[] Par5s { get; set; }
     }
 
-    public class CreateNewCourseCommandHandler : IRequestHandler<CreateNewCourseCommand, Course>
+    public class CreateNewCourseCommandHandler : IRequestHandler<CreateNewCourseCommand, CourseVm>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
-        public CreateNewCourseCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor)
+        public CreateNewCourseCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMapper mapper)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
 
-        public async Task<Course> Handle(CreateNewCourseCommand request, CancellationToken cancellationToken)
+        public async Task<CourseVm> Handle(CreateNewCourseCommand request, CancellationToken cancellationToken)
         {
             if (request.HoleDistances is null || !request.HoleDistances.Any())
             {
@@ -75,7 +79,12 @@ namespace Web.Courses.Commands
 
             _documentSession.Store(newCourse);
             await _documentSession.SaveChangesAsync(cancellationToken);
-            return newCourse;
+            var courseVm = _mapper.Map<CourseVm>(newCourse);
+            courseVm.Distance = 0;
+
+            return courseVm;
         }
     }
+
+
 }

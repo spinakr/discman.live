@@ -78,6 +78,7 @@ const NewCourse = (props: Props) => {
                 onBoundsChanged={({ center, zoom }) => {
                   setCenter(center);
                   setZoom(zoom);
+                  setCourseLocation(center);
                 }}
               >
                 <Draggable
