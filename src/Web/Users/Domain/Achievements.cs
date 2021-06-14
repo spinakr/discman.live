@@ -28,10 +28,10 @@ namespace Web.Users
             var newAchievements = new List<Achievement>();
             foreach (var roundAchievement in roundAchievements)
             {
-                var constructor = roundAchievement.GetConstructor(new Type[] {typeof(Guid), typeof(string)});
-                var achievementObj = (RoundAchievement) constructor.Invoke(new object[] {roundId, username});
+                var constructor = roundAchievement.GetConstructor(new Type[] { typeof(Guid), typeof(string) });
+                var achievementObj = (RoundAchievement)constructor.Invoke(new object[] { roundId, username });
                 var evaluationMethod = roundAchievement.GetMethod(nameof(RoundAchievement.Evaluate));
-                var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {round, username});
+                var res = (bool)evaluationMethod.Invoke(achievementObj, new object[] { round, username });
                 if (res)
                 {
                     newAchievements.Add(achievementObj);
@@ -43,6 +43,11 @@ namespace Web.Users
             return newAchievements;
         }
 
+        public void RemoveAllofType(string achName)
+        {
+            _achievements = _achievements.Where(a => a.AchievementName != achName).ToList();
+        }
+
         public List<Achievement> EvaluateUserRounds(List<Round> userRounds, string username)
         {
             var userAchievements = Assembly.GetCallingAssembly()
@@ -52,10 +57,10 @@ namespace Web.Users
             var newAchievements = new List<Achievement>();
             foreach (var userAchievement in userAchievements)
             {
-                var constructor = userAchievement.GetConstructor(new Type[] {typeof(string)});
-                var achievementObj = (UserAchievement) constructor.Invoke(new object[] {username});
+                var constructor = userAchievement.GetConstructor(new Type[] { typeof(string) });
+                var achievementObj = (UserAchievement)constructor.Invoke(new object[] { username });
                 var evaluationMethod = userAchievement.GetMethod(nameof(UserAchievement.Evaluate));
-                var res = (bool) evaluationMethod.Invoke(achievementObj, new object[] {userRounds});
+                var res = (bool)evaluationMethod.Invoke(achievementObj, new object[] { userRounds });
                 if (res && _achievements.All(a => a.AchievementName != achievementObj.AchievementName))
                 {
                     newAchievements.Add(achievementObj);
@@ -288,22 +293,6 @@ namespace Web.Users
         }
     }
 
-    public class OnePutPerHole : RoundAchievement
-    {
-        public override bool Evaluate(Round round, string username)
-        {
-            var playerScore = round.PlayerScores.Single(s => s.PlayerName == username);
-            var onePuts = playerScore.Scores
-                .Count(h => h.StrokeSpecs
-                    .Count(s => s.Outcome == StrokeSpec.StrokeOutcome.Circle1 || s.Outcome == StrokeSpec.StrokeOutcome.Circle2) <= 1);
-            return onePuts == playerScore.Scores.Count;
-        }
-
-        public OnePutPerHole(Guid roundId, string username) : base(roundId, username)
-        {
-        }
-    }
-
     public class Eagle : RoundAchievement
     {
         public Eagle(Guid roundId, string username) : base(roundId, username)
@@ -329,11 +318,13 @@ namespace Web.Users
 
         public override bool Evaluate(List<Round> rounds)
         {
+            return false; //logic does not work currently
+
             var perMonth = rounds.GroupBy(r => r.StartTime.Month);
             var months = perMonth.Where(g => g.Count() > 9).ToList();
             var month = months.OrderByDescending(x => x.Key).FirstOrDefault()?.Key;
             if (month is null) return false;
-            this.AchievedAt = new DateTime(DateTime.Today.Year, (int) month, 1);
+            this.AchievedAt = new DateTime(DateTime.Today.Year, (int)month, 1);
             return true;
         }
     }
@@ -347,11 +338,13 @@ namespace Web.Users
 
         public override bool Evaluate(List<Round> rounds)
         {
+            return false; //logic does not work currently
+
             var perMonth = rounds.GroupBy(r => r.StartTime.Month);
             var months = perMonth.Where(g => g.Count() > 19).ToList();
             var month = months.OrderByDescending(x => x.Key).FirstOrDefault()?.Key;
             if (month is null) return false;
-            this.AchievedAt = new DateTime(DateTime.Today.Year, (int) month, 1);
+            this.AchievedAt = new DateTime(DateTime.Today.Year, (int)month, 1);
             return true;
         }
     }
@@ -365,12 +358,14 @@ namespace Web.Users
 
         public override bool Evaluate(List<Round> rounds)
         {
+            return false; //logic does not work currently
+
             var perWeek = rounds.GroupBy(r => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
                 r.StartTime, CalendarWeekRule.FirstDay, DayOfWeek.Monday));
             var weeks = perWeek.Where(w => w.Select(x => x.StartTime.DayOfWeek).Distinct().Count() == 7);
             var week = weeks.OrderByDescending(x => x.Key).FirstOrDefault()?.Key;
             if (week is null) return false;
-            this.AchievedAt = CultureInfo.CurrentCulture.Calendar.AddWeeks(new DateTime(DateTime.Today.Year, 1, 1), (int) week);
+            this.AchievedAt = CultureInfo.CurrentCulture.Calendar.AddWeeks(new DateTime(DateTime.Today.Year, 1, 1), (int)week);
             return true;
         }
     }
@@ -384,6 +379,7 @@ namespace Web.Users
 
         public override bool Evaluate(List<Round> rounds)
         {
+            return false; //logic does not work currently
             return rounds.Count >= 100;
         }
     }
@@ -397,6 +393,7 @@ namespace Web.Users
 
         public override bool Evaluate(List<Round> rounds)
         {
+            return false; //logic does not work currently
             var perDay = rounds.Where(r => r.StartTime != default).GroupBy(r => r.StartTime.Date);
             var days = perDay.Where(d => d.Count() > 4);
             var achievementDay = days.OrderByDescending(x => x.Key).FirstOrDefault();

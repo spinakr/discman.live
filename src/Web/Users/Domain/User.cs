@@ -21,7 +21,7 @@ namespace Web.Users
             Username = requestUsername;
             Password = hashedPw.Hash;
             Salt = hashedPw.Salt;
-            SimpleScoring = true;
+            SimpleScoring = false;
             Email = email;
             NewsIdsSeen = new List<string>();
             Friends = new List<string>();

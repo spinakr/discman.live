@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,16 +50,29 @@ namespace Web.Courses
             // var users = documentSession.Query<User>().ToList();
             // foreach (var user in users)
             // {
-            //     var rounds = documentSession
-            //         .Query<Round>()
-            //         .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
-            //         .ToList();
+            // var rounds = documentSession
+            //     .Query<Round>()
+            //     .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
+            //     .ToList();
 
-            //     if (rounds.Count == 0)
-            //     {
-            //         // documentSession.Delete(user);
-            //         _logger.LogInformation($"Deleting user {user.Username}, no rounds registered and more than 5 months old");
-            //     }
+            // if (rounds.Count == 0)
+            // {
+            //     // documentSession.Delete(user);
+            //     _logger.LogInformation($"Deleting user {user.Username}, no rounds registered and more than 5 months old");
+            // }
+            //     if (user is null) continue;
+            //     user.SimpleScoring = false;
+            //     if (user.Achievements is null) user.Achievements = new Achievements();
+            //     user.Achievements.RemoveAllofType("TwentyRoundsInAMonth");
+            //     documentSession.Update(user);
+            // }
+
+            // var rounds = documentSession.Query<Round>().ToList();
+            // foreach (var round in rounds)
+            // {
+            //     if (round.Achievements is null) continue;
+            //     round.Achievements = round.Achievements.Where(a => a.AchievementName != "TwentyRoundsInAMonth").ToList();
+            //     documentSession.Update(round);
             // }
 
             // documentSession.SaveChanges();
