@@ -18,11 +18,11 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserAchievementsComponent = (props: Props) => {
-  const { username } = useParams();
+  const { usernameParam } = useParams<{ usernameParam: string }>();
   const { fetchUserAchievements, user } = props;
   useEffect(() => {
-    fetchUserAchievements(username);
-  }, [fetchUserAchievements, username]);
+    fetchUserAchievements(usernameParam);
+  }, [fetchUserAchievements, usernameParam]);
   const achievements = user?.userAchievements;
 
   return (

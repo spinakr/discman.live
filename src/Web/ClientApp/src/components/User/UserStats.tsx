@@ -17,13 +17,13 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserStatsComponent = (props: Props) => {
-  const { username } = useParams();
+  const { usernameParam } = useParams<{ usernameParam: string }>();
   const year = new Date().getMonth() + 1;
   const [statsSince, setStatsSince] = useState(year);
   const { fetchUserStats, user } = props;
   useEffect(() => {
-    fetchUserStats(statsSince, username);
-  }, [fetchUserStats, statsSince, username]);
+    fetchUserStats(statsSince, usernameParam);
+  }, [fetchUserStats, statsSince, usernameParam]);
   const stats = user?.userStats;
 
   return (

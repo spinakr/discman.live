@@ -19,12 +19,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const UserRounds = (props: Props) => {
-  const { username } = useParams<{ username: string }>();
+  const { usernameParam } = useParams<{ usernameParam: string }>();
   const [page, setPage] = useState(1);
   const { fetchUserRounds } = props;
   React.useEffect(() => {
-    fetchUserRounds(page, username);
-  }, [fetchUserRounds, page, username]);
+    fetchUserRounds(page, usernameParam);
+  }, [fetchUserRounds, page, usernameParam]);
   const pagedRounds = props.user?.userRounds;
 
   if (!pagedRounds?.rounds || pagedRounds.rounds.length === 0)
@@ -37,7 +37,7 @@ const UserRounds = (props: Props) => {
           <RoundListItem
             key={r.id}
             round={r}
-            username={username || props.user?.user?.username || ""}
+            username={usernameParam || props.user?.user?.username || ""}
           />
         ))}
       </div>
