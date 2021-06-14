@@ -7,75 +7,71 @@ $table-row-active-color: #257942;
 @import "../node_modules/bulma/bulma.sass";
 @import "../node_modules/bulma-steps-component/bulma-steps.sass";
 
-
 .navbar {
   &.is-transparent {
-  background-color: rgba(233,237,201,0.8);
-  background-image: none;
+    background-color: rgba(233, 237, 201, 0.8);
+    background-image: none;
   }
-  }
+}
 
-.sigCanvas{
+.sigCanvas {
   background-color: white;
   border: 1px solid black;
   width: 100%;
-  height: 100px; 
+  height: 100px;
 }
 
-.signatureImage{
+.signatureImage {
   height: 50px;
-  
 }
 
-img.bordered{
+img.bordered {
   border-style: solid;
   border-width: 1px;
 }
 
-.columns { 
-  max-width: 100%; 
+.columns {
+  max-width: 100%;
 }
 
-.under-par-cell{
- background-color: #74c69d;
+.under-par-cell {
+  background-color: #74c69d;
 }
 
-.bogey-cell{
- background-color: #e9c46a;
+.bogey-cell {
+  background-color: #e9c46a;
 }
 
-.dobble-cell{
- background-color: #f4a261;
+.dobble-cell {
+  background-color: #f4a261;
 }
 
-.ob-cell{
+.ob-cell {
   text-decoration: underline;
   text-decoration-color: red;
   text-decoration-style: solid;
 }
 
-
-tr.score-card-divider-row th, 
-tr.score-card-divider-row td{
-    border-bottom: 1px solid black !important;
+tr.score-card-divider-row th,
+tr.score-card-divider-row td {
+  border-bottom: 1px solid black !important;
 }
 
-
-tr.active-user-row td{
-    line-height: 2  ;
-    font-weight: bold;
+tr.active-user-row td {
+  line-height: 2;
+  font-weight: bold;
 }
 
 .columns-full {
-  width: 100%; 
+  width: 100%;
 }
 
-.lower-row{
-    line-height: 0.9
+.lower-row {
+  line-height: 0.9;
 }
 
-.scrollable{
-    overflow-y: auto;
+.scrollable {
+  overflow-y: auto;
 }
 
 .box {
@@ -94,7 +90,18 @@ tr.active-user-row td{
 .waggle {
   animation: waggle 2s 1s forwards ease-out;
   animation-iteration-count: 5;
+}
 
+// .is-narrowest {
+//   table-layout: fixed !important;
+// }
+
+.is-narrowest td,
+.is-narrowest th {
+  vertical-align: middle !important;
+  padding: 0.1em !important;
+  font-size: x-small !important;
+  min-width: 0 !important;
 }
 
 @keyframes waggle {

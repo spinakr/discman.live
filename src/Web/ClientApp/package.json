@@ -13,6 +13,7 @@
     "bulma-switch": "^2.0.0",
     "connected-react-router": "6.5.2",
     "history": "4.10.1",
+    "html-to-image": "^1.6.2",
     "merge": "1.2.1",
     "node-sass": "^4.14.1",
     "pigeon-maps": "^0.19.5",

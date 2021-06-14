@@ -6,7 +6,6 @@ import RoundChart from "./RoundChart";
 import RoundStats from "./RoundStats";
 import { UserStats } from "../../store/User";
 import RoundLeaderboard from "./RoundLeaderboard";
-import SignaturePad from "react-signature-canvas";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -87,6 +86,7 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
 
       {active === 3 && <RoundChart round={round} swipeHandlers={handlers} />}
 
+      <hr />
       <div className="is-flex is-flex-direction-column">
         {round.signatures.map((s) => {
           return (

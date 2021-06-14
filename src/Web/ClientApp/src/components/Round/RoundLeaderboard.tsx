@@ -3,6 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import colors, { scoreColorStyle } from "../../colors";
 import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
+import { toBlob } from "html-to-image";
 
 export interface RoundLeaderboardProps {
   round: Round;
@@ -15,7 +16,51 @@ const playerTotal = (playerScore: PlayerScore) => {
   }, 0);
 };
 
-const renderScores = (
+const renderScoresThight = (
+  playerScores: PlayerScore[],
+  username: string,
+  tableRef: React.RefObject<HTMLTableElement>
+) => {
+  return (
+    <table
+      className="table is-narrowest is-fullwidth my-0 mb-2"
+      style={{ backgroundColor: colors.table }}
+      ref={tableRef}
+    >
+      <thead>
+        <tr>
+          <th>
+            Hole
+            <br />
+            Par
+          </th>
+          {playerScores[0].scores.map((s) => (
+            <th key={s.hole.number}>
+              {s.hole.number < 10 ? "\u00A0\u00A0" : null}
+              {s.hole.number} <br />
+              <i>{s.hole.par}</i>
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {playerScores.map((p) => (
+          <tr
+            key={p.playerName}
+            className={p.playerName === username ? "active-user-row" : ""}
+          >
+            <td>
+              {p.playerName}&nbsp;(
+              {playerTotal(p)})
+            </td>
+            {p.scores.map((s) => renderPlayerHoleScore(s))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+const renderScoresPart = (
   playerScores: PlayerScore[],
   username: string,
   from: number,
@@ -82,6 +127,7 @@ export default ({ round, username }: RoundLeaderboardProps) => {
     return atotal === btotal ? 0 : atotal < btotal ? -1 : 1;
   });
 
+  const tableRef = React.createRef<HTMLTableElement>();
   const holesOnCourse = round.playerScores[0].scores.length;
 
   return (
@@ -124,9 +170,31 @@ export default ({ round, username }: RoundLeaderboardProps) => {
         </tbody>
       </table>
       <br />
-      {renderScores(round.playerScores, username, 0, 8, true)}
-      {renderScores(round.playerScores, username, 8, 18, false)}
-      {renderScores(round.playerScores, username, 19, 30, false)}
+      {renderScoresThight(round.playerScores, username, tableRef)}
+
+      <button
+        className="button mt-3"
+        style={{ backgroundColor: colors.button }}
+        onClick={() => {
+          if (!tableRef.current) return;
+          toBlob(tableRef.current).then((blob) => {
+            if (!blob) return;
+            const file = new File([blob], "roundsummary.png", {
+              type: blob.type,
+            });
+            Object.freeze(file);
+            navigator.share({
+              files: [file],
+            } as any);
+          });
+        }}
+      >
+        Share
+      </button>
+
+      {/* {renderScoresPart(round.playerScores, username, 0, 8, true)}
+      {renderScoresPart(round.playerScores, username, 8, 18, false)}
+      {renderScoresPart(round.playerScores, username, 19, 30, false)} */}
     </>
   );
 };
