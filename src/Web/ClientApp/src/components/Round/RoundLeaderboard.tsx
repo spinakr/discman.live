@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
+import { Link } from "react-router-dom";
 import colors, { scoreColorStyle } from "../../colors";
 import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
 
@@ -107,7 +108,7 @@ export default ({ round, username }: RoundLeaderboardProps) => {
                 <th>{i + 1}</th>
                 <td>
                   {s.playerEmoji}
-                  {s.playerName}
+                  <Link to={`/users/${s.playerName}`}>{s.playerName}</Link>
                 </td>
                 <td>
                   {playerTotal(s) >= 0 ? "+" : "-"}

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 import colors, { scoreColorStyle } from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
 
@@ -73,7 +74,7 @@ const RoundScoreCard = ({
                 className={s.name === username ? "active-user-row" : ""}
               >
                 <td>
-                  {s.name}&nbsp;(
+                  <Link to={`/users/${s.name}`}>{s.name}</Link>&nbsp;(
                   {s.totalScore})
                 </td>
               </tr>

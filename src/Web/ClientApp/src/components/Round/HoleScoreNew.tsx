@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import colors from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
 
@@ -42,7 +43,7 @@ const HoleScoreComponent = ({
   const prevHole = activeHole - 1 > -1 ? courseHoles[activeHole - 1] : null;
 
   const playersToDisplay = round.playerScores; //consider not showing all players
-    // round.playerScores.length > 4 ? [activePlayerScores] : round.playerScores;
+  // round.playerScores.length > 4 ? [activePlayerScores] : round.playerScores;
 
   return (
     <div className="pt-1 pb-0">
@@ -124,7 +125,7 @@ const HoleScoreComponent = ({
                     className="has-text-centered"
                   >
                     &nbsp;
-                    {p.playerName} (
+                    <Link to={`/users/${p.playerName}`}>{p.playerName}</Link> (
                     {p.scores.reduce((total, score) => {
                       return total + score.relativeToPar;
                     }, 0)}
