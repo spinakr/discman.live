@@ -30,7 +30,7 @@ const RoundListItem = (props: UserRoundProps) => {
       </span>
       {round.courseName || round.roundName} -{" "}
       <i>
-        {new Date(round.startTime).toLocaleDateString()}
+        {new Date(round.startTime).toISOString().substring(0, 10)}
         {round.isCompleted
           ? ` | ${userTotal > 0 ? "+" : ""}${userTotal}`
           : ""}{" "}

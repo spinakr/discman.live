@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import colors, { scoreColorStyle } from "../../colors";
 import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
@@ -16,16 +16,13 @@ const playerTotal = (playerScore: PlayerScore) => {
   }, 0);
 };
 
-const renderScoresThight = (
-  playerScores: PlayerScore[],
-  username: string,
-  tableRef: React.RefObject<HTMLTableElement>
-) => {
+const renderScoresThight = (playerScores: PlayerScore[], username: string) => {
   return (
     <table
-      className="table is-narrowest is-fullwidth my-0 mb-2"
-      style={{ backgroundColor: colors.table }}
-      ref={tableRef}
+      className="table is-narrowest is-fullwidth my-0"
+      style={{
+        backgroundColor: colors.table,
+      }}
     >
       <thead>
         <tr>
@@ -126,8 +123,9 @@ export default ({ round, username }: RoundLeaderboardProps) => {
     const btotal = playerTotal(b);
     return atotal === btotal ? 0 : atotal < btotal ? -1 : 1;
   });
-
-  const tableRef = React.createRef<HTMLTableElement>();
+  const [showThight, setShowThight] = useState(false);
+  const [cannotShare, setCannotShare] = useState(false);
+  const scoresRef = React.createRef<HTMLDivElement>();
   const holesOnCourse = round.playerScores[0].scores.length;
 
   return (
@@ -169,32 +167,53 @@ export default ({ round, username }: RoundLeaderboardProps) => {
           })}
         </tbody>
       </table>
-      <br />
-      {renderScoresThight(round.playerScores, username, tableRef)}
-
-      <button
-        className="button mt-3"
-        style={{ backgroundColor: colors.button }}
-        onClick={() => {
-          if (!tableRef.current) return;
-          toBlob(tableRef.current).then((blob) => {
-            if (!blob) return;
-            const file = new File([blob], "roundsummary.png", {
-              type: blob.type,
-            });
-            Object.freeze(file);
-            navigator.share({
-              files: [file],
-            } as any);
-          });
-        }}
-      >
-        Share
-      </button>
-
+      <hr />
       {/* {renderScoresPart(round.playerScores, username, 0, 8, true)}
       {renderScoresPart(round.playerScores, username, 8, 18, false)}
       {renderScoresPart(round.playerScores, username, 19, 30, false)} */}
+
+      <div
+        ref={scoresRef}
+        style={{
+          backgroundColor: colors.background,
+        }}
+      >
+        <div className="is-size-6 mb-0 ml-2 is-pulled-left">
+          {round.courseName}&nbsp;-&nbsp;
+          {new Date(round.startTime).toISOString().substring(0, 10)}
+        </div>
+        <div>{renderScoresThight(round.playerScores, username)}</div>
+        <div className="is-size-7 is-italic">
+          discman.live&nbsp;-&nbsp;{new Date().getFullYear()}
+        </div>
+      </div>
+      <br />
+
+      <button
+        disabled={cannotShare}
+        className="button mt-3"
+        style={{ backgroundColor: colors.button }}
+        onClick={() => {
+          setShowThight(true);
+          if (!scoresRef.current) return;
+          toBlob(scoresRef.current)
+            .then((blob) => {
+              if (!blob) return;
+              const file = new File([blob], "roundsummary.png", {
+                type: blob.type,
+              });
+              Object.freeze(file);
+
+              navigator.share({
+                files: [file],
+              } as any);
+            })
+            .catch(() => setCannotShare(true))
+            .finally(() => setShowThight(false));
+        }}
+      >
+        {cannotShare ? "Share not supported" : "Share"}
+      </button>
     </>
   );
 };
