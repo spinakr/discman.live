@@ -106,12 +106,18 @@ export interface RoundsState {
   playerCourseStats: PlayerCourseStats[] | null;
   scoreCardOpen: boolean;
   finishedRoundStats: UserStats[];
+  editHole: boolean;
 }
 
 //Actions
 export interface FetchRoundsSuccessAction {
   type: "FETCH_ROUNDS_SUCCEED";
   rounds: Round[];
+}
+
+export interface GoToNextPersonalHoleAction {
+  type: "GOTO_NEXT_PERSONAL_HOLE";
+  username: string;
 }
 
 export interface FetchRoundSuccessAction {
@@ -189,6 +195,11 @@ export interface ToggleScoreCardAction {
   open: boolean;
 }
 
+export interface SetEditHoleAction {
+  type: "SET_EDIT_HOLE";
+  editHole: boolean;
+}
+
 export type KnownAction =
   | FetchRoundsSuccessAction
   | FetchRoundSuccessAction
@@ -206,6 +217,8 @@ export type KnownAction =
   | RoundWasDeletedAction
   | SpectatorLeftAction
   | FetchRoundStatsSuccessAction
+  | GoToNextPersonalHoleAction
+  | SetEditHoleAction
   | CourseWasSavedAction;
 
 const fetchRound = (
@@ -252,9 +265,15 @@ const initialState: RoundsState = {
   playerCourseStats: null,
   scoreCardOpen: false,
   finishedRoundStats: [],
+  editHole: false,
 };
 
 export const actionCreators = {
+  setEditHole: (editHole: boolean): AppThunkAction<KnownAction> => (
+    dispatch
+  ) => {
+    dispatch({ type: "SET_EDIT_HOLE", editHole });
+  },
   setScorecardOpen: (open: boolean): AppThunkAction<KnownAction> => (
     dispatch
   ) => {
@@ -750,20 +769,39 @@ export const actionCreators = {
   ) => {
     dispatch({ type: "SET_ACTIVE_HOLE", holeIndex: holeIndex });
   },
+  goToNextPersonalHole: (): AppThunkAction<KnownAction> => (
+    dispatch,
+    getState
+  ) => {
+    const appState = getState();
+    const loggedInUser = appState?.user?.user;
+    loggedInUser &&
+      dispatch({
+        type: "GOTO_NEXT_PERSONAL_HOLE",
+        username: loggedInUser.username,
+      });
+  },
 };
 
-// const getActiveHolde = (round: Round) => {
-//   const activeHole = round.playerScores
-//     .map((p) => p.scores.find((s) => s.strokes === 0))
-//     .sort((a, b) => {
-//       return a && b ? a.hole.number - b.hole.number : 0;
-//     })
-//     .find(() => true);
+//wait for all to score
+const getNextUncompletedHole = (round: Round, user: string) => {
+  const activeHole = round.playerScores
+    .map((p) => p.scores.find((s) => s.strokes === 0))
+    .sort((a, b) => {
+      return a && b ? a.hole.number - b.hole.number : 0;
+    })
+    .find(() => true);
 
-//   return activeHole ? activeHole.hole.number : 100;
-// };
+  const activeHoleIndex =
+    activeHole &&
+    round.playerScores[0].scores.findIndex(
+      (x) => x.hole.number === activeHole.hole.number
+    );
 
-const getActiveHole = (round: Round, user: string) => {
+  return activeHoleIndex !== undefined ? activeHoleIndex : -1;
+};
+
+const getNextPlayerHole = (round: Round, user: string) => {
   const holeScores =
     round.playerScores.find((p) => p.playerName === user)?.scores ||
     ([] as HoleScore[]);
@@ -793,43 +831,24 @@ export const reducer: Reducer<RoundsState> = (
         ...state,
         round: action.round,
         //if holes has been shifted on the server, the activeHoleIndex is no longer valid
-        activeHoleIndex:
-          action.round.playerScores[0].scores[0].hole.number !==
-          state.round.playerScores[0].scores[0].hole.number
-            ? getActiveHole(action.round, action.username)
-            : state.activeHoleIndex,
+        // activeHoleIndex:
+        //   action.round.playerScores[0].scores[0].hole.number !==
+        //   state.round.playerScores[0].scores[0].hole.number
+        //     ? getActiveHole(action.round, action.username)
+        //     : state.activeHoleIndex,
+        activeHoleIndex: getNextUncompletedHole(action.round, action.username),
       };
-    case "SPECTATOR_JOINED":
-      return state.round
-        ? {
-            ...state,
-            round: {
-              ...state.round,
-              spectators: [...state.round?.spectators, action.username],
-            },
-          }
-        : state;
-    case "SPECTATOR_LEFT":
-      return state.round
-        ? {
-            ...state,
-            round: {
-              ...state.round,
-              spectators: state.round?.spectators.filter(
-                (s) => s !== action.username
-              ),
-            },
-          }
-        : state;
     case "TOGGLE_SCORECARD":
       return { ...state, scoreCardOpen: action.open };
+    case "SET_EDIT_HOLE":
+      return { ...state, editHole: action.editHole };
     case "FETCH_ROUNDS_SUCCEED":
       return { ...state, rounds: action.rounds };
     case "FETCH_ROUND_SUCCEED":
       return {
         ...state,
         round: action.round,
-        activeHoleIndex: getActiveHole(action.round, action.username),
+        activeHoleIndex: getNextUncompletedHole(action.round, action.username),
       };
     case "NEW_ROUND_CREATED":
       return { ...state, round: action.round };
@@ -839,15 +858,17 @@ export const reducer: Reducer<RoundsState> = (
       return {
         ...state,
         round: action.round,
-        activeHoleIndex: getActiveHole(action.round, action.username),
+        activeHoleIndex: getNextUncompletedHole(action.round, action.username),
+        editHole: false,
       };
-    // case "ROUND_WAS_UPDATED":
-    //   if (state.round?.id !== action.round.id) return state;
-    //   return {
-    //     ...state,
-    //     round: action.round,
-    //     activeHole: getActiveHolde(action.round),
-    //   };
+
+    case "GOTO_NEXT_PERSONAL_HOLE":
+      return {
+        ...state,
+        activeHoleIndex: state.round
+          ? getNextPlayerHole(state.round, action.username)
+          : state.activeHoleIndex,
+      };
     case "ROUND_WAS_COMPLETED":
       if (!state.round) return state;
       return {

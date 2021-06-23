@@ -192,7 +192,7 @@ const Feed = (props: Props) => {
   if (!feed) return null;
 
   return (
-    <section className="">
+    <section className="container">
       {/* <div className="columns is-mobile">
         <div className="column"> </div>
         <div className="column">

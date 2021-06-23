@@ -180,7 +180,7 @@ export default ({ round, username }: RoundLeaderboardProps) => {
       >
         <div className="is-size-6 mb-0 ml-2 is-pulled-left">
           {round.courseName}&nbsp;-&nbsp;
-          {new Date(round.startTime).toISOString().substring(0, 10)}
+          {new Date(round.startTime).toISOString().substring(0, 10)}&nbsp;
         </div>
         <div>{renderScoresThight(round.playerScores, username)}</div>
         <div className="is-size-7 is-italic">

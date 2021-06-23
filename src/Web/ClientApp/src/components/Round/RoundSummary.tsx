@@ -44,7 +44,7 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
   });
 
   return (
-    <div className="has-text-centered" style={{ paddingBottom: 50 }}>
+    <div className="container has-text-centered" style={{ paddingBottom: 50 }}>
       <div className="tabs my-0 is-centered">
         <ul>
           <li

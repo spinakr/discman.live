@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as RoundsStore from "../../store/Rounds";
@@ -13,16 +13,18 @@ import ScoreAnimations from "./ScoreAnimations";
 import NavMenu from "../NavMenu";
 import Colors from "../../colors";
 import SignRound from "./SignRound";
+import HoleStatus from "./HoleStatus";
 
 const mapState = (state: ApplicationState) => {
   return {
-    user: state.user,
+    username: state.user?.userDetails?.username,
     round: state.rounds?.round,
     playersStats: state.rounds?.playerCourseStats || [],
     scoreCardOpen: state.rounds?.scoreCardOpen,
     // activeHole: state.rounds?.activeHole,
     activeHoleIndex: state.rounds?.activeHoleIndex,
     finishedRoundStats: state.rounds?.finishedRoundStats || [],
+    editHole: state.rounds?.editHole,
   };
 };
 
@@ -72,6 +74,10 @@ const RoundComponent = (props: Props) => {
     fetchStatsOnCourse,
     fetchUserStats,
     finishedRoundStats,
+    username,
+    goToNextPersonalHole,
+    editHole,
+    setEditHole,
   } = props;
   let { roundId } = useParams<{ roundId: string }>();
   const roundCompleted = round?.isCompleted;
@@ -82,13 +88,24 @@ const RoundComponent = (props: Props) => {
     roundCompleted && fetchUserStats(roundId);
   }, [fetchRound, fetchStatsOnCourse, fetchUserStats, roundCompleted, roundId]);
 
+  const holeScores = round?.playerScores.map((p) => {
+    return {
+      username: p.playerName,
+      scores: p.scores[activeHoleIndex || 0],
+    };
+  });
+  const waitingForScores =
+    holeScores &&
+    holeScores.find((s) => s.username === username)?.scores?.strokes !== 0 &&
+    holeScores.some((s) => s.scores && s.scores?.strokes === 0);
+
   const allScoresSet = round?.playerScores.every((p) =>
     p.scores.every((s) => s.strokes !== 0)
   );
   if (!round) return null;
 
   const isPartOfRound = round?.playerScores.some(
-    (s) => s.playerName === props.user?.user?.username
+    (s) => s.playerName === username
   );
 
   return (
@@ -119,14 +136,14 @@ const RoundComponent = (props: Props) => {
           <RoundSummary
             round={round}
             finishedRoundStats={finishedRoundStats}
-            username={props.user?.user?.username || ""}
+            username={username || ""}
           />
         ) : (
           <>
             {activeHoleIndex === -1 && isPartOfRound ? ( //all holes registered, show scorecard + complete button
               <div className="has-text-centered pt-6 mx-1">
                 <RoundScoreCard
-                  username={props.user?.user?.username || ""}
+                  username={username || ""}
                   round={round}
                   activeHole={activeHoleIndex}
                   setActiveHole={props.setActiveHole}
@@ -137,26 +154,35 @@ const RoundComponent = (props: Props) => {
                   <SignRound
                     completeRound={props.completeRound}
                     signatures={round.signatures}
-                    username={props.user?.user?.username || ""}
+                    username={username || ""}
                   />
                 )}
               </div>
             ) : (
               //regular live view, hole scores and score selctor
               <>
-                <HoleScore
-                  username={props.user?.user?.username || ""}
-                  round={round}
-                  activeHole={activeHoleIndex || 0}
-                  setActiveHole={props.setActiveHole}
-                  playersStats={props.playersStats}
-                />
-                <HoleScoreSelector />
+                <>
+                  <HoleScore
+                    username={username || ""}
+                    round={round}
+                    activeHole={activeHoleIndex || 0}
+                    setActiveHole={props.setActiveHole}
+                    playersStats={props.playersStats}
+                  />
+                  <HoleScoreSelector />
+                </>
+                {waitingForScores && !editHole && holeScores && (
+                  <HoleStatus
+                    holeScores={holeScores}
+                    gotoNextHole={goToNextPersonalHole}
+                    editHoleScore={setEditHole}
+                  />
+                )}
               </>
             )}
             {props.scoreCardOpen && (
               <RoundScoreCardModal
-                username={props.user?.user?.username || ""}
+                username={username || ""}
                 round={round}
                 activeHole={activeHoleIndex || 0}
                 setActiveHole={props.setActiveHole}
