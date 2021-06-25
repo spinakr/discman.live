@@ -6,6 +6,7 @@ import RoundChart from "./RoundChart";
 import RoundStats from "./RoundStats";
 import { UserStats } from "../../store/User";
 import RoundLeaderboard from "./RoundLeaderboard";
+import RoundAchievements from "./RoundAchievements";
 
 export interface RoundSummaryProps {
   round: Round;
@@ -85,31 +86,9 @@ export default ({ round, finishedRoundStats, username }: RoundSummaryProps) => {
       )}
 
       {active === 3 && <RoundChart round={round} swipeHandlers={handlers} />}
-
-      <hr />
-      <div className="is-flex is-flex-direction-column">
-        {round.signatures.map((s) => {
-          return (
-            <div key={s.username} className="is-flex is-flex-direction-row">
-              <div className="is-flex px-5 mt-2">
-                <span className="is-size-5">{s.username}</span>
-              </div>
-              <div className="is-flex">
-                <img
-                  key={s.username}
-                  className="signatureImage"
-                  src={`${s.base64Signature}`}
-                  alt="Signature"
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* {active === 4 && (
+      {active === 4 && (
         <RoundAchievements round={round} swipeHandlers={handlers} />
-      )} */}
+      )}
     </div>
   );
 };

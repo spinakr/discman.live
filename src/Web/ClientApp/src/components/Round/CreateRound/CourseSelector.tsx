@@ -154,7 +154,7 @@ const CourseSelector = (props: Props) => {
           </div>
           <div className="is-flex ml-2">
             <Link
-              to="/courses"
+              to={`/courses/${selectedCourse}`}
               className="button px-1"
               style={{ backgroundColor: colors.button }}
               onClick={() => closeDialog()}

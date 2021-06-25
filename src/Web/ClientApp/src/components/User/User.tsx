@@ -56,16 +56,16 @@ const UserComponent = (props: Props) => {
             <a>Stats</a>
           </li>
           <li
-            className={active === 4 ? "is-active" : ""}
-            onClick={() => setActive(4)}
-          >
-            <a>Tourneys</a>
-          </li>
-          <li
             className={active === 3 ? "is-active" : ""}
             onClick={() => setActive(3)}
           >
             <a>Achievements</a>
+          </li>
+          <li
+            className={active === 4 ? "is-active" : ""}
+            onClick={() => setActive(4)}
+          >
+            <a>Tourneys</a>
           </li>
         </ul>
       </div>

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import colors, { scoreColorStyle } from "../../colors";
 import { Round, HoleScore, PlayerScore } from "../../store/Rounds";
 import { toBlob } from "html-to-image";
+import AchievementImage from "../AchievementImage";
 
 export interface RoundLeaderboardProps {
   round: Round;
@@ -127,6 +128,9 @@ export default ({ round, username }: RoundLeaderboardProps) => {
   const [cannotShare, setCannotShare] = useState(false);
   const scoresRef = React.createRef<HTMLDivElement>();
   const holesOnCourse = round.playerScores[0].scores.length;
+  const allHolesScored = !round.playerScores.some((p) =>
+    p.scores.some((s) => s.strokes === 0)
+  );
 
   return (
     <>
@@ -139,11 +143,15 @@ export default ({ round, username }: RoundLeaderboardProps) => {
             <th></th>
             <th>Player</th>
             <th>Score</th>
-            <th>Through</th>
+            <th>{allHolesScored ? "Achievements" : "Through"}</th>
           </tr>
         </thead>
         <tbody>
           {round.playerScores.map((s, i) => {
+            const holesPlayed = s.scores.filter((s) => s.strokes !== 0).length;
+            const playerAchievments = round.achievements
+              .filter((a) => a.username === s.playerName)
+              .slice(undefined, 3);
             return (
               <tr
                 key={s.playerName}
@@ -158,10 +166,26 @@ export default ({ round, username }: RoundLeaderboardProps) => {
                   {playerTotal(s) >= 0 ? "+" : "-"}
                   {Math.abs(playerTotal(s))}
                 </td>
-                <td>
-                  {s.scores.filter((s) => s.strokes !== 0).length} /{" "}
-                  {holesOnCourse}
-                </td>
+                {holesPlayed === holesOnCourse ? (
+                  <td align="center" className="pt-1">
+                    <div className="is-flex is-justify-content-space-around">
+                      {playerAchievments && playerAchievments.length > 0
+                        ? playerAchievments.map((a) => (
+                            <span className="is-flex" key={a.achievementName}>
+                              <AchievementImage
+                                isSmall={true}
+                                achievementName={a.achievementName}
+                              />
+                            </span>
+                          ))
+                        : "-"}
+                    </div>
+                  </td>
+                ) : (
+                  <td>
+                    {holesPlayed} / {holesOnCourse}
+                  </td>
+                )}
               </tr>
             );
           })}
@@ -214,6 +238,26 @@ export default ({ round, username }: RoundLeaderboardProps) => {
       >
         {cannotShare ? "Share not supported" : "Share"}
       </button>
+      <hr />
+      <div className="is-flex is-flex-direction-column">
+        {round.signatures.map((s) => {
+          return (
+            <div key={s.username} className="is-flex is-flex-direction-row">
+              <div className="is-flex px-5 mt-2">
+                <span className="is-size-5">{s.username}</span>
+              </div>
+              <div className="is-flex">
+                <img
+                  key={s.username}
+                  className="signatureImage"
+                  src={`${s.base64Signature}`}
+                  alt="Signature"
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 };
