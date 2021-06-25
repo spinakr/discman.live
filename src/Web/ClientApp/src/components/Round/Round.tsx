@@ -17,12 +17,11 @@ import HoleStatus from "./HoleStatus";
 
 const mapState = (state: ApplicationState) => {
   return {
-    username: state.user?.userDetails?.username,
+    username: state.user?.userDetails?.username || "",
     round: state.rounds?.round,
     playersStats: state.rounds?.playerCourseStats || [],
     scoreCardOpen: state.rounds?.scoreCardOpen,
-    // activeHole: state.rounds?.activeHole,
-    activeHoleIndex: state.rounds?.activeHoleIndex,
+    activeHoleIndex: state.rounds?.activeHoleIndex || 0,
     finishedRoundStats: state.rounds?.finishedRoundStats || [],
     editHole: state.rounds?.editHole,
   };
@@ -78,6 +77,7 @@ const RoundComponent = (props: Props) => {
     goToNextPersonalHole,
     editHole,
     setEditHole,
+    playersStats,
   } = props;
   let { roundId } = useParams<{ roundId: string }>();
   const roundCompleted = round?.isCompleted;
@@ -87,17 +87,6 @@ const RoundComponent = (props: Props) => {
     fetchStatsOnCourse(roundId);
     roundCompleted && fetchUserStats(roundId);
   }, [fetchRound, fetchStatsOnCourse, fetchUserStats, roundCompleted, roundId]);
-
-  const holeScores = round?.playerScores.map((p) => {
-    return {
-      username: p.playerName,
-      scores: p.scores[activeHoleIndex || 0],
-    };
-  });
-  const waitingForScores =
-    holeScores &&
-    holeScores.find((s) => s.username === username)?.scores?.strokes !== 0 &&
-    holeScores.some((s) => s.scores && s.scores?.strokes === 0);
 
   const allScoresSet = round?.playerScores.every((p) =>
     p.scores.every((s) => s.strokes !== 0)
@@ -165,26 +154,30 @@ const RoundComponent = (props: Props) => {
                   <HoleScore
                     username={username || ""}
                     round={round}
-                    activeHole={activeHoleIndex || 0}
+                    activeHole={activeHoleIndex}
                     setActiveHole={props.setActiveHole}
                     playersStats={props.playersStats}
                   />
                   <HoleScoreSelector />
                 </>
-                {waitingForScores && !editHole && holeScores && (
+                {
                   <HoleStatus
-                    holeScores={holeScores}
                     gotoNextHole={goToNextPersonalHole}
-                    editHoleScore={setEditHole}
+                    setEditHoleScore={setEditHole}
+                    editHoleScore={editHole}
+                    playersStats={playersStats}
+                    round={round}
+                    activeHoleIndex={activeHoleIndex}
+                    username={username}
                   />
-                )}
+                }
               </>
             )}
             {props.scoreCardOpen && (
               <RoundScoreCardModal
                 username={username || ""}
                 round={round}
-                activeHole={activeHoleIndex || 0}
+                activeHole={activeHoleIndex}
                 setActiveHole={props.setActiveHole}
                 closeDialog={() => props.setScorecardOpen(false)}
                 playersStats={props.playersStats}

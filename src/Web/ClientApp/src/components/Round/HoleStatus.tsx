@@ -1,14 +1,16 @@
 import React from "react";
 import colors, { scoreColorStyle } from "../../colors";
-import { HoleScore, Round } from "../../store/Rounds";
+import { HoleScore, PlayerCourseStats, Round } from "../../store/Rounds";
+import RoundPredictions from "./RoundPredictions";
 
 export interface HoleStatusProps {
-  holeScores: {
-    username: string;
-    scores: HoleScore;
-  }[];
   gotoNextHole: () => void;
-  editHoleScore: (editHole: boolean) => void;
+  setEditHoleScore: (editHole: boolean) => void;
+  editHoleScore: boolean | undefined;
+  playersStats: PlayerCourseStats[];
+  round: Round;
+  activeHoleIndex: number;
+  username: string;
 }
 
 const scoreText = (holeScores: HoleScore) => {
@@ -37,11 +39,41 @@ const scoreText = (holeScores: HoleScore) => {
 export default ({
   gotoNextHole,
   editHoleScore,
-  holeScores,
+  setEditHoleScore,
+  playersStats,
+  round,
+  activeHoleIndex,
+  username,
 }: HoleStatusProps) => {
+  const holeScores = round?.playerScores.map((p) => {
+    return {
+      username: p.playerName,
+      scores: p.scores[activeHoleIndex || 0],
+    };
+  });
+  const waitingForScores =
+    holeScores &&
+    holeScores.find((s) => s.username === username)?.scores?.strokes !== 0 &&
+    holeScores.some((s) => s.scores && s.scores?.strokes === 0);
+
   const sortedScores = [...holeScores].sort(
     (a, b) => a.scores.strokes - b.scores.strokes
   );
+
+  const playerStats = playersStats.find((s) => s.playerName === username);
+  const playerScores = round.playerScores.find(
+    (s) => s.playerName === username
+  );
+
+  if (
+    !waitingForScores ||
+    editHoleScore ||
+    !holeScores ||
+    !playerStats ||
+    !playerScores
+  )
+    return null;
+
   return (
     <div className="modal is-active">
       <div className="modal-background"></div>
@@ -88,14 +120,20 @@ export default ({
                 ))}
               </tbody>
             </table>
+            <hr />
+            <RoundPredictions
+              playerRoundScores={playerScores}
+              playerStats={playerStats}
+            />
           </div>
+
           <footer
             className="modal-card-foot is-flex is-flex-direction-row is-justify-content-space-evenly"
             style={{ backgroundColor: colors.background }}
           >
             <button
               className="button is-flex"
-              onClick={() => editHoleScore(true)}
+              onClick={() => setEditHoleScore(true)}
               style={{ backgroundColor: colors.button }}
             >
               Edit

@@ -40,7 +40,7 @@ const InformationDialogue = (props: InformationDialogueProps) => {
       <span className="icon is-large has-text-info">
         <i
           onClick={() => setShowDialog(true)}
-          className="fas fa-2x fa-info"
+          className="fas fa-lg fa-info"
         ></i>
       </span>
     </>

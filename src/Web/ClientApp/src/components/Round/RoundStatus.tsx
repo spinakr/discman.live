@@ -6,6 +6,7 @@ import * as RoundsStore from "../../store/Rounds";
 import { Chart } from "react-charts";
 import InformationDialogue from "../InformationDialogue";
 import colors from "../../colors";
+import RoundPredictions from "./RoundPredictions";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -66,48 +67,9 @@ const RoundStatus = (props: Props) => {
     ],
     []
   );
-  if (!playerStats || +playerStats.roundsPlayed < 1) return null;
 
-  var lastScoredHoleIndex = 0;
-  playerRoundScores &&
-    playerRoundScores.scores.forEach((s, i) => {
-      if (lastScoredHoleIndex !== 0) return;
-      if (s.strokes === 0) {
-        lastScoredHoleIndex = i - 1;
-      }
-    });
-
-  const predLength =
-    (playerStats && playerStats.averagePrediction.length - 1) || 0;
-
-  const currentScore =
-    (roundScores &&
-      roundScores.reduce((total, score) => {
-        return total + score.relativeToPar;
-      }, 0)) ||
-    0;
-
-  const currentAverage =
-    playerStats?.averagePrediction[
-      lastScoredHoleIndex === 0 ? predLength : lastScoredHoleIndex
-    ];
-
-  const versusAverage = Math.ceil(currentScore - (currentAverage || 0));
-
-  const predictedFinalScore =
-    (lastScoredHoleIndex === 0
-      ? currentScore
-      : (currentScore &&
-          playerStats &&
-          Math.ceil(
-            currentScore +
-              playerStats.holeAverages
-                .filter((h, i) => i > lastScoredHoleIndex)
-                .reduce((total, score) => {
-                  return total + score;
-                }, 0)
-          )) ||
-        0) || 0;
+  if (!playerRoundScores || !playerStats || +playerStats.roundsPlayed < 1)
+    return null;
 
   return (
     <>
@@ -124,52 +86,11 @@ const RoundStatus = (props: Props) => {
               className="modal-card-body px-2"
               style={{ backgroundColor: colors.background }}
             >
-              <div className="has-text-centered">
-                <span className="title is-5">Current Score</span>
-                <InformationDialogue
-                  title="Round Status"
-                  text={`Shows how the current round compares to your previous rounds on the course.
-
-The blue line shows your average round progression based on averages on each hole. The red line is the current round.`}
-                />{" "}
-                <br />
-                <span className="is-size-3">
-                  {currentScore > 0 ? "+" : ""}
-                  {currentScore}
-                </span>
-              </div>
-              <div className="columns is-centered is-marginless is-mobile">
-                <span className="column has-text-centered ">
-                  <span className="title is-6 ">Predicted Score</span>
-                  <br />
-                  <p
-                    className={`${
-                      predictedFinalScore - (playerStats?.courseAverage || 0) >
-                      0
-                        ? "has-background-danger"
-                        : "has-background-primary"
-                    }`}
-                  >
-                    {predictedFinalScore > 0 ? "+" : ""}
-                    {predictedFinalScore}
-                  </p>
-                </span>
-                <span className="column has-text-centered">
-                  <span className="title is-6 ">Versus Average</span>
-                  <br />
-                  <p
-                    className={`${
-                      versusAverage > 0
-                        ? "has-background-danger"
-                        : "has-background-primary"
-                    }`}
-                  >
-                    {versusAverage > 0 ? "+" : ""}
-                    {versusAverage}
-                  </p>
-                </span>
-              </div>
-              <div className="columns is-centered is-mobile">
+              <RoundPredictions
+                playerStats={playerStats}
+                playerRoundScores={playerRoundScores}
+              />
+              <div className="columns is-centered is-mobile mb-0 pb-0">
                 <span className="column has-text-centered">
                   <h6 className="title is-6">Course Average</h6>
                   {playerStats?.courseAverage.toFixed(1)}
@@ -178,6 +99,15 @@ The blue line shows your average round progression based on averages on each hol
                   <h6 className="title is-6">Course Record</h6>
                   {playerStats?.playerCourseRecord}
                 </span>
+              </div>
+              <div className="has-text-centered pt-0 mt-0">
+                <span className="title is-6">Round Progression</span>
+                <InformationDialogue
+                  title="Round Status"
+                  text={`Shows how the current round compares to your previous rounds on the course.
+
+The blue line shows your average round progression based on averages on each hole. The red line is the current round.`}
+                />{" "}
               </div>
               <div style={{ width: "350px", height: "200px" }}>
                 <Chart data={data} axes={axes} tooltip />
