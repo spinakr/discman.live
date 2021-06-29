@@ -149,9 +149,11 @@ export default ({ round, username }: RoundLeaderboardProps) => {
         <tbody>
           {round.playerScores.map((s, i) => {
             const holesPlayed = s.scores.filter((s) => s.strokes !== 0).length;
-            const playerAchievments = round.achievements
-              .filter((a) => a.username === s.playerName)
-              .slice(undefined, 3);
+            const playerAchievments =
+              round?.achievements &&
+              round.achievements
+                .filter((a) => a.username === s.playerName)
+                .slice(undefined, 3);
             return (
               <tr
                 key={s.playerName}

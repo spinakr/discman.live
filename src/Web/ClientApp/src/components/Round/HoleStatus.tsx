@@ -65,14 +65,9 @@ export default ({
     (s) => s.playerName === username
   );
 
-  if (
-    !waitingForScores ||
-    editHoleScore ||
-    !holeScores ||
-    !playerStats ||
-    !playerScores
-  )
+  if (!waitingForScores || editHoleScore || !holeScores || !playerScores) {
     return null;
+  }
 
   return (
     <div className="modal is-active">
@@ -121,10 +116,12 @@ export default ({
               </tbody>
             </table>
             <hr />
-            <RoundPredictions
-              playerRoundScores={playerScores}
-              playerStats={playerStats}
-            />
+            {playerStats && (
+              <RoundPredictions
+                playerRoundScores={playerScores}
+                playerStats={playerStats}
+              />
+            )}
           </div>
 
           <footer
