@@ -30,7 +30,7 @@ const renderCoursesList = (
   var courseNames = layouts.map((l) => l.name).filter(onlyUnique);
   return (
     <>
-      <NewCourse currentCourseName={""} />
+      <NewCourse />
       <br />
       <br />
       <div className="field">

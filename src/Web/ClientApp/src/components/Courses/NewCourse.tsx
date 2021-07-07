@@ -5,6 +5,7 @@ import { ApplicationState } from "../../store";
 import * as CoursesStore from "../../store/Courses";
 import { Draggable, Map, Marker, Point } from "pigeon-maps";
 import colors from "../../colors";
+import { Course } from "../../store/Courses";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -15,7 +16,7 @@ const mapState = (state: ApplicationState) => {
 const connector = connect(mapState, CoursesStore.actionCreators);
 
 interface NewCourseProps {
-  currentCourseName: string | undefined;
+  currentCourse?: Course | undefined;
 }
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
@@ -23,10 +24,12 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & NewCourseProps;
 
 const NewCourse = (props: Props) => {
-  const { createCourse, currentCourseName } = props;
+  const { createCourse, currentCourse } = props;
   const [showDialog, setShowDialog] = useState(false);
   const [layoutName, setLayoutName] = useState<string>("");
-  const [courseName, setCourseName] = useState<string>(currentCourseName || "");
+  const [courseName, setCourseName] = useState<string>(
+    currentCourse?.name || ""
+  );
   const [numberOfHoles, setNumberOfHoles] = useState<number>(18);
   const [par4s, setPar4s] = useState<number[]>([]);
   const [par5s, setPar5s] = useState<number[]>([]);
@@ -102,11 +105,11 @@ const NewCourse = (props: Props) => {
                     type="text"
                     value={courseName}
                     onChange={(e) => setCourseName(e.target.value)}
-                    disabled={!!currentCourseName}
+                    disabled={!!currentCourse}
                     style={{ backgroundColor: colors.field }}
                   ></input>
                 </div>
-                {props.currentCourseName && (
+                {currentCourse && (
                   <div className="field">
                     <input
                       className="input"
@@ -202,7 +205,12 @@ const NewCourse = (props: Props) => {
                 createCourse(
                   courseName,
                   layoutName,
-                  courseLocation,
+                  currentCourse
+                    ? [
+                        currentCourse.coordinates.latitude,
+                        currentCourse.coordinates.longitude,
+                      ]
+                    : courseLocation,
                   numberOfHoles,
                   par4s,
                   par5s
@@ -222,7 +230,7 @@ const NewCourse = (props: Props) => {
         onClick={() => setShowDialog(true)}
         style={{ backgroundColor: colors.button }}
       >
-        <strong>{currentCourseName ? "New Layout" : "New Course"}</strong>
+        <strong>{currentCourse ? "New Layout" : "New Course"}</strong>
       </button>
     </>
   );

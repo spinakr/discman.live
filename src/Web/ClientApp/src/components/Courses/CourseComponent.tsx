@@ -44,7 +44,7 @@ const CourseComponent = ({ layouts, updateCourse }: CourseProps) => {
                 </select>
               </div>
             </div>
-            <NewCourse currentCourseName={courseName} />
+            <NewCourse currentCourse={selectedLayout} />
           </div>
 
           <CourseDetails course={selectedLayout} updateCourse={updateCourse} />
