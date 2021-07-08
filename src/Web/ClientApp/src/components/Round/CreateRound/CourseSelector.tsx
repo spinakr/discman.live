@@ -1,4 +1,3 @@
-import { Point } from "pigeon-maps";
 import React, { useState, useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
@@ -11,7 +10,6 @@ import {
 } from "../../../store/Courses";
 import { Hole } from "../../../store/Rounds";
 import { useMountEffect } from "../../../utils";
-import NewCourse from "../../Courses/NewCourse";
 import CoursesMap from "./CoursesMap";
 import "./CreateRound.css";
 
@@ -34,11 +32,6 @@ type Props = PropsFromRedux & {
   selectedLayout: Course | undefined;
   closeDialog: () => void;
 };
-
-interface Chunk {
-  header: JSX.Element;
-  par: JSX.Element;
-}
 
 const tableComps = (holeNumber: number, holePar: number) => {
   const header = (key: number) => (

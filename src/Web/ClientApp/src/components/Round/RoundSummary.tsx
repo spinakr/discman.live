@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { Round, PlayerScore } from "../../store/Rounds";
 import RoundChart from "./RoundChart";

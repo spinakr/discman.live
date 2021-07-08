@@ -25,7 +25,7 @@ type Props = PropsFromRedux & {};
 const RoundStatus = (props: Props) => {
   const { stats, user, round } = props;
   const [showDialog, setShowDialog] = useState(false);
-  const [showPlayer, setShowPlayer] = useState(user?.user?.username);
+  const [showPlayer] = useState(user?.user?.username);
 
   const playerStats = stats && stats.find((s) => s.playerName === showPlayer);
 

@@ -58,54 +58,6 @@ const renderScoresThight = (playerScores: PlayerScore[], username: string) => {
     </table>
   );
 };
-const renderScoresPart = (
-  playerScores: PlayerScore[],
-  username: string,
-  from: number,
-  to: number,
-  withTotals: boolean
-) => {
-  return (
-    <table
-      className="table is-narrow is-fullwidth my-0 mb-2"
-      style={{ backgroundColor: colors.table }}
-    >
-      <thead>
-        <tr>
-          {withTotals && (
-            <th>
-              Hole
-              <br />
-              Par
-            </th>
-          )}
-          {playerScores[0].scores.slice(from, to).map((s) => (
-            <th key={s.hole.number}>
-              {s.hole.number} <br />
-              <i>{s.hole.par}</i>
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {playerScores.map((p) => (
-          <tr
-            key={p.playerName}
-            className={p.playerName === username ? "active-user-row" : ""}
-          >
-            {withTotals && (
-              <td>
-                {p.playerName}&nbsp;(
-                {playerTotal(p)})
-              </td>
-            )}
-            {p.scores.slice(from, to).map((s) => renderPlayerHoleScore(s))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
 
 const renderPlayerHoleScore = (s: HoleScore) => {
   return (
@@ -124,7 +76,7 @@ export default ({ round, username }: RoundLeaderboardProps) => {
     const btotal = playerTotal(b);
     return atotal === btotal ? 0 : atotal < btotal ? -1 : 1;
   });
-  const [showThight, setShowThight] = useState(false);
+  const [, setShowThight] = useState(false);
   const [cannotShare, setCannotShare] = useState(false);
   const scoresRef = React.createRef<HTMLDivElement>();
   const holesOnCourse = round.playerScores[0].scores.length;

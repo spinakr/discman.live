@@ -1,10 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { ApplicationState } from "../store";
 import { connect, ConnectedProps } from "react-redux";
 import { actionCreators as userActionCreator } from "../store/User";
-import { Link } from "react-router-dom";
 import colors from "../colors";
-import UpdateEmailForm from "./User/UpdateEmailForm";
 import EmojiPicker from "./User/EmojiPicker";
 import CountryPicker from "./User/CountryPicker";
 

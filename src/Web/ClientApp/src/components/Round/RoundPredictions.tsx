@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React from "react";
 import { PlayerCourseStats, PlayerScore } from "../../store/Rounds";
-import InformationDialogue from "../InformationDialogue";
 
 const RoundPredictions = ({
   playerStats,

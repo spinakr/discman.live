@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as CoursesStore from "../../store/Courses";
-import { Draggable, Map, Marker, Point } from "pigeon-maps";
+import { Draggable, Map, Point } from "pigeon-maps";
 import colors from "../../colors";
 import { Course } from "../../store/Courses";
 

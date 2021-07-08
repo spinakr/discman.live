@@ -18,7 +18,7 @@ const CoursesMap = ({
     59.91614272103729,
     10.746863315787369,
   ] as Point);
-  const [course, setCourse] = useState([
+  const [, setCourse] = useState([
     59.91614272103729,
     10.746863315787369,
   ] as Point);

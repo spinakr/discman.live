@@ -6,7 +6,7 @@ type Props = {
 };
 
 const emailValid = (email: string) => {
-  if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/.test(email)) return true;
+  if (/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/.test(email)) return true;
   return false;
 };
 

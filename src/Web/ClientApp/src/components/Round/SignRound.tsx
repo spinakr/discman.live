@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import colors from "../../colors";
 import SignaturePad from "react-signature-canvas";
 import { PlayerSignature } from "../../store/Rounds";

@@ -8,8 +8,6 @@ import Feed from "./Feed/Feed";
 import NewsMessages from "./NewsMessages";
 import About from "./About";
 import InitSettings from "./InitSettings";
-import Signup from "./Signup";
-import colors from "../colors";
 import { Link } from "react-router-dom";
 import AddFriends from "./AddFriends";
 

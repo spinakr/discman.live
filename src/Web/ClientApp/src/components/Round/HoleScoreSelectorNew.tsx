@@ -4,7 +4,6 @@ import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
 import * as RoundsStore from "../../store/Rounds";
 import { StrokeOutcome } from "../../store/Rounds";
-import NewHole from "./NewHole";
 import "./HoleScore.css";
 import RoundStatus from "./RoundStatus";
 import * as UserStore from "../../store/User";
