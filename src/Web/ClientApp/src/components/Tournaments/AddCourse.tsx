@@ -7,6 +7,7 @@ import {
 } from "../../store/Courses";
 import { actionCreators as tournamentsActionCreator } from "../../store/Tournaments";
 import { useParams } from "react-router";
+import colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -25,7 +26,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 type Props = PropsFromRedux & {};
 
 const AddCourse = (props: Props) => {
-  let { tournamentId } = useParams();
+  let { tournamentId } = useParams<{ tournamentId: string }>();
   const [courseFilter, setCourseFilter] = useState("");
   const [showDialog, setShowDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<string | undefined>();
@@ -60,10 +61,16 @@ const AddCourse = (props: Props) => {
           <div className="modal-background"></div>
         </div>
         <div className="modal-card">
-          <header className="modal-card-head">
+          <header
+            className="modal-card-head"
+            style={{ backgroundColor: colors.background }}
+          >
             <p className="modal-card-title">Add course</p>
           </header>
-          <section className="modal-card-body">
+          <section
+            className="modal-card-body"
+            style={{ backgroundColor: colors.background }}
+          >
             <label className="label">Course</label>
             <>
               <div className="field">
@@ -75,6 +82,7 @@ const AddCourse = (props: Props) => {
                     onChange={(e) => {
                       setCourseFilter(e.target.value);
                     }}
+                    style={{ backgroundColor: colors.field }}
                   />
                   <span className="icon is-left">
                     <i className="fas fa-search" aria-hidden="true"></i>
@@ -105,6 +113,7 @@ const AddCourse = (props: Props) => {
                       <div className="select is-grey">
                         <select
                           onChange={(e) => layoutSelected(e.target.value)}
+                          style={{ backgroundColor: colors.field }}
                         >
                           {availableLayouts?.map((c) => (
                             <option key={c.id} value={c.id}>
@@ -118,9 +127,12 @@ const AddCourse = (props: Props) => {
                 )}
             </>
           </section>
-          <footer className="modal-card-foot">
+          <footer
+            className="modal-card-foot"
+            style={{ backgroundColor: colors.background }}
+          >
             <button
-              className="button is-success is-light is-outlined"
+              className="button "
               onClick={() => {
                 tournamentId &&
                   selectedLayout &&
@@ -131,7 +143,11 @@ const AddCourse = (props: Props) => {
             >
               Save
             </button>
-            <button className="button" onClick={() => setShowDialog(false)}>
+            <button
+              className="button"
+              onClick={() => setShowDialog(false)}
+              style={{ backgroundColor: colors.background }}
+            >
               Cancel
             </button>
           </footer>

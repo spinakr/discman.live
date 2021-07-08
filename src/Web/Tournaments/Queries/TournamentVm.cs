@@ -9,17 +9,20 @@ namespace Web.Tournaments.Queries
         public TournamentInfo Info { get; set; }
         public TournamentLeaderboard Leaderboard { get; set; }
         public TournamentPricesVm Prices { get; set; }
-        
+
     }
-    
+
     public class TournamentPricesVm : IMapFrom<TournamentPrices>
     {
-        
+
         public List<FinalScoreVm> Scoreboard { get; set; }
         public TournamentPriceVm FastestPlayer { get; set; }
         public TournamentPriceVm SlowestPlayer { get; set; }
-        public TournamentPriceVm BestPutter { get; set; }
-        public TournamentPriceVm MostAccurateDriver { get; set; }
+        public TournamentPriceVm MostBirdies { get; set; }
+        public TournamentPriceVm LeastBogeysOrWorse { get; set; }
+        public TournamentPriceVm LongestCleanStreak { get; set; }
+        public TournamentPriceVm LongestDrySpell { get; set; }
+        public TournamentPriceVm BounceBacks { get; set; }
     }
 
     public class FinalScoreVm : IMapFrom<FinalScore>

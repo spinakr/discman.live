@@ -7,6 +7,7 @@ import {
   ScoreMode,
 } from "../../store/Rounds";
 import { CourseInfo } from "../../store/Tournaments";
+import colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -46,16 +47,26 @@ const NewTournamentRound = (props: Props) => {
           <div className="modal-background"></div>
         </div>
         <div className="modal-card has-text-left">
-          <header className="modal-card-head">
+          <header
+            className="modal-card-head"
+            style={{ backgroundColor: colors.background }}
+          >
             <p className="modal-card-title">Start new round</p>
           </header>
-          <section className="modal-card-body">
+          <section
+            className="modal-card-body"
+            style={{ backgroundColor: colors.background }}
+          >
             <label className="label">Course</label>
             <>
               <div className="field">
                 <div className="control">
                   <div className="select is-primary">
-                    <select value={props.selectedCourse.name} disabled>
+                    <select
+                      value={props.selectedCourse.name}
+                      disabled
+                      style={{ backgroundColor: colors.field }}
+                    >
                       <option>{props.selectedCourse.name}</option>
                     </select>
                   </div>
@@ -64,7 +75,11 @@ const NewTournamentRound = (props: Props) => {
               <div className="field">
                 <div className="control">
                   <div className="select is-primary">
-                    <select value={props.selectedCourse.layout} disabled>
+                    <select
+                      value={props.selectedCourse.layout}
+                      disabled
+                      style={{ backgroundColor: colors.field }}
+                    >
                       <option>{props.selectedCourse.layout}</option>
                     </select>
                   </div>
@@ -75,7 +90,10 @@ const NewTournamentRound = (props: Props) => {
             <div className="field">
               <div className="control">
                 <div className="select is-primary">
-                  <select onChange={(e) => playerAdded(e.target.value)}>
+                  <select
+                    onChange={(e) => playerAdded(e.target.value)}
+                    style={{ backgroundColor: colors.field }}
+                  >
                     <option></option>
                     {props.friends?.map((u) => (
                       <option key={u}>{u}</option>
@@ -96,9 +114,12 @@ const NewTournamentRound = (props: Props) => {
               </span>
             ))}
           </section>
-          <footer className="modal-card-foot">
+          <footer
+            className="modal-card-foot"
+            style={{ backgroundColor: colors.background }}
+          >
             <button
-              className="button is-success"
+              className="button"
               onClick={() => {
                 props.newRound(
                   props.selectedCourse.id,
@@ -111,7 +132,11 @@ const NewTournamentRound = (props: Props) => {
             >
               Start
             </button>
-            <button className="button" onClick={() => setShowDialog(false)}>
+            <button
+              className="button"
+              onClick={() => setShowDialog(false)}
+              style={{ backgroundColor: colors.background }}
+            >
               Cancel
             </button>
           </footer>

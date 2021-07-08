@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
+import colors from "../../colors";
 import { ApplicationState } from "../../store";
 import { actionCreators as tournamentsActionCreator } from "../../store/Tournaments";
 // import "bulma-calendar/dist/js/bulma-calendar.min.js";
@@ -47,10 +48,16 @@ const NewTournament = (props: Props) => {
           <div className="modal-background"></div>
         </div>
         <div className="modal-card">
-          <header className="modal-card-head">
+          <header
+            className="modal-card-head"
+            style={{ backgroundColor: colors.background }}
+          >
             <p className="modal-card-title">Create new tournament</p>
           </header>
-          <section className="modal-card-body">
+          <section
+            className="modal-card-body"
+            style={{ backgroundColor: colors.background }}
+          >
             <label className="label">Tournament name</label>
             <div className="field">
               <div className="control">
@@ -59,6 +66,7 @@ const NewTournament = (props: Props) => {
                   type="text"
                   value={tournamentName}
                   onChange={(e) => setTournamentName(e.target.value)}
+                  style={{ background: colors.field }}
                 ></input>
               </div>
             </div>
@@ -70,6 +78,7 @@ const NewTournament = (props: Props) => {
                   type="date"
                   value={toIsoDate(start)}
                   onChange={(e) => setStart(new Date(e.target.value))}
+                  style={{ background: colors.field }}
                 ></input>
               </div>
             </div>
@@ -81,13 +90,17 @@ const NewTournament = (props: Props) => {
                   type="date"
                   value={toIsoDate(end)}
                   onChange={(e) => setEnd(new Date(e.target.value))}
+                  style={{ background: colors.field }}
                 ></input>
               </div>
             </div>
           </section>
-          <footer className="modal-card-foot">
+          <footer
+            className="modal-card-foot"
+            style={{ backgroundColor: colors.background }}
+          >
             <button
-              className="button is-success is-light is-outlined"
+              className="button"
               onClick={() => {
                 createTournament(tournamentName, start, end);
                 setShowDialog(false);
@@ -96,7 +109,11 @@ const NewTournament = (props: Props) => {
             >
               Create
             </button>
-            <button className="button" onClick={() => setShowDialog(false)}>
+            <button
+              className="button"
+              onClick={() => setShowDialog(false)}
+              style={{ backgroundColor: colors.background }}
+            >
               Cancel
             </button>
           </footer>

@@ -1,4 +1,5 @@
 import React from "react";
+import colors from "../../colors";
 import { Tournament } from "../../store/Tournaments";
 
 export interface TournamentLeaderboardProps {
@@ -7,7 +8,10 @@ export interface TournamentLeaderboardProps {
 }
 
 export default ({ tournament, username }: TournamentLeaderboardProps) => (
-  <table className="table is-marginless is-paddingless is-narrow is-striped is-fullwidth">
+  <table
+    className="table is-marginless is-paddingless is-narrow is-striped is-fullwidth"
+    style={{ backgroundColor: colors.table }}
+  >
     <thead>
       <tr>
         <th></th>

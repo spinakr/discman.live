@@ -18,13 +18,17 @@ export interface Prices {
   scoreboard: FinalScore[];
   fastestPlayer: Price;
   slowestPlayer: Price;
-  bestPutter: Price;
-  mostAccurateDriver: Price;
+  mostBirdies: Price;
+  leastBogeysOrWorse: Price;
+  longestCleanStreak: Price;
+  longestDrySpell: Price;
+  bounceBacks: Price;
 }
 
 export interface Price {
   username: string;
   scoreValue: string;
+  negativePrice: boolean;
 }
 
 export interface FinalScore {

@@ -57,19 +57,7 @@ namespace Web.Tournaments.Commands
                 var playerScores = rounds.SelectMany(r => r.PlayerScores.Where(s => s.PlayerName == tournamentPlayer)).ToList();
                 if (playerScores.Any() && playerScores.All(s => s.Scores.All(x => x.StrokeSpecs.Count > 0 || x.Strokes == 1)))
                 {
-                    var averagePutsPerHole = playerScores
-                        .Average(s => s.Scores
-                            .Average(h => h.StrokeSpecs
-                                .Count(ss => ss.Outcome == StrokeSpec.StrokeOutcome.Circle1 || ss.Outcome == StrokeSpec.StrokeOutcome.Circle2)));
-
-                    var fairwayHitRatio = playerScores.Sum(s => s.Scores.Count(h =>
-                    {
-                        var firstThrow = h.StrokeSpecs.FirstOrDefault()?.Outcome;
-
-                        return firstThrow == StrokeSpec.StrokeOutcome.Fairway ||
-                               firstThrow == StrokeSpec.StrokeOutcome.Circle1 ||
-                               firstThrow == StrokeSpec.StrokeOutcome.Circle2;
-                    })) / (double) playerScores.Sum(s => s.Scores.Count);
+                    var playerHoles = playerScores.SelectMany(s => s.Scores).ToArray();
 
                     var averageMinsPerHole = playerScores.Average(s =>
                     {
@@ -83,26 +71,6 @@ namespace Web.Tournaments.Commands
 
                         return diffs.Average(x => x.TotalMinutes);
                     });
-
-
-                    if (string.IsNullOrWhiteSpace(prices.BestPutter?.ScoreValue) || double.Parse(prices.BestPutter.ScoreValue) > averagePutsPerHole)
-                    {
-                        prices.BestPutter = new TournamentPrice
-                        {
-                            ScoreValue = averagePutsPerHole.ToString(),
-                            Username = tournamentPlayer
-                        };
-                    }
-
-                    if (string.IsNullOrWhiteSpace(prices.MostAccurateDriver?.ScoreValue) ||
-                        double.Parse(prices.MostAccurateDriver.ScoreValue) < fairwayHitRatio)
-                    {
-                        prices.MostAccurateDriver = new TournamentPrice
-                        {
-                            Username = tournamentPlayer,
-                            ScoreValue = fairwayHitRatio.ToString()
-                        };
-                    }
 
                     if (string.IsNullOrWhiteSpace(prices.FastestPlayer?.ScoreValue) ||
                         double.Parse(prices.FastestPlayer.ScoreValue) > averageMinsPerHole)
@@ -120,19 +88,95 @@ namespace Web.Tournaments.Commands
                         prices.SlowestPlayer = new TournamentPrice
                         {
                             Username = tournamentPlayer,
-                            ScoreValue = averageMinsPerHole.ToString(CultureInfo.InvariantCulture)
+                            ScoreValue = averageMinsPerHole.ToString(CultureInfo.InvariantCulture),
+                            NegativePrice = true
+                        };
+                    }
+
+                    var birdieCount = playerHoles.Count(s => s.RelativeToPar < 0);
+                    if (string.IsNullOrWhiteSpace(prices.MostBirdies?.ScoreValue) ||
+                        int.Parse(prices.MostBirdies.ScoreValue) < birdieCount)
+                    {
+                        prices.MostBirdies = new TournamentPrice
+                        {
+                            Username = tournamentPlayer,
+                            ScoreValue = birdieCount.ToString(CultureInfo.InvariantCulture)
+                        };
+                    }
+
+
+                    var bogeysOrWorse = playerHoles.Count(s => s.RelativeToPar > 0);
+                    if (string.IsNullOrWhiteSpace(prices.LeastBogeysOrWorse?.ScoreValue) ||
+                        int.Parse(prices.LeastBogeysOrWorse.ScoreValue) > bogeysOrWorse)
+                    {
+                        prices.LeastBogeysOrWorse = new TournamentPrice
+                        {
+                            Username = tournamentPlayer,
+                            ScoreValue = bogeysOrWorse.ToString(CultureInfo.InvariantCulture)
+                        };
+                    }
+
+                    var longestCleanStreak = playerHoles.Aggregate(
+                        new { Longest = 0, Current = 0 },
+                        (agg, element) => element.RelativeToPar <= 0 ?
+                               new { Longest = Math.Max(agg.Longest, agg.Current + 1), Current = agg.Current + 1 } :
+                               new { agg.Longest, Current = 0 },
+                            agg => agg.Longest);
+
+                    if (string.IsNullOrWhiteSpace(prices.LongestCleanStreak?.ScoreValue) ||
+                        int.Parse(prices.LongestCleanStreak.ScoreValue) < longestCleanStreak)
+                    {
+                        prices.LongestCleanStreak = new TournamentPrice
+                        {
+                            Username = tournamentPlayer,
+                            ScoreValue = longestCleanStreak.ToString(CultureInfo.InvariantCulture)
+                        };
+                    }
+
+                    var longestDrySpell = playerHoles.Aggregate(
+                        new { Longest = 0, Current = 0 },
+                        (agg, element) => element.RelativeToPar > 0 ?
+                               new { Longest = Math.Max(agg.Longest, agg.Current + 1), Current = agg.Current + 1 } :
+                               new { agg.Longest, Current = 0 },
+                            agg => agg.Longest);
+
+                    if (string.IsNullOrWhiteSpace(prices.LongestDrySpell?.ScoreValue) ||
+                        int.Parse(prices.LongestDrySpell.ScoreValue) < longestDrySpell)
+                    {
+                        prices.LongestDrySpell = new TournamentPrice
+                        {
+                            Username = tournamentPlayer,
+                            ScoreValue = longestDrySpell.ToString(CultureInfo.InvariantCulture),
+                            NegativePrice = true
+                        };
+                    }
+
+                    var bounceBacks = playerHoles.Where((x, i) =>
+                    {
+                        if (i == 0) return false;
+                        var prev = playerHoles[i - 1];
+
+                        return x.RelativeToPar < 0 || prev.RelativeToPar > 0;
+                    }).Count();
+                    if (string.IsNullOrWhiteSpace(prices.BounceBacks?.ScoreValue) ||
+                        int.Parse(prices.BounceBacks.ScoreValue) > bounceBacks)
+                    {
+                        prices.BounceBacks = new TournamentPrice
+                        {
+                            Username = tournamentPlayer,
+                            ScoreValue = bounceBacks.ToString(CultureInfo.InvariantCulture)
                         };
                     }
                 }
 
-                prices.Scoreboard.Add(new FinalScore {Score = totalScore, Username = tournamentPlayer, RoundsPlayed = playerScores.Count});
+                prices.Scoreboard.Add(new FinalScore { Score = totalScore, Username = tournamentPlayer, RoundsPlayed = playerScores.Count });
             }
 
             prices.Scoreboard = prices.Scoreboard
                 .OrderByDescending(s => s.RoundsPlayed)
                 .ThenBy(s => s.Score)
                 .ToList();
-            
+
             return prices;
         }
     }

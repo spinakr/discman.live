@@ -15,8 +15,8 @@ namespace Web.Tournaments.Domain
             Id = Guid.NewGuid();
             CreatedAt = DateTime.Now;
             Name = name;
-            Players = new List<string> {admin};
-            Admins = new List<string> {admin};
+            Players = new List<string> { admin };
+            Admins = new List<string> { admin };
             Start = start;
             End = end;
             Courses = new List<Guid>();
@@ -55,12 +55,15 @@ namespace Web.Tournaments.Domain
         {
             Scoreboard = new List<FinalScore>();
         }
-        
+
         public List<FinalScore> Scoreboard { get; set; }
         public TournamentPrice FastestPlayer { get; set; }
         public TournamentPrice SlowestPlayer { get; set; }
-        public TournamentPrice BestPutter { get; set; }
-        public TournamentPrice MostAccurateDriver { get; set; }
+        public TournamentPrice MostBirdies { get; set; }
+        public TournamentPrice LeastBogeysOrWorse { get; set; }
+        public TournamentPrice LongestCleanStreak { get; set; }
+        public TournamentPrice LongestDrySpell { get; set; }
+        public TournamentPrice BounceBacks { get; set; }
     }
 
     public class FinalScore
@@ -74,5 +77,6 @@ namespace Web.Tournaments.Domain
     {
         public string Username { get; set; }
         public string ScoreValue { get; set; }
+        public bool NegativePrice { get; set; } = false;
     }
 }

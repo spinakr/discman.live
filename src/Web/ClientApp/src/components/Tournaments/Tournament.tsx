@@ -10,6 +10,7 @@ import TournamentLeaderboard from "./TournamentLeaderboard";
 import NewTournamentRound from "./NewTournamentRound";
 import { Link } from "react-router-dom";
 import TournamentPrices from "./TournamentPrices";
+import colors from "../../colors";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -42,7 +43,7 @@ const toDateString = (date: Date) => {
 };
 
 const Tournament = (props: Props) => {
-  let { tournamentId } = useParams();
+  let { tournamentId } = useParams<{ tournamentId: string }>();
   const { fetchTournament, tournament } = props;
   const [copied, setCopied] = useState(false);
   React.useEffect(() => {
@@ -66,7 +67,10 @@ const Tournament = (props: Props) => {
 
   return (
     <>
-      <nav className="navbar is-light level is-mobile mb-0">
+      <nav
+        className="navbar is-light level is-mobile mb-0"
+        style={{ backgroundColor: colors.navbar }}
+      >
         <div className="ml-1 navbar-item has-text-centered">
           <div className="is-size-5">{tournament.info.name}</div>
         </div>
