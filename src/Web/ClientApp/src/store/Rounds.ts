@@ -169,6 +169,11 @@ export interface CourseWasSavedAction {
   type: "COURSE_WAS_SAVED";
 }
 
+export interface HoleWasDeletedAction {
+  type: "HOLE_WAS_DELETED";
+  holeNumber: number;
+}
+
 export interface RoundWasCompletedAction {
   type: "ROUND_WAS_COMPLETED";
 }
@@ -205,6 +210,7 @@ export type KnownAction =
   | FetchRoundSuccessAction
   | ScoreUpdatedSuccessAction
   | NewRoundCreatedAction
+  | HoleWasDeletedAction
   | CallHistoryMethodAction
   | ConnectToHubAction
   | DisconnectToHubAction
@@ -551,7 +557,7 @@ export const actionCreators = {
       return;
 
     const activeHoleIndex = appState.rounds?.activeHoleIndex;
-    if (!activeHoleIndex) return;
+    if (activeHoleIndex === null || activeHoleIndex === undefined) return;
     const holeNumber =
       appState.rounds?.round?.playerScores[0].scores[activeHoleIndex].hole
         .number;
@@ -565,6 +571,7 @@ export const actionCreators = {
     })
       .then((res) => {
         if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+        dispatch({ type: "HOLE_WAS_DELETED", holeNumber });
         return res;
       })
       .catch((err: Error) => {
@@ -874,6 +881,22 @@ export const reducer: Reducer<RoundsState> = (
       return {
         ...state,
         round: { ...state.round, isCompleted: true },
+      };
+    case "HOLE_WAS_DELETED":
+      if (!state.round) return state;
+      return {
+        ...state,
+        round: {
+          ...state.round,
+          playerScores: state.round?.playerScores.map((p) => {
+            return {
+              ...p,
+              scores: p.scores.filter(
+                (s) => s.hole.number !== action.holeNumber
+              ),
+            };
+          }),
+        },
       };
     case "ROUND_WAS_DELETED":
       if (state.round?.id === action.roundId) {

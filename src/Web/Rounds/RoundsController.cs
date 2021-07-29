@@ -129,19 +129,6 @@ namespace Web.Rounds
         {
             return Ok(await _mediator.Send(new GetPlayersCourseStatsQuery { RoundId = roundId }));
         }
-
-        [HttpPut("{roundId}/scoremode")]
-        public async Task<IActionResult> SetScoreMode(Guid roundId, [FromBody] ChangeScoreModeRequest req)
-        {
-            await _mediator.Send(new SetScoreModeCommand
-            {
-                RoundId = roundId,
-                ScoreMode = req.ScoreMode
-            });
-
-            return Ok();
-        }
-
     }
 
     public class SaveCourseRequest
