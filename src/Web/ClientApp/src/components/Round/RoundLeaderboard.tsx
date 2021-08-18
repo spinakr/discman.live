@@ -11,10 +11,12 @@ export interface RoundLeaderboardProps {
   username: string;
 }
 
-const playerTotal = (playerScore: PlayerScore) => {
-  return playerScore.scores.reduce((total, hole) => {
-    return total + hole.relativeToPar;
-  }, 0);
+const playerTotal = (playerScore: PlayerScore, handicap?: number) => {
+  return (
+    playerScore.scores.reduce((total, hole) => {
+      return total + hole.relativeToPar;
+    }, 0) - (handicap || 0)
+  );
 };
 
 const renderScoresThight = (playerScores: PlayerScore[], username: string) => {
@@ -77,12 +79,21 @@ export default ({ round, username }: RoundLeaderboardProps) => {
     return atotal === btotal ? 0 : atotal < btotal ? -1 : 1;
   });
   const [, setShowThight] = useState(false);
+  const [sortHcp, setSortHcp] = useState(false);
   const [cannotShare, setCannotShare] = useState(false);
   const scoresRef = React.createRef<HTMLDivElement>();
   const holesOnCourse = round.playerScores[0].scores.length;
   const allHolesScored = !round.playerScores.some((p) =>
     p.scores.some((s) => s.strokes === 0)
   );
+
+  const playerScores = sortHcp
+    ? [...round.playerScores].sort(
+        (a, b) =>
+          playerTotal(a, a.courseAverageAtTheTime) -
+          playerTotal(b, b.courseAverageAtTheTime)
+      )
+    : round.playerScores;
 
   return (
     <>
@@ -95,11 +106,17 @@ export default ({ round, username }: RoundLeaderboardProps) => {
             <th></th>
             <th>Player</th>
             <th>Score</th>
+            <th
+              onClick={() => setSortHcp(!sortHcp)}
+              style={{ backgroundColor: `${sortHcp ? "red" : ""}` }}
+            >
+              Hcp
+            </th>
             <th>{allHolesScored ? "Achievements" : "Through"}</th>
           </tr>
         </thead>
         <tbody>
-          {round.playerScores.map((s, i) => {
+          {playerScores.map((s, i) => {
             const holesPlayed = s.scores.filter((s) => s.strokes !== 0).length;
             const playerAchievments =
               round?.achievements &&
@@ -119,6 +136,12 @@ export default ({ round, username }: RoundLeaderboardProps) => {
                 <td>
                   {playerTotal(s) >= 0 ? "+" : "-"}
                   {Math.abs(playerTotal(s))}
+                </td>
+                <td>
+                  {playerTotal(s, s.courseAverageAtTheTime) >= 0 ? "+" : "-"}
+                  {Math.round(
+                    Math.abs(playerTotal(s, s.courseAverageAtTheTime))
+                  )}
                 </td>
                 {holesPlayed === holesOnCourse ? (
                   <td align="center" className="pt-1">

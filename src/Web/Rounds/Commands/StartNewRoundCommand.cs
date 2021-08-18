@@ -51,25 +51,42 @@ namespace Web.Rounds.Commands
                 .Where(u => u.Username.IsOneOf(playerNames.ToArray()))
                 .ToList();
 
-
-            // var justStartedRound = await _documentSession
-            //     .Query<Round>()
-            //     .Where(r => !r.Deleted)
-            //     .Where(r => !r.IsCompleted)
-            //     .Where(r => r.PlayerScores.Any(s => s.PlayerName == username))
-            //     .SingleOrDefaultAsync(r => r.StartTime > DateTime.Now.AddMinutes(-10), token: cancellationToken);
-            //
-            // if (justStartedRound is object) return justStartedRound;
-
             var round = course != null
                 ? new Round(course, players, username, request.RoundName, request.ScoreMode)
                 : new Round(players, username, request.RoundName, request.ScoreMode);
+
+            CalculateCourseAverages(round, players, course);
+
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 
             await _mediator.Publish(new RoundWasStarted { RoundId = round.Id }, cancellationToken);
 
             return await Task.FromResult(round);
+        }
+
+        private void CalculateCourseAverages(Round round, List<User> players, Course course)
+        {
+            foreach (var player in players)
+            {
+                var playerCourseRounds = _documentSession
+                    .Query<Round>()
+                    .Where(r => !r.Deleted)
+                    .Where(r => r.IsCompleted)
+                    .Where(r => r.PlayerScores.Count > 1)
+                    .Where(r => r.CourseName == course.Name && r.CourseLayout == course.Layout)
+                    .Where(r => r.PlayerScores.Any(s => s.PlayerName == player.Username))
+                    .ToList();
+                var fivePreviousRounds = playerCourseRounds
+                    .Where(r => r.StartTime < DateTime.Now)
+                    .OrderByDescending(r => r.StartTime)
+                    .Take(5)
+                    .ToList();
+                var courseScores = fivePreviousRounds.Select(r => r.PlayerScore(player.Username));
+                var currentCourseAverage = courseScores.Average();
+
+                round.PlayerScores.Single(s => s.PlayerName == player.Username).CourseAverageAtTheTime = currentCourseAverage;
+            }
         }
     }
 }
