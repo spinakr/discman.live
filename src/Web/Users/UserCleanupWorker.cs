@@ -33,47 +33,28 @@ namespace Web.Courses
 
         private void DoWork(object state)
         {
-            // using var documentSession = _documentStore.OpenSession();
+            using var documentSession = _documentStore.OpenSession();
 
-            // var featureToggles = documentSession.Query<FeatureToggles>().SingleOrDefault();
-            // if (featureToggles is null)
-            // {
-            //     featureToggles = new FeatureToggles();
-            //     documentSession.Store(featureToggles);
-            // }
+            _logger.LogInformation("Cleaning old users");
 
-            // if (featureToggles.CleanOldUsersDone2) return;
-            // featureToggles.CleanOldUsersDone2 = true;
-            // documentSession.Update(featureToggles);
-            // _logger.LogInformation("Cleaning old users");
+            var users = documentSession.Query<User>().ToList();
+            var deletedUser = 0;
+            foreach (var user in users)
+            {
+                var rounds = documentSession
+                    .Query<Round>()
+                    .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
+                    .ToList();
 
-            // var users = documentSession.Query<User>().ToList();
-            // foreach (var user in users)
-            // {
-            // var rounds = documentSession
-            //     .Query<Round>()
-            //     .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
-            //     .ToList();
+                if (rounds.Count == 0)
+                {
+                    // documentSession.Delete(user);
+                    _logger.LogInformation($"Deleting user {user.Username}, no rounds registered and more than 5 months old");
+                    deletedUser++;
+                }
 
-            // if (rounds.Count == 0)
-            // {
-            //     // documentSession.Delete(user);
-            //     _logger.LogInformation($"Deleting user {user.Username}, no rounds registered and more than 5 months old");
-            // }
-            //     if (user is null) continue;
-            //     user.SimpleScoring = false;
-            //     if (user.Achievements is null) user.Achievements = new Achievements();
-            //     user.Achievements.RemoveAllofType("TwentyRoundsInAMonth");
-            //     documentSession.Update(user);
-            // }
-
-            // var rounds = documentSession.Query<Round>().ToList();
-            // foreach (var round in rounds)
-            // {
-            //     if (round.Achievements is null) continue;
-            //     round.Achievements = round.Achievements.Where(a => a.AchievementName != "TwentyRoundsInAMonth").ToList();
-            //     documentSession.Update(round);
-            // }
+            }
+            _logger.LogInformation($"Deleted {deletedUser} users!");
 
             // documentSession.SaveChanges();
         }
