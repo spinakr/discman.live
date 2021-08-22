@@ -83,6 +83,7 @@ namespace Web.Rounds.Commands
                     .Take(5)
                     .ToList();
                 var courseScores = fivePreviousRounds.Select(r => r.PlayerScore(player.Username));
+                if (courseScores is null || courseScores.Count() == 0) return;
                 var currentCourseAverage = courseScores.Average();
 
                 round.PlayerScores.Single(s => s.PlayerName == player.Username).CourseAverageAtTheTime = currentCourseAverage;
