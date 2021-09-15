@@ -32,6 +32,39 @@ namespace Web.Courses
         private void DoWork(object state)
         {
             using var documentSession = _documentStore.OpenSession();
+
+
+            try
+            {
+                var allRounds = documentSession
+                    .Query<Round>().ToList();
+
+                var courses = documentSession
+                    .Query<Course>().ToList();
+
+                foreach (var round in allRounds)
+                {
+                    var course = courses.SingleOrDefault(c => c.Id == round.CourseId);
+                    foreach (var p in round.PlayerScores)
+                    {
+                        p.NumberOfHcpStrokes = (int)Math.Round(Math.Min(p.CourseAverageAtTheTime, course?.CourseAverageScore ?? 10000.0));
+                    }
+                    documentSession.Update(round);
+                }
+
+
+                documentSession.SaveChanges();
+
+
+            }
+            catch (System.Exception e)
+            {
+                _logger.LogError($"Failed to update round handicap {e.Data}");
+            }
+
+
+
+
             var activeRounds = documentSession
                 .Query<Round>()
                 .Where(r => !r.Deleted)
@@ -39,7 +72,7 @@ namespace Web.Courses
                 .Where(r => r.StartTime < DateTime.Today.AddDays(-2)).ToList();
 
             if (!activeRounds.Any()) return;
-            
+
             _logger.LogInformation($"Cleaning up active rounds older than 3 days. {activeRounds.Count} active rounds will be completed or deleted");
             foreach (var round in activeRounds)
             {

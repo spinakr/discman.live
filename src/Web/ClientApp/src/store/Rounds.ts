@@ -41,6 +41,7 @@ export interface PlayerScore {
   playerName: string;
   playerEmoji: string;
   courseAverageAtTheTime: number;
+  numberOfHcpStrokes: number;
   scores: HoleScore[];
 }
 

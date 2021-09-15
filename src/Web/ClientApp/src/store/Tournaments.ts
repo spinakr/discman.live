@@ -43,6 +43,7 @@ export interface TournamentLeaderboard {
 export interface TournamentScore {
   name: string;
   totalScore: number;
+  totalHcpScore: number;
   coursesPlayed: string[];
 }
 

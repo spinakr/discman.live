@@ -94,6 +94,17 @@ namespace Web.Rounds
                 .Sum(q => q.RelativeToPar);
         }
 
+        public int PlayerHcpScore(string player)
+        {
+            var playerScores = PlayerScores
+                .Where(s => s.PlayerName == player)
+                .SelectMany(s => s.Scores);
+
+            var playerHcpStrokes = PlayerScores.Single(p => p.PlayerName == player).NumberOfHcpStrokes;
+
+            return playerScores.Sum(q => q.RelativeToPar) - playerHcpStrokes;
+        }
+
         public double RoundAverageScore()
         {
             return PlayerScores.Sum(ps => ps.Scores.Sum(s => s.RelativeToPar)) / (double)PlayerScores.Count;
@@ -146,6 +157,7 @@ namespace Web.Rounds
         public string PlayerName { get; set; }
         public string PlayerEmoji { get; set; }
         public double CourseAverageAtTheTime { get; set; }
+        public int NumberOfHcpStrokes { get; set; }
         public List<HoleScore> Scores { get; set; }
     }
 

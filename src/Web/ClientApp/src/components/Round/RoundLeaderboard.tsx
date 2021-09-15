@@ -90,8 +90,8 @@ export default ({ round, username }: RoundLeaderboardProps) => {
   const playerScores = sortHcp
     ? [...round.playerScores].sort(
         (a, b) =>
-          playerTotal(a, a.courseAverageAtTheTime) -
-          playerTotal(b, b.courseAverageAtTheTime)
+          playerTotal(a, a.numberOfHcpStrokes) -
+          playerTotal(b, b.numberOfHcpStrokes)
       )
     : round.playerScores;
 
@@ -138,10 +138,8 @@ export default ({ round, username }: RoundLeaderboardProps) => {
                   {Math.abs(playerTotal(s))}
                 </td>
                 <td>
-                  {playerTotal(s, s.courseAverageAtTheTime) >= 0 ? "+" : "-"}
-                  {Math.round(
-                    Math.abs(playerTotal(s, s.courseAverageAtTheTime))
-                  )}
+                  {playerTotal(s, s.numberOfHcpStrokes) >= 0 ? "+" : "-"}
+                  {Math.round(Math.abs(playerTotal(s, s.numberOfHcpStrokes)))}
                 </td>
                 {holesPlayed === holesOnCourse ? (
                   <td align="center" className="pt-1">

@@ -68,18 +68,20 @@ namespace Web.Tournaments.Queries
 
                 var totalScore = tournamentRounds.Sum(r => r.PlayerScore(tournamentPlayer));
                 var coursesPlayed = tournamentRounds.Select(r => r.CourseId).Distinct().ToList();
+                var hcpScore = tournamentRounds.Sum(r => r.PlayerHcpScore(tournamentPlayer));
 
                 leaderboard.Scores.Add(new TournamentScore
                 {
                     Name = tournamentPlayer,
                     TotalScore = totalScore,
-                    CoursesPlayed = coursesPlayed
+                    CoursesPlayed = coursesPlayed,
+                    TotalHcpScore = hcpScore
                 });
             }
 
             leaderboard.Scores = leaderboard.Scores
                 .OrderByDescending(s => s.CoursesPlayed.Count)
-                .ThenBy(s => s.TotalScore)
+                .ThenBy(s => s.TotalHcpScore)
                 .ToList();
 
             return leaderboard;

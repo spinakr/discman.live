@@ -193,32 +193,6 @@ const Feed = (props: Props) => {
 
   return (
     <section className="container">
-      {/* <div className="columns is-mobile">
-        <div className="column"> </div>
-        <div className="column">
-          <h3 className="title is-3 has-text-centered">Feed</h3>
-        </div>
-
-        <div className="column">
-          <div className="field">
-            <div className="control">
-              <div className="select is-grey is-small">
-                <select
-                  value={itemType}
-                  onChange={(e) => {
-                    setPage(1);
-                    setItemType(e.target.value);
-                  }}
-                >
-                  <option value="">All</option>
-                  <option value="Round">Rounds</option>
-                  <option value="Hole">Holes</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> */}
       {feed.feedItems.length > 0 && (
         <div className="">
           <InfiniteScroll

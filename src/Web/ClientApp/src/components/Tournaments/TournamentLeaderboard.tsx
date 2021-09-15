@@ -17,6 +17,7 @@ export default ({ tournament, username }: TournamentLeaderboardProps) => (
         <th></th>
         <th>Player</th>
         <th>Score</th>
+        <th>Hcp Score</th>
         <th>Courses</th>
       </tr>
     </thead>
@@ -33,6 +34,10 @@ export default ({ tournament, username }: TournamentLeaderboardProps) => (
               <td>
                 {s.totalScore >= 0 ? "+" : "-"}
                 {Math.abs(s.totalScore)}
+              </td>
+              <td>
+                {s.totalHcpScore >= 0 ? "+" : "-"}
+                {Math.abs(s.totalHcpScore)}
               </td>
               <td>
                 {s.coursesPlayed.length} / {tournament.info.courses.length}{" "}

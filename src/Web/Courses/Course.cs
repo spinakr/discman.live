@@ -46,6 +46,8 @@ namespace Web.Courses
         {
             Holes = Holes.Select(h => new Hole(h.Number, holePars[h.Number - 1], holeDistances[h.Number - 1], h.Rating, h.Average)).ToList();
         }
+
+        public double CourseAverageScore => Holes.Sum(h => h.Average - h.Par);
     }
 
     public record Coordinates(decimal Latitude, decimal Longitude);

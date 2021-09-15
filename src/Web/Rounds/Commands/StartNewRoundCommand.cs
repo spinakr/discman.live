@@ -55,7 +55,7 @@ namespace Web.Rounds.Commands
                 ? new Round(course, players, username, request.RoundName, request.ScoreMode)
                 : new Round(players, username, request.RoundName, request.ScoreMode);
 
-            CalculateCourseAverages(round, players, course);
+            CalculatePlayerCourseAverages(round, players, course);
 
             _documentSession.Store(round);
             _documentSession.SaveChanges();
@@ -65,7 +65,7 @@ namespace Web.Rounds.Commands
             return await Task.FromResult(round);
         }
 
-        private void CalculateCourseAverages(Round round, List<User> players, Course course)
+        private void CalculatePlayerCourseAverages(Round round, List<User> players, Course course)
         {
             foreach (var player in players)
             {
@@ -86,7 +86,9 @@ namespace Web.Rounds.Commands
                 if (courseScores is null || courseScores.Count() == 0) return;
                 var currentCourseAverage = courseScores.Average();
 
-                round.PlayerScores.Single(s => s.PlayerName == player.Username).CourseAverageAtTheTime = currentCourseAverage;
+                var playerScore = round.PlayerScores.Single(s => s.PlayerName == player.Username);
+                playerScore.CourseAverageAtTheTime = currentCourseAverage;
+                playerScore.NumberOfHcpStrokes = (int)Math.Round(Math.Min(currentCourseAverage, course.CourseAverageScore));
             }
         }
     }
