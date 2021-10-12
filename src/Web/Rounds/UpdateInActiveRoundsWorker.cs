@@ -33,38 +33,6 @@ namespace Web.Courses
         {
             using var documentSession = _documentStore.OpenSession();
 
-
-            try
-            {
-                var allRounds = documentSession
-                    .Query<Round>().ToList();
-
-                var courses = documentSession
-                    .Query<Course>().ToList();
-
-                foreach (var round in allRounds)
-                {
-                    var course = courses.SingleOrDefault(c => c.Id == round.CourseId);
-                    foreach (var p in round.PlayerScores)
-                    {
-                        p.NumberOfHcpStrokes = (int)Math.Round(Math.Min(p.CourseAverageAtTheTime, course?.CourseAverageScore ?? 10000.0));
-                    }
-                    documentSession.Update(round);
-                }
-
-
-                documentSession.SaveChanges();
-
-
-            }
-            catch (System.Exception e)
-            {
-                _logger.LogError($"Failed to update round handicap {e.Data}");
-            }
-
-
-
-
             var activeRounds = documentSession
                 .Query<Round>()
                 .Where(r => !r.Deleted)

@@ -14,21 +14,22 @@ namespace Web.Tournaments
         {
             SizeLimit = 10
         });
- 
+
         public async Task<TournamentLeaderboard> GetOrCreate(object key, Func<Task<TournamentLeaderboard>> createItem)
         {
             if (!_cache.TryGetValue(key, out TournamentLeaderboard cacheEntry))
             {
                 cacheEntry = await createItem();
- 
+
                 var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSize(1)//Size amount
+                    .SetSize(1)
                     .SetPriority(CacheItemPriority.High)
                     .SetSlidingExpiration(TimeSpan.FromMinutes(5))
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
- 
+
                 _cache.Set(key, cacheEntry, cacheEntryOptions);
             }
             return cacheEntry;
         }
-    }}
+    }
+}

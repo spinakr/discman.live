@@ -74,7 +74,7 @@ namespace Web.Rounds.Commands
                     .Where(r => !r.Deleted)
                     .Where(r => r.IsCompleted)
                     .Where(r => r.PlayerScores.Count > 1)
-                    .Where(r => r.CourseName == course.Name && r.CourseLayout == course.Layout)
+                    .Where(r => r.CourseId == course.Id)
                     .Where(r => r.PlayerScores.Any(s => s.PlayerName == player.Username))
                     .ToList();
                 var fivePreviousRounds = playerCourseRounds
