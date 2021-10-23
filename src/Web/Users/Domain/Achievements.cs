@@ -1,11 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using Baseline;
 using Web.Rounds;
+// ReSharper disable UnusedType.Global
 
 namespace Web.Users
 {
@@ -320,12 +319,14 @@ namespace Web.Users
         {
             return false; //logic does not work currently
 
+/*
             var perMonth = rounds.GroupBy(r => r.StartTime.Month);
             var months = perMonth.Where(g => g.Count() > 9).ToList();
             var month = months.OrderByDescending(x => x.Key).FirstOrDefault()?.Key;
             if (month is null) return false;
             this.AchievedAt = new DateTime(DateTime.Today.Year, (int)month, 1);
             return true;
+*/
         }
     }
 
@@ -340,12 +341,14 @@ namespace Web.Users
         {
             return false; //logic does not work currently
 
+/*
             var perMonth = rounds.GroupBy(r => r.StartTime.Month);
             var months = perMonth.Where(g => g.Count() > 19).ToList();
             var month = months.OrderByDescending(x => x.Key).FirstOrDefault()?.Key;
             if (month is null) return false;
             this.AchievedAt = new DateTime(DateTime.Today.Year, (int)month, 1);
             return true;
+*/
         }
     }
 
@@ -360,6 +363,7 @@ namespace Web.Users
         {
             return false; //logic does not work currently
 
+/*
             var perWeek = rounds.GroupBy(r => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
                 r.StartTime, CalendarWeekRule.FirstDay, DayOfWeek.Monday));
             var weeks = perWeek.Where(w => w.Select(x => x.StartTime.DayOfWeek).Distinct().Count() == 7);
@@ -367,6 +371,7 @@ namespace Web.Users
             if (week is null) return false;
             this.AchievedAt = CultureInfo.CurrentCulture.Calendar.AddWeeks(new DateTime(DateTime.Today.Year, 1, 1), (int)week);
             return true;
+*/
         }
     }
 
@@ -380,7 +385,9 @@ namespace Web.Users
         public override bool Evaluate(List<Round> rounds)
         {
             return false; //logic does not work currently
+/*
             return rounds.Count >= 100;
+*/
         }
     }
 
@@ -394,11 +401,13 @@ namespace Web.Users
         public override bool Evaluate(List<Round> rounds)
         {
             return false; //logic does not work currently
+/*
             var perDay = rounds.Where(r => r.StartTime != default).GroupBy(r => r.StartTime.Date);
             var days = perDay.Where(d => d.Count() > 4);
             var achievementDay = days.OrderByDescending(x => x.Key).FirstOrDefault();
             if (achievementDay != null) this.AchievedAt = achievementDay.Key;
             return achievementDay != null;
+*/
         }
     }
 }

@@ -35,6 +35,7 @@ namespace Web.Users
         public byte[] Salt { get; set; }
         public List<string> Friends { get; set; }
         public Achievements Achievements { get; set; }
+        public int DiscmanPoints { get; set; }
         public string Email { get; set; }
         public bool SimpleScoring { get; set; } = false;
         public string Emoji { get; set; }

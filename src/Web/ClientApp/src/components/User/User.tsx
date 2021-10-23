@@ -38,7 +38,8 @@ const UserComponent = (props: Props) => {
       <h3 className="title is-3 has-text-centered">
         {countries[(userDetails && userDetails.country) || "unknown"]} &nbsp;
         {username}&nbsp;
-        {userDetails?.emoji}
+        {userDetails?.emoji}&nbsp;
+        {userDetails?.discmanPoints}
       </h3>
 
       <div className="tabs is-small is-fullwidth is-centered">

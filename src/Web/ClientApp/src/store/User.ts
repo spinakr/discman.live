@@ -40,6 +40,7 @@ export interface UserDetails {
   emoji: string;
   country: string;
   activeRound: string | null;
+  discmanPoints: number;
 }
 
 export interface UserAchievement {

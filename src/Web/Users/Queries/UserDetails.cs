@@ -15,6 +15,7 @@ namespace Web.Users.Queries
         public string Emoji { get; set; }
         public string Country { get; set; }
         public bool RegisterPutDistance { get; set; }
+        public int DiscmanPoints { get; set; }
         public List<string> NewsIdsSeen { get; set; }
         public List<string> Friends { get; set; }
         public Guid? ActiveRound { get; set; }

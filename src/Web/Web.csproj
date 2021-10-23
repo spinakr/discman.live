@@ -49,6 +49,11 @@
     <_ContentIncludedByDefault Remove="ClientApp\package.json" />
     <_ContentIncludedByDefault Remove="ClientApp\public\manifest.json" />
     <_ContentIncludedByDefault Remove="ClientApp\tsconfig.json" />
+    <_ContentIncludedByDefault Remove="AdminApp\.eslintrc.json" />
+    <_ContentIncludedByDefault Remove="AdminApp\package-lock.json" />
+    <_ContentIncludedByDefault Remove="AdminApp\package.json" />
+    <_ContentIncludedByDefault Remove="AdminApp\public\manifestnew2.json" />
+    <_ContentIncludedByDefault Remove="AdminApp\tsconfig.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

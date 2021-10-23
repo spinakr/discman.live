@@ -42,6 +42,7 @@ namespace Web
             services.AddHostedService<UpdateInActiveRoundsWorker>();
             services.AddHostedService<LeaderboardWorker>();
             services.AddHostedService<ResetPasswordWorker>();
+            services.AddHostedService<DiscmanPointUpdater>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
