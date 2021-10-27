@@ -46,6 +46,8 @@ namespace Web
             services.AddHostedService<LeaderboardWorker>();
             services.AddHostedService<ResetPasswordWorker>();
             services.AddHostedService<DiscmanPointUpdater>();
+            services.AddHostedService<UserEmailNotificationWorker>();
+            // services.AddHostedService<UserCleanupWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

@@ -1,17 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
-using Marten.Linq.LastModified;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Web.Infrastructure;
-using Web.Rounds;
-using Web.Users;
 
-namespace Web.Courses
+namespace Web.Users
 {
     public class UserCleanupWorker : IHostedService, IDisposable
     {
@@ -33,28 +28,40 @@ namespace Web.Courses
 
         private void DoWork(object state)
         {
+            Thread.Sleep(2000);
             using var documentSession = _documentStore.OpenSession();
-
-            _logger.LogInformation("Cleaning old users");
-
+            
             var users = documentSession.Query<User>().ToList();
-            var deletedUser = 0;
+            _logger.LogInformation("Removing self from friends");
             foreach (var user in users)
             {
-                var rounds = documentSession
-                    .Query<Round>()
-                    .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
-                    .ToList();
-
-                if (rounds.Count == 0)
-                {
-                    // documentSession.Delete(user);
-                    _logger.LogInformation($"Deleting user {user.Username}, no rounds registered and more than 5 months old");
-                    deletedUser++;
-                }
-
+                // user.LastEmailSent = null;
+                user.Friends = user.Friends.Where(f => f != user.Username).ToList();
+                documentSession.Update(user);
             }
-            _logger.LogInformation($"Deleted {deletedUser} users!");
+
+            documentSession.SaveChanges();
+
+            // _logger.LogInformation("Cleaning old users");
+            //
+            // var users = documentSession.Query<User>().ToList();
+            // var deletedUser = 0;
+            // foreach (var user in users)
+            // {
+            //     var rounds = documentSession
+            //         .Query<Round>()
+            //         .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
+            //         .ToList();
+            //
+            //     if (rounds.Count == 0)
+            //     {
+            //         // documentSession.Delete(user);
+            //         _logger.LogInformation($"Deleting user {user.Username}, no rounds registered and more than 5 months old");
+            //         deletedUser++;
+            //     }
+            //
+            // }
+            // _logger.LogInformation($"Deleted {deletedUser} users!");
 
             // documentSession.SaveChanges();
         }

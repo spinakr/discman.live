@@ -33,6 +33,7 @@ namespace Web.Courses
 
         private void DoWork(object state)
         {
+            Thread.Sleep(5000);
             using var documentSession = _documentStore.OpenSession();
 
             var users = documentSession.Query<User>().ToList();

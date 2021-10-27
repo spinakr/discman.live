@@ -4,11 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using Marten.Schema;
 using Microsoft.IdentityModel.Tokens;
 using Web.Rounds;
 
 namespace Web.Users
 {
+    [UseOptimisticConcurrency]
     public class User
     {
         public User()
@@ -43,6 +45,7 @@ namespace Web.Users
         public bool RegisterPutDistance { get; set; } = false;
         public List<string> NewsIdsSeen { get; set; } = new List<string>();
         public bool SettingsInitialized { get; set; } = false;
+        public DateTime? LastEmailSent  { get; set; }
         public AuthenticatedUser Authenticated(string secret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
