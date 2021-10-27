@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
@@ -11,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using SendGrid.Extensions.DependencyInjection;
@@ -54,10 +57,7 @@ namespace Web
             services.AddControllersWithViews(options => options.Filters.Add(new ApiExceptionFilter()));
             services.AddHttpContextAccessor();
 
-            services.AddSendGrid(options =>
-            {
-                options.ApiKey = Configuration.GetValue<string>("SENDGRID_APIKEY");
-            });
+            services.AddSendGrid(options => { options.ApiKey = Configuration.GetValue<string>("SENDGRID_APIKEY"); });
 
 
             // In production, the React files will be served from this directory
@@ -100,13 +100,25 @@ namespace Web
                                 // Read the token out of the query string
                                 context.Token = accessToken;
                             }
+                            else if (context.HttpContext.Request.Path.StartsWithSegments("/Admin"))
+                            {
+                                context.Token = context.Request.Cookies["authentication"];
+                            }
 
                             return Task.CompletedTask;
                         }
                     };
                 });
 
+            services.AddAuthorization(o =>
+                o.AddPolicy("AdminOnly", p => p.RequireClaim(ClaimTypes.Name, "kofoed")));
+
             services.AddSignalR();
+            services.AddRazorPages(o =>
+            {
+                o.RootDirectory = "/Admin";
+                o.Conventions.AuthorizeFolder("/", "AdminOnly");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -137,22 +149,19 @@ namespace Web
             });
 
 
-
-            // var adminAppHostName = env.IsDevelopment() ? "admin.localhost" : "admin.discman.live";
-            // app.MapWhen(o => o.Request.Host.Host == adminAppHostName &&
-            //                  o.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value == "kofoed",
-            //             adminApp =>
-            // {
-            //     adminApp.UseSpa(spa =>
-            //           {
-            //               spa.Options.SourcePath = "AdminApp";
-
-            //               if (env.IsDevelopment())
-            //               {
-            //                   spa.UseReactDevelopmentServer(npmScript: "start");
-            //               }
-            //           });
-            // });
+            app.Map("/admin",
+                adminApp =>
+                {
+                    adminApp.UseRouting();
+                    adminApp.UseAuthentication();
+                    adminApp.UseAuthorization();
+                    adminApp.UseStaticFiles(new StaticFileOptions
+                    {
+                        FileProvider = new PhysicalFileProvider(
+                            Path.Combine(env.ContentRootPath, "Admin/wwwroot")),
+                    });
+                    adminApp.UseEndpoints(e => { e.MapRazorPages(); });
+                });
 
             app.UseSpa(spa =>
             {
@@ -163,7 +172,6 @@ namespace Web
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-
         }
     }
 }

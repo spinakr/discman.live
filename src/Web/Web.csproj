@@ -33,6 +33,10 @@
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
     <None Remove="ClientApp\**" />
     <Content Remove="ClientApp\**" />
+    <None Remove="Admin\wwwroot\css\site.css" />
+    <Content Include="Admin\wwwroot\css\site.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,34 @@
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Discman Admin</title>
+    <link rel="stylesheet" type="text/css" href="/admin/css/site.css"/>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/unpoly@2.4.1/unpoly.min.css">
+</head>
+<body>
+<nav class="navbar">
+    <a href="/admin/Rounds" class="nav-item" up-target="main">
+        Rounds
+    </a>
+    <a href="/admin/Users" class="nav-item" up-target="main">
+        Users
+    </a>
+</nav>
+<hr/>
+
+
+<main class="container">
+    @RenderBody()
+</main>
+<hr/>
+<footer>
+    <p>&copy; 2021 - Discman.live</p>
+</footer>
+
+
+<script src="https://unpkg.com/unpoly@2.4.1/unpoly.min.js"></script>
+</body>
+</html>

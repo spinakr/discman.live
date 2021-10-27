@@ -272,6 +272,7 @@ const initialState: UserState = user
 
 const logout = (dispatch: (action: KnownAction) => void) => {
   localStorage.removeItem("user");
+  document.cookie = `authentication=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   dispatch({ type: "LOG_USER_OUT" });
   dispatch(push("/"));
 };
@@ -354,6 +355,7 @@ export const actionCreators = {
           user: data,
         });
         localStorage.setItem("user", JSON.stringify(data));
+        document.cookie = `authentication=${data.token}`;
         dispatch(push("/"));
       })
       .catch((err: Error) => {

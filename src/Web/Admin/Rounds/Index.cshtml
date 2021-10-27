@@ -1,0 +1,20 @@
+@page
+@model Web.Admin.Rounds.Rounds
+
+
+
+<div>
+    <table>
+        <tr>
+            <th>Started</th>
+            <th>Course</th>
+        </tr>
+        @foreach (var round in Model.Data.Rounds)
+        {
+            <tr>
+                <td>@round.StartTime</td>
+                <td>@round.CourseName - @round.CourseLayout</td>
+            </tr>
+        }
+    </table>
+</div>

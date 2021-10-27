@@ -1,0 +1,12 @@
+@page "/users/{username}"
+@model Web.Admin.Users.Details
+
+<h2>Details</h2>
+
+<div class="container">
+    <h4>@Model.Data.User.Username - @Model.Data.User.Emoji</h4>
+    <p>@Model.Data.User.Email</p>
+    
+    <hr />
+    
+</div>
