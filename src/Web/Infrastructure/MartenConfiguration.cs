@@ -1,8 +1,10 @@
+using System;
 using Marten;
 using Marten.Schema.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Weasel.Postgresql;
 using Web.Feeds.Domain;
 
 namespace Web.Infrastructure
@@ -24,7 +26,14 @@ namespace Web.Infrastructure
                         .WithEncoding("UTF-8")
                         .ConnectionLimit(-1);
                 });
-                _.DefaultIdStrategy = (mapping, storeOptions) => new CombGuidIdGeneration();
+
+                _.Policies.ForAllDocuments(m =>
+                {
+                    if (m.IdType == typeof(Guid))
+                    {
+                        m.IdStrategy = new CombGuidIdGeneration();
+                    }
+                });
 
                 _.AutoCreateSchemaObjects = AutoCreate.All;
 
@@ -36,4 +45,5 @@ namespace Web.Infrastructure
             services.AddSingleton<IDocumentStore>(store);
             services.AddScoped(sp => sp.GetService<IDocumentStore>().OpenSession());
         }
-    }}
+    }
+}
