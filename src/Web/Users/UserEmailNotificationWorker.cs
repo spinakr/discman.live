@@ -94,7 +94,7 @@ namespace Web.Users
                 string.IsNullOrWhiteSpace(user.Email) ||
                 user.LastEmailSent > DateTime.Now.AddDays(-14)) return false;
             if (roundCount < 5 || lastRoundStarted is null) return false;
-            if (lastRoundStarted > DateTime.Today.AddDays(-14)) return false; //TODO: change to propper value (14)
+            if (lastRoundStarted > DateTime.Today.AddDays(-14)) return false; 
             return true;
         }
 

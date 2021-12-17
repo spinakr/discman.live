@@ -1,0 +1,10 @@
+@page "/rounds/{roundId}"
+@model Web.Admin.Rounds.RoundDetails
+
+<h2>Round</h2>
+
+<div class="container">
+    <h4>@Model.Data.RoundDetails.CourseName - @Model.Data.RoundDetails.LayoutName</h4>
+    <p>Created by: @Model.Data.RoundDetails.CreatedBy</p>
+    <p>Duration: @Model.Data.RoundDetails.RoundDuration minutes</p>
+</div>

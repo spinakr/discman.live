@@ -12,7 +12,11 @@
         @foreach (var round in Model.Data.Rounds)
         {
             <tr>
-                <td>@round.StartTime</td>
+            
+                <td>
+                    <a href="rounds/@round.Id" up-layer="new">@round.StartTime</a>
+                </td>
+                
                 <td>@round.CourseName - @round.CourseLayout</td>
             </tr>
         }

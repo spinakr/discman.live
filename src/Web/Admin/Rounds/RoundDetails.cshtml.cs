@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,33 +7,35 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Web.Common.Mapping;
 using Web.Rounds;
+using Web.Users;
 
 namespace Web.Admin.Rounds
 {
-    public class Rounds : PageModel
+    public class RoundDetails : PageModel
     {
         private readonly IMediator _mediator;
 
-        public Rounds(IMediator mediator) => _mediator = mediator;
+        public RoundDetails(IMediator mediator) => _mediator = mediator;
 
         public Result Data { get; private set; }
 
-        public async Task OnGetAsync() => Data = await _mediator.Send(new Query());
+        public async Task OnGetAsync(Query query) => Data = await _mediator.Send(query);
 
         public record Query : IRequest<Result>
         {
+            public Guid RoundId { get; set; }
         }
 
         public record Result
         {
-            public List<RoundVm> Rounds { get; init; }
+            public RoundDetailsVm RoundDetails { get; init; }
 
-            public record RoundVm : IMapFrom<Round>
+            public record RoundDetailsVm : IMapFrom<Round>
             {
-                public Guid Id { get; set; }
-                public DateTime StartTime { get; set; }
-                public string CourseName { get; init; }
-                public string CourseLayout { get; init; }
+                public string CourseName { get; set; }
+                public string LayoutName { get; set; }
+                public string CreatedBy { get; set; }
+                public double RoundDuration { get; set; }
             }
         }
 
@@ -53,16 +53,12 @@ namespace Web.Admin.Rounds
 
             public async Task<Result> Handle(Query message, CancellationToken token)
             {
-                var rounds = await _documentSession.Query<Round>()
-                    .Where(r => r.IsCompleted && !r.Deleted)
-                    .OrderByDescending(r => r.CompletedAt)
-                    .Take(20)
-                    .ToListAsync(token: token);
-
+                var user = await _documentSession.Query<Round>()
+                    .FirstOrDefaultAsync(u => u.Id == message.RoundId, token: token);
 
                 return new Result
                 {
-                    Rounds = rounds.Select(r => _mapper.Map<Result.RoundVm>(r)).ToList()
+                    RoundDetails = _mapper.Map<Result.RoundDetailsVm>(user)
                 };
             }
         }
