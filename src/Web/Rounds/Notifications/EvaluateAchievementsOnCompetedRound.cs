@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.SignalR;
 using Web.Infrastructure;
 using Web.Rounds;
 using Web.Users;
+using NServiceBus;
 
 namespace Web.Rounds.Notifications
 {
@@ -17,12 +18,14 @@ namespace Web.Rounds.Notifications
         private readonly IDocumentSession _documentSession;
         private readonly IHubContext<RoundsHub> _roundsHub;
         private readonly IMediator _mediator;
+        private readonly IMessageSession _messageSession;
 
-        public EvaluateAchievementsOnCompetedRound(IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub, IMediator mediator)
+        public EvaluateAchievementsOnCompetedRound(IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub, IMediator mediator, IMessageSession messageSession)
         {
             _documentSession = documentSession;
             _roundsHub = roundsHub;
             _mediator = mediator;
+            _messageSession = messageSession;
         }
 
         public async Task Handle(RoundWasCompleted notification, CancellationToken cancellationToken)
@@ -36,6 +39,11 @@ namespace Web.Rounds.Notifications
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
             await _roundsHub.NotifyPlayersOnUpdatedRound("", round);
+
+            await _messageSession.Publish<NSBEvents.RoundWasCompleted>(e =>
+            {
+                e.RoundId = round.Id;
+            });
         }
 
         private async Task<IEnumerable<Achievement>> EvaluateAchievements(Round round)
@@ -64,7 +72,7 @@ namespace Web.Rounds.Notifications
                     // .Where(r => r.CompletedAt > new DateTime(now.Year, 1, 1))
                     .ToListAsync();
 
-                var userRounds = rounds.Concat(new List<Round> {round}).ToList();
+                var userRounds = rounds.Concat(new List<Round> { round }).ToList();
 
                 var userAchievements = userInRound.Achievements.EvaluateUserRounds(userRounds, userInRound.Username);
 
@@ -78,12 +86,12 @@ namespace Web.Rounds.Notifications
             foreach (var achievement in newUserAchievements)
             {
                 await _mediator.Publish(new UserEarnedAchievement
-                    {
-                        RoundId = achievement.RoundId,
-                        Username = achievement.Username,
-                        AchievementName = achievement.AchievementName,
-                        AchievedAt = achievement.AchievedAt
-                    }
+                {
+                    RoundId = achievement.RoundId,
+                    Username = achievement.Username,
+                    AchievementName = achievement.AchievementName,
+                    AchievedAt = achievement.AchievedAt
+                }
                 );
             }
 

@@ -41,12 +41,12 @@ namespace Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHostedService<UpdateCourseRatingsWorker>();
-            services.AddHostedService<UpdateInActiveRoundsWorker>();
-            services.AddHostedService<LeaderboardWorker>();
-            services.AddHostedService<ResetPasswordWorker>();
-            services.AddHostedService<DiscmanPointUpdater>();
-            services.AddHostedService<UserEmailNotificationWorker>();
+            // services.AddHostedService<UpdateCourseRatingsWorker>();
+            // services.AddHostedService<UpdateInActiveRoundsWorker>();
+            // services.AddHostedService<LeaderboardWorker>();
+            // services.AddHostedService<ResetPasswordWorker>();
+            // services.AddHostedService<DiscmanPointUpdater>();
+            // services.AddHostedService<UserEmailNotificationWorker>();
             // services.AddHostedService<UserCleanupWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
@@ -64,6 +64,8 @@ namespace Web
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
+
+
 
             services.ConfigureMarten(Configuration, _env);
             services.AddSingleton<LeaderboardCache>();

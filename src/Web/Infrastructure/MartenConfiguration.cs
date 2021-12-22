@@ -1,4 +1,3 @@
-using System;
 using Marten;
 using Marten.Schema.Identity;
 using Microsoft.Extensions.Configuration;
@@ -27,19 +26,10 @@ namespace Web.Infrastructure
                         .ConnectionLimit(-1);
                 });
 
-                _.Policies.ForAllDocuments(m =>
-                {
-                    if (m.IdType == typeof(Guid))
-                    {
-                        m.IdStrategy = new CombGuidIdGeneration();
-                    }
-                });
-
                 _.AutoCreateSchemaObjects = AutoCreate.All;
 
                 _.Schema.For<UserFeedItem>().Index(x => x.Username);
                 _.Schema.For<GlobalFeedItem>().Index(x => x.Id);
-
             });
 
             services.AddSingleton<IDocumentStore>(store);

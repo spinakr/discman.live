@@ -2,8 +2,10 @@ using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using NServiceBus;
 using Serilog;
 using Serilog.Events;
+using Web.Infrastructure;
 using EnvironmentName = Microsoft.Extensions.Hosting.EnvironmentName;
 
 namespace Web
@@ -40,8 +42,9 @@ namespace Web
                 .MinimumLevel.Information();
 
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var enableElk = Environment.GetEnvironmentVariable("ENABLE_ELK");
             var isDevelopment = environment == Environments.Development;
-            if (!isDevelopment)
+            if (!isDevelopment && enableElk is not null && enableElk == "true")
             {
                 logConfig.WriteTo.Http("http://logstash:7000");
             }
@@ -52,6 +55,7 @@ namespace Web
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); })
-                .UseSerilog();
+                .UseSerilog()
+                .UseNServiceBus(context => NServiceBusConfiguration.ConfigureEndpoint());
     }
 }
