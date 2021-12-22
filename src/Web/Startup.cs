@@ -41,13 +41,11 @@ namespace Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // services.AddHostedService<UpdateCourseRatingsWorker>();
-            // services.AddHostedService<UpdateInActiveRoundsWorker>();
-            // services.AddHostedService<LeaderboardWorker>();
-            // services.AddHostedService<ResetPasswordWorker>();
+            services.AddHostedService<UpdateCourseRatingsWorker>();
+            services.AddHostedService<UpdateInActiveRoundsWorker>();
+            services.AddHostedService<ResetPasswordWorker>();
             // services.AddHostedService<DiscmanPointUpdater>();
-            // services.AddHostedService<UserEmailNotificationWorker>();
-            // services.AddHostedService<UserCleanupWorker>();
+            services.AddHostedService<UserEmailNotificationWorker>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
