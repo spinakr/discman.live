@@ -1,21 +1,15 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Marten;
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using NServiceBus;
 using Web.Feeds.Domain;
 using Web.Infrastructure;
-using Web.Rounds;
-using Web.Rounds.Notifications;
-using Web.Users;
+using Web.Rounds.NSBEvents;
 
-namespace Web.Feeds.Notifications
+namespace Web.Feeds.Handlers
 {
-    public class UpdateFeedsOnRoundDeleted : INotificationHandler<RoundWasDeleted>
+    public class UpdateFeedsOnRoundDeleted : IHandleMessages<RoundWasDeleted>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHubContext<RoundsHub> _roundsHub;
@@ -26,17 +20,17 @@ namespace Web.Feeds.Notifications
             _roundsHub = roundsHub;
         }
 
-        public async Task Handle(RoundWasDeleted notification, CancellationToken cancellationToken)
+        public async Task Handle(RoundWasDeleted notification, IMessageHandlerContext context)
         {
             var globalFeedItems = await _documentSession
                 .Query<GlobalFeedItem>()
                 .Where(x => x.RoundId == notification.RoundId)
-                .ToListAsync(token: cancellationToken);
+                .ToListAsync();
             var globalItemIds = globalFeedItems.Select(item => item.Id).ToArray();
             var userFeedItems = await _documentSession
                 .Query<UserFeedItem>()
                 .Where(x => x.FeedItemId.IsOneOf(globalItemIds))
-                .ToListAsync(token: cancellationToken);
+                .ToListAsync();
 
             foreach (var globalFeedItem in globalFeedItems)
             {
@@ -48,7 +42,7 @@ namespace Web.Feeds.Notifications
                 _documentSession.Delete(userFeedItem);
             }
 
-            await _documentSession.SaveChangesAsync(cancellationToken);
+            await _documentSession.SaveChangesAsync();
         }
     }
 }

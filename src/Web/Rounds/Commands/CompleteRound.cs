@@ -7,9 +7,9 @@ using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
+using NServiceBus;
 using Web.Infrastructure;
-using Web.Rounds.Notifications;
-using Web.Users;
+using Web.Rounds.NSBEvents;
 
 namespace Web.Rounds.Commands
 {
@@ -24,15 +24,14 @@ namespace Web.Rounds.Commands
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHubContext<RoundsHub> _roundsHub;
-        private readonly IMediator _mediator;
+        private readonly IMessageSession _messageSession;
 
-        public CompleteRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor,
-            IHubContext<RoundsHub> roundsHub, IMediator mediator)
+        public CompleteRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IHubContext<RoundsHub> roundsHub, IMessageSession messageSession)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
             _roundsHub = roundsHub;
-            _mediator = mediator;
+            _messageSession = messageSession;
         }
 
         public async Task<Unit> Handle(CompleteRoundCommand request, CancellationToken cancellationToken)
@@ -48,7 +47,7 @@ namespace Web.Rounds.Commands
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
             await _roundsHub.NotifyPlayersOnUpdatedRound(authenticatedUsername, round);
-            if (round.IsCompleted) await _mediator.Publish(new RoundWasCompleted { RoundId = round.Id }, cancellationToken);
+            if (round.IsCompleted) await _messageSession.Publish(new RoundWasCompleted { RoundId = round.Id });
 
             return new Unit();
         }

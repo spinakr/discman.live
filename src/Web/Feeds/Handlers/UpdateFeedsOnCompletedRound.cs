@@ -1,23 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Marten;
-using Marten.Linq.SoftDeletes;
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using NServiceBus;
 using Web.Feeds.Domain;
 using Web.Infrastructure;
 using Web.Rounds;
-using Web.Rounds.Notifications;
+using Web.Rounds.NSBEvents;
 using Web.Users;
 using Action = Web.Feeds.Domain.Action;
 
-namespace Web.Feeds.Notifications
+namespace Web.Feeds.Handlers
 {
-    public class UpdateFeedsOnCompletedRound : INotificationHandler<RoundWasCompleted>
+    public class UpdateFeedsOnCompletedRound : IHandleMessages<RoundWasCompleted>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHubContext<RoundsHub> _roundsHub;
@@ -28,15 +25,15 @@ namespace Web.Feeds.Notifications
             _roundsHub = roundsHub;
         }
 
-        public async Task Handle(RoundWasCompleted notification, CancellationToken cancellationToken)
+        public async Task Handle(RoundWasCompleted notification, IMessageHandlerContext context)
         {
-            var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == notification.RoundId, token: cancellationToken);
+            var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == notification.RoundId);
 
             var friends = new List<string>();
             var players = round.PlayerScores.Select(s => s.PlayerName).ToList();
             foreach (var player in players)
             {
-                var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == player, token: cancellationToken);
+                var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == player);
                 friends.AddRange(user.Friends ?? new List<string>());
             }
 
@@ -57,7 +54,7 @@ namespace Web.Feeds.Notifications
 
             _documentSession.UpdateFriendsFeeds(friends, feedItem);
 
-            await _documentSession.SaveChangesAsync(cancellationToken);
+            await _documentSession.SaveChangesAsync();
         }
 
     }

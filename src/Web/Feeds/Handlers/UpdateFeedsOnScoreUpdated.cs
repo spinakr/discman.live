@@ -1,22 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Marten;
-using Marten.Linq;
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using NServiceBus;
 using Web.Feeds.Domain;
 using Web.Infrastructure;
-using Web.Rounds;
-using Web.Rounds.Notifications;
+using Web.Rounds.NSBEvents;
 using Web.Users;
 
-namespace Web.Feeds.Notifications
+namespace Web.Feeds.Handlers
 {
-    public class UpdateFeedsOnScoreUpdated : INotificationHandler<ScoreWasUpdated>
+    public class UpdateFeedsOnScoreUpdated : IHandleMessages<ScoreWasUpdated>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHubContext<RoundsHub> _roundsHub;
@@ -27,18 +23,18 @@ namespace Web.Feeds.Notifications
             _roundsHub = roundsHub;
         }
 
-        public async Task Handle(ScoreWasUpdated notification, CancellationToken cancellationToken)
+        public async Task Handle(ScoreWasUpdated notification, IMessageHandlerContext context)
         {
             await CleanupFeedsIfScoreWasChanged(notification);
             if (notification.RelativeScore > -1) return;
 
-            var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == notification.Username, token: cancellationToken);
+            var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == notification.Username);
             var friends = user.Friends ?? new List<string>();
             friends.Add(notification.Username);
 
             var feedItem = new GlobalFeedItem
             {
-                Subjects = new List<string> {user.Username},
+                Subjects = new List<string> { user.Username },
                 ItemType = ItemType.Hole,
                 CourseName = notification.CourseName,
                 HoleScore = notification.RelativeScore,
@@ -51,7 +47,7 @@ namespace Web.Feeds.Notifications
 
             _documentSession.UpdateFriendsFeeds(friends, feedItem);
 
-            await _documentSession.SaveChangesAsync(cancellationToken);
+            await _documentSession.SaveChangesAsync();
         }
 
         private async Task CleanupFeedsIfScoreWasChanged(ScoreWasUpdated notification)
@@ -65,9 +61,9 @@ namespace Web.Feeds.Notifications
                     i.HoleNumber == notification.HoleNumber &&
                     i.Subjects.Any(s => s == notification.Username))
                 .SingleOrDefaultAsync();
-            
+
             if (globalItem is null) return;
-            
+
             var userItems = await _documentSession
                 .Query<UserFeedItem>()
                 .Where(i => i.FeedItemId == globalItem.Id)

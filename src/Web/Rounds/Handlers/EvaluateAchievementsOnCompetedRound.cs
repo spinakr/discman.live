@@ -1,52 +1,41 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Marten;
-using MediatR;
 using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using Web.Infrastructure;
-using Web.Rounds;
 using Web.Users;
 using NServiceBus;
+using Web.Rounds.NSBEvents;
 
 namespace Web.Rounds.Notifications
 {
-    public class EvaluateAchievementsOnCompetedRound : INotificationHandler<RoundWasCompleted>
+    public class EvaluateAchievementsOnCompetedRound : IHandleMessages<RoundWasCompleted>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHubContext<RoundsHub> _roundsHub;
-        private readonly IMediator _mediator;
-        private readonly IMessageSession _messageSession;
 
-        public EvaluateAchievementsOnCompetedRound(IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub, IMediator mediator, IMessageSession messageSession)
+        public EvaluateAchievementsOnCompetedRound(IDocumentSession documentSession, IHubContext<RoundsHub> roundsHub)
         {
             _documentSession = documentSession;
             _roundsHub = roundsHub;
-            _mediator = mediator;
-            _messageSession = messageSession;
         }
 
-        public async Task Handle(RoundWasCompleted notification, CancellationToken cancellationToken)
+        public async Task Handle(RoundWasCompleted notification, IMessageHandlerContext context)
         {
-            var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == notification.RoundId, token: cancellationToken);
+            var round = await _documentSession.Query<Round>().SingleAsync(x => x.Id == notification.RoundId);
 
-            var newUserAchievements = await EvaluateAchievements(round);
+            var newUserAchievements = await EvaluateAchievements(round, context);
             if (round.Achievements is null) round.Achievements = new List<Achievement>();
             round.Achievements.AddRange(newUserAchievements);
 
             _documentSession.Update(round);
-            await _documentSession.SaveChangesAsync(cancellationToken);
+            await _documentSession.SaveChangesAsync();
             await _roundsHub.NotifyPlayersOnUpdatedRound("", round);
-
-            await _messageSession.Publish<NSBEvents.RoundWasCompleted>(e =>
-            {
-                e.RoundId = round.Id;
-            });
         }
 
-        private async Task<IEnumerable<Achievement>> EvaluateAchievements(Round round)
+        private async Task<IEnumerable<Achievement>> EvaluateAchievements(Round round, IMessageHandlerContext context)
         {
             var userNames = round.PlayerScores.Select(s => s.PlayerName).ToArray();
 
@@ -85,7 +74,7 @@ namespace Web.Rounds.Notifications
 
             foreach (var achievement in newUserAchievements)
             {
-                await _mediator.Publish(new UserEarnedAchievement
+                await context.Publish(new UserEarnedAchievement
                 {
                     RoundId = achievement.RoundId,
                     Username = achievement.Username,

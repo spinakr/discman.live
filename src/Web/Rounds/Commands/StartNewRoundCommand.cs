@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using NServiceBus;
 using Web.Courses;
-using Web.Rounds;
-using Web.Rounds.Notifications;
+using Web.Rounds.NSBEvents;
 using Web.Users;
 
 namespace Web.Rounds.Commands
@@ -26,13 +26,13 @@ namespace Web.Rounds.Commands
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IMediator _mediator;
+        private readonly IMessageSession _messageSession;
 
-        public StartNewRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMediator mediator)
+        public StartNewRoundCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMessageSession messageSession)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
-            _mediator = mediator;
+            _messageSession = messageSession;
         }
 
         public async Task<Round> Handle(StartNewRoundCommand request, CancellationToken cancellationToken)
@@ -60,7 +60,7 @@ namespace Web.Rounds.Commands
             _documentSession.Store(round);
             _documentSession.SaveChanges();
 
-            await _mediator.Publish(new RoundWasStarted { RoundId = round.Id }, cancellationToken);
+            await _messageSession.Publish(new RoundWasStarted { RoundId = round.Id });
 
             return await Task.FromResult(round);
         }

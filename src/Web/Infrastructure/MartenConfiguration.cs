@@ -1,5 +1,4 @@
 using Marten;
-using Marten.Schema.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

@@ -1,9 +1,9 @@
 using System;
-using MediatR;
+using NServiceBus;
 
-namespace Web.Rounds.Notifications
+namespace Web.Rounds.NSBEvents
 {
-    public class UserEarnedAchievement : INotification
+    public class UserEarnedAchievement : IEvent
     {
         public Guid RoundId { get; set; }
         public string Username { get; set; }

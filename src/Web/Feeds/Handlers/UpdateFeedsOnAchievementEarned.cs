@@ -1,21 +1,16 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Marten;
-using MediatR;
 using Microsoft.AspNetCore.SignalR;
+using NServiceBus;
 using Web.Feeds.Domain;
 using Web.Infrastructure;
-using Web.Rounds;
-using Web.Rounds.Notifications;
+using Web.Rounds.NSBEvents;
 using Web.Users;
 
-namespace Web.Feeds.Notifications
+namespace Web.Feeds.Handlers
 {
-    public class UpdateFeedsOnAchievementEarned : INotificationHandler<UserEarnedAchievement>
+    public class UpdateFeedsOnAchievementEarned : IHandleMessages<UserEarnedAchievement>
     {
         private readonly IDocumentSession _documentSession;
         private readonly IHubContext<RoundsHub> _roundsHub;
@@ -26,15 +21,15 @@ namespace Web.Feeds.Notifications
             _roundsHub = roundsHub;
         }
 
-        public async Task Handle(UserEarnedAchievement notification, CancellationToken cancellationToken)
+        public async Task Handle(UserEarnedAchievement notification, IMessageHandlerContext context)
         {
-            var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == notification.Username, token: cancellationToken);
+            var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == notification.Username);
             var friends = user.Friends ?? new List<string>();
             friends.Add(notification.Username);
 
             var feedItem = new GlobalFeedItem
             {
-                Subjects = new List<string> {user.Username},
+                Subjects = new List<string> { user.Username },
                 ItemType = ItemType.Achievement,
                 RegisteredAt = notification.AchievedAt,
                 RoundId = notification.RoundId,
@@ -44,8 +39,8 @@ namespace Web.Feeds.Notifications
             _documentSession.Store(feedItem);
 
             _documentSession.UpdateFriendsFeeds(friends, feedItem);
-            
-            await _documentSession.SaveChangesAsync(cancellationToken);
+
+            await _documentSession.SaveChangesAsync();
         }
     }
 }

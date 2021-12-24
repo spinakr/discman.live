@@ -1,23 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Baseline;
 using Marten;
-using MediatR;
-using Microsoft.AspNetCore.SignalR;
+using NServiceBus;
 using Web.Feeds.Domain;
-using Web.Infrastructure;
-using Web.Rounds;
-using Web.Rounds.Notifications;
 using Web.Tournaments.Notifications;
 using Web.Users;
 using Action = Web.Feeds.Domain.Action;
 
-namespace Web.Feeds.Notifications
+namespace Web.Feeds.Handlers
 {
-    public class UpdateFeedsOnUserJoinedTournament : INotificationHandler<PlayerJoinedTournament>
+    public class UpdateFeedsOnUserJoinedTournament : IHandleMessages<PlayerJoinedTournament>
     {
         private readonly IDocumentSession _documentSession;
 
@@ -26,14 +19,14 @@ namespace Web.Feeds.Notifications
             _documentSession = documentSession;
         }
 
-        public async Task Handle(PlayerJoinedTournament notification, CancellationToken cancellationToken)
+        public async Task Handle(PlayerJoinedTournament notification, IMessageHandlerContext context)
         {
-            var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == notification.Username, token: cancellationToken);
+            var user = await _documentSession.Query<User>().SingleAsync(x => x.Username == notification.Username);
             var friends = user.Friends ?? new List<string>();
 
             var feedItem = new GlobalFeedItem
             {
-                Subjects = new List<string> {user.Username},
+                Subjects = new List<string> { user.Username },
                 ItemType = ItemType.Tournament,
                 Action = Action.Joined,
                 RegisteredAt = DateTime.Now,
@@ -44,8 +37,8 @@ namespace Web.Feeds.Notifications
             _documentSession.Store(feedItem);
 
             _documentSession.UpdateFriendsFeeds(friends, feedItem);
-            
-            await _documentSession.SaveChangesAsync(cancellationToken);
+
+            await _documentSession.SaveChangesAsync();
         }
     }
 }

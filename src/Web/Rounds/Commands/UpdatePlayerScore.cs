@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -8,11 +7,9 @@ using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using NServiceBus;
 using Web.Infrastructure;
-using Web.Rounds;
-using Web.Rounds.Notifications;
+using Web.Rounds.NSBEvents;
 
 namespace Web.Rounds.Commands
 {
@@ -32,15 +29,14 @@ namespace Web.Rounds.Commands
         private readonly IDocumentSession _documentSession;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHubContext<RoundsHub> _roundsHub;
-        private readonly IMediator _mediator;
+        private readonly IMessageSession _messageSession;
 
-        public UpdatePlayerScoreCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor,
-            IHubContext<RoundsHub> roundsHub, IMediator mediator)
+        public UpdatePlayerScoreCommandHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IHubContext<RoundsHub> roundsHub, IMessageSession messageSession)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
             _roundsHub = roundsHub;
-            _mediator = mediator;
+            _messageSession = messageSession;
         }
 
         public async Task<Round> Handle(UpdatePlayerScoreCommand request, CancellationToken cancellationToken)
@@ -77,7 +73,7 @@ namespace Web.Rounds.Commands
             await _documentSession.SaveChangesAsync(cancellationToken);
             await _roundsHub.NotifyPlayersOnUpdatedRound(authenticatedUsername, round);
 
-            await _mediator.Publish(new ScoreWasUpdated
+            await _messageSession.Publish(new ScoreWasUpdated
             {
                 RoundId = round.Id,
                 Username = authenticatedUsername,
@@ -85,7 +81,7 @@ namespace Web.Rounds.Commands
                 HoleNumber = holeScore.Hole.Number,
                 RelativeScore = relativeScore,
                 ScoreWasChanged = holeAlreadyRegistered
-            }, cancellationToken);
+            });
 
             return round;
         }

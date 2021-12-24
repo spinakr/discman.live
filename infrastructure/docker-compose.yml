@@ -27,6 +27,7 @@ services:
     image: rabbitmq:3.9.11-alpine
     container_name: rabbitmq
     hostname: rabbitmq
+    mem_limit: 512m
     restart:
       unless-stopped
       #ports:
@@ -50,56 +51,65 @@ services:
       timeout: 5s
       retries: 5
 
-  # elasticsearch:
-  #   build:
-  #     context: elasticsearch/
-  #     args:
-  #       ELK_VERSION: 7.8.0
-  #   restart: unless-stopped
-  #   volumes:
-  #     - type: volume
-  #       source: elasticsearch
-  #       target: /usr/share/elasticsearch/data
-  #   # ports:
-  #   #   - "9200:9200"
-  #   #   - "9300:9300"
-  #   environment:
-  #     - variables.env
+  elasticsearch:
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: 7.8.0
+    restart: unless-stopped
+    mem_limit: 1g
+    volumes:
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    # ports:
+    #   - "9200:9200"
+    #   - "9300:9300"
+    env_file:
+      - ./variables.env
 
-  # logstash:
-  #   build:
-  #     context: logstash/
-  #     args:
-  #       ELK_VERSION: 7.8.0
-  #   # ports:
-  #   #   - "7000:7000/tcp"
-  #   #   - "7000:7000/udp"
-  #   #   - "9600:9600"
-  #   restart: unless-stopped
-  #   environment:
-  #     - variables.env
-  #   depends_on:
-  #     - elasticsearch
+  logstash:
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: 7.8.0
+    # ports:
+    #   - "7000:7000/tcp"
+    #   - "7000:7000/udp"
+    #   - "9600:9600"
+    restart: unless-stopped
+    mem_limit: 1g
+    env_file:
+      - variables.env
+    depends_on:
+      - elasticsearch
 
-  # kibana:
-  #   restart: unless-stopped
-  #   build:
-  #     context: kibana/
-  #     args:
-  #       ELK_VERSION: 7.8.0
-  #   ports:
-  #     - "9999:5601"
-  #   depends_on:
-  #     - elasticsearch
+  kibana:
+    restart: unless-stopped
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: 7.8.0
+    ports:
+      - "9999:5601"
+    env_file:
+      - variables.env
+    depends_on:
+      - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.366
+    image: sp1nakr/disclive:0.370
     container_name: discmanweb
     restart: unless-stopped
+    mem_limit: 2g
     #ports:
     #  - "80:80"
     env_file:
       - ./variables.env
+    depends_on:
+      - rabbitmq
+      - postgres
+      - logstash
 
 volumes:
   elasticsearch:
