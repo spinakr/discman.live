@@ -41,8 +41,8 @@ services:
     restart: unless-stopped
     environment:
       - variables.env
-    #ports:
-    #  - "5432:5432"
+    ports:
+      - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
@@ -98,7 +98,7 @@ services:
       - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.370
+    image: sp1nakr/disclive:0.372
     container_name: discmanweb
     restart: unless-stopped
     mem_limit: 2g
