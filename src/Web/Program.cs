@@ -52,7 +52,7 @@ namespace Web
                 logConfig.WriteTo.Http("http://logstash:7000");
             }
 
-            string tableName = "logs";
+            string tableName = "discman_logs";
 
             var columnWriters = new Dictionary<string, ColumnWriterBase>
             {
@@ -66,8 +66,8 @@ namespace Web
                 {"machine_name", new SinglePropertyColumnWriter("MachineName", PropertyWriteMethod.ToString, NpgsqlDbType.Text, "l") }
             };
 
-            logConfig.WriteTo.PostgreSQL(Environment.GetEnvironmentVariable("DOTNET_POSTGRES_CON_STRING"), tableName, columnWriters, needAutoCreateTable: true);
-
+            // logConfig.WriteTo.PostgreSQL(Environment.GetEnvironmentVariable("DOTNET_POSTGRES_CON_STRING"), tableName, columnWriters, needAutoCreateTable: true);
+            //
             Log.Logger = logConfig.CreateLogger();
         }
 

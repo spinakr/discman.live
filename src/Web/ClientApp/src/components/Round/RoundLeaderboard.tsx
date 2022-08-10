@@ -106,6 +106,7 @@ export default ({ round, username }: RoundLeaderboardProps) => {
             <th></th>
             <th>Player</th>
             <th>Score</th>
+            <th>Rating</th>
             <th
               onClick={() => setSortHcp(!sortHcp)}
               style={{ backgroundColor: `${sortHcp ? "red" : ""}` }}
@@ -123,6 +124,10 @@ export default ({ round, username }: RoundLeaderboardProps) => {
               round.achievements
                 .filter((a) => a.username === s.playerName)
                 .slice(undefined, 3);
+            const ratingChange =
+              round.ratingChanges
+                .find((c) => c.username === s.playerName)
+                ?.change.toFixed(0) || 0;
             return (
               <tr
                 key={s.playerName}
@@ -136,6 +141,10 @@ export default ({ round, username }: RoundLeaderboardProps) => {
                 <td>
                   {playerTotal(s) >= 0 ? "+" : "-"}
                   {Math.abs(playerTotal(s))}
+                </td>
+                <td>
+                  {ratingChange > 0 ? "+" : ""}
+                  {ratingChange}
                 </td>
                 <td>
                   {playerTotal(s, s.numberOfHcpStrokes) >= 0 ? "+" : "-"}

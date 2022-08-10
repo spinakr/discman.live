@@ -1,8 +1,8 @@
-using MediatR;
+using NServiceBus;
 
-namespace Web.Users.Notifications
+namespace Web.Users.NSBEvents
 {
-    public class FriendWasAdded: INotification
+    public class FriendWasAdded : IEvent
     {
         public string Username { get; set; }
         public string FriendName { get; set; }

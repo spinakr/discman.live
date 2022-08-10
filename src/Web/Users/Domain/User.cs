@@ -38,6 +38,8 @@ namespace Web.Users
         public List<string> Friends { get; set; }
         public Achievements Achievements { get; set; }
         public int DiscmanPoints { get; set; }
+        public double Elo { get; set; } = 1500;
+        public List<Rating> RatingHistory { get; set; } = new List<Rating>();
         public string Email { get; set; }
         public bool SimpleScoring { get; set; } = false;
         public string Emoji { get; set; }
@@ -45,7 +47,7 @@ namespace Web.Users
         public bool RegisterPutDistance { get; set; } = false;
         public List<string> NewsIdsSeen { get; set; } = new List<string>();
         public bool SettingsInitialized { get; set; } = false;
-        public DateTime? LastEmailSent  { get; set; }
+        public DateTime? LastEmailSent { get; set; }
         public AuthenticatedUser Authenticated(string secret)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -88,5 +90,11 @@ namespace Web.Users
             if (NewsIdsSeen is null) NewsIdsSeen = new List<string>();
             NewsIdsSeen.Add(requestNewsId);
         }
+    }
+
+    public class Rating
+    {
+        public double Elo { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }

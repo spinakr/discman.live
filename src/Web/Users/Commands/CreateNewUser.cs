@@ -1,10 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using EllipticCurve;
 using Marten;
 using MediatR;
 using Microsoft.Extensions.Configuration;
-using Web.Users.Notifications;
+using Web.Users.NSBEvents;
 
 namespace Web.Users.Commands
 {

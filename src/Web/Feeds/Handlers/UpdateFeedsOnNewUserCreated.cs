@@ -5,7 +5,7 @@ using Marten;
 using NServiceBus;
 using Web.Feeds.Domain;
 using Web.Users;
-using Web.Users.Notifications;
+using Web.Users.NSBEvents;
 using Action = Web.Feeds.Domain.Action;
 
 namespace Web.Feeds.Handlers

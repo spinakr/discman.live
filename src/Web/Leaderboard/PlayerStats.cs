@@ -7,6 +7,7 @@ namespace Web.Matches
         public double AverageHoleScore { get; set; }
         public double CourseAdjustedAverageScore { get; set; }
         public int RoundCount { get; set; }
+        public double Elo { get; set; }
         public int BirdieCount { get; set; }
         public int BogeyCount { get; set; }
     }

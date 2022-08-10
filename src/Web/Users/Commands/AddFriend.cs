@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Marten;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Web.Users.Notifications;
+using Web.Users.NSBEvents;
 
 namespace Web.Users.Commands
 {

@@ -34,7 +34,7 @@ namespace Web.Admin.Users
             public record UserVm : IMapFrom<User>
             {
                 public string Username { get; set; }
-                public int DiscmanPoints { get; set; }
+                public double Elo { get; set; }
                 public string Emoji { get; set; }
             }
         }

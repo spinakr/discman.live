@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline.Reflection;
 using Web.Courses;
 using Web.Users;
 
@@ -64,6 +65,7 @@ namespace Web.Rounds
         public List<PlayerScore> PlayerScores { get; set; }
 
         public bool Deleted { get; set; }
+        public List<RatingChange> RatingChanges { get; set; } = new List<RatingChange>();
 
         public double RoundDuration => IsCompleted ? Math.Round((CompletedAt - StartTime).TotalMinutes) : Math.Round((DateTime.Now - StartTime).TotalMinutes);
 
@@ -136,6 +138,23 @@ namespace Web.Rounds
         {
             PlayerScores = PlayerScores.OrderBy(ps => ps.Scores.LastOrDefault(s => s.Strokes != 0)?.RelativeToPar).ToList();
         }
+
+        public int PlayerStanding(string username)
+        {
+            var sortedPlayers = PlayerScores
+                .GroupBy(s => s.PlayerName)
+                .OrderBy(_ => _.SelectMany(_ => _.Scores).Sum(_ => _.RelativeToPar))
+                .Select(_ => _.Key)
+                .ToArray();
+
+            return Array.IndexOf(sortedPlayers, username) + 1;
+        }
+    }
+
+    public class RatingChange
+    {
+        public double Change { get; set; }
+        public string Username { get; set; }
     }
 
     public enum ScoreMode

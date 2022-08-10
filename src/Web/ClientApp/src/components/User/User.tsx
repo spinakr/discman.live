@@ -9,6 +9,7 @@ import { useParams } from "react-router";
 import UserAchievements from "./UserAchievements";
 import Tournaments from "../Tournaments/Tournaments";
 import { countries } from "./CountryPicker";
+import RatingHistory from "./RatingHistory";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -39,7 +40,7 @@ const UserComponent = (props: Props) => {
         {countries[(userDetails && userDetails.country) || "unknown"]} &nbsp;
         {username}&nbsp;
         {userDetails?.emoji}&nbsp;
-        {userDetails?.discmanPoints}
+        {Math.round(userDetails?.elo || 0)}
       </h3>
 
       <div className="tabs is-small is-fullwidth is-centered">
@@ -54,17 +55,23 @@ const UserComponent = (props: Props) => {
             className={active === 2 ? "is-active" : ""}
             onClick={() => setActive(2)}
           >
-            <a>Stats</a>
+            <a>Rating</a>
           </li>
           <li
             className={active === 3 ? "is-active" : ""}
             onClick={() => setActive(3)}
           >
-            <a>Achievements</a>
+            <a>Stats</a>
           </li>
           <li
             className={active === 4 ? "is-active" : ""}
             onClick={() => setActive(4)}
+          >
+            <a>Achievements</a>
+          </li>
+          <li
+            className={active === 5 ? "is-active" : ""}
+            onClick={() => setActive(5)}
           >
             <a>Tourneys</a>
           </li>
@@ -75,9 +82,10 @@ const UserComponent = (props: Props) => {
           <UserRounds />
         </div>
       )}
-      {active === 2 && <UserStats />}
-      {active === 3 && <UserAchievements />}
-      {active === 4 && <Tournaments username={username} />}
+      {active === 2 && <RatingHistory username={username} />}
+      {active === 3 && <UserStats />}
+      {active === 4 && <UserAchievements />}
+      {active === 5 && <Tournaments username={username} />}
     </div>
   );
 };

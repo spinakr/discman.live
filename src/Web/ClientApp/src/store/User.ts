@@ -41,6 +41,13 @@ export interface UserDetails {
   country: string;
   activeRound: string | null;
   discmanPoints: number;
+  elo: number;
+  ratingHistory: Rating[];
+}
+
+export interface Rating {
+  elo: number;
+  datetime: Date;
 }
 
 export interface UserAchievement {

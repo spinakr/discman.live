@@ -22,7 +22,8 @@ namespace Web.Users.Queries
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
-        public GetUserDetailsQueryHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public GetUserDetailsQueryHandler(IDocumentSession documentSession, IHttpContextAccessor httpContextAccessor,
+            IMapper mapper)
         {
             _documentSession = documentSession;
             _httpContextAccessor = httpContextAccessor;
@@ -31,10 +32,13 @@ namespace Web.Users.Queries
 
         public async Task<UserDetails> Handle(GetUserDetailsQuery request, CancellationToken cancellationToken)
         {
-            var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims.Single(c => c.Type == ClaimTypes.Name).Value;
+            var authenticatedUsername = _httpContextAccessor.HttpContext?.User.Claims
+                .Single(c => c.Type == ClaimTypes.Name).Value;
             var username = !string.IsNullOrWhiteSpace(request.Username) ? request.Username : authenticatedUsername;
-            var user = await _documentSession.Query<User>().SingleAsync(u => u.Username == username, token: cancellationToken);
+            var user = await _documentSession.Query<User>()
+                .SingleAsync(u => u.Username == username, token: cancellationToken);
             var details = _mapper.Map<UserDetails>(user);
+            details.RatingHistory = details.RatingHistory.Where(r => r.DateTime > DateTime.Now.AddYears(-1)).ToList();
 
 
             var activeRound = await _documentSession

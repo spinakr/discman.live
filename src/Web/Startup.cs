@@ -42,6 +42,7 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddHostedService<UpdateCourseRatingsWorker>();
+            // services.AddHostedService<DiscmanEloUpdater>();
             services.AddHostedService<UpdateInActiveRoundsWorker>();
             services.AddHostedService<ResetPasswordWorker>();
             // services.AddHostedService<DiscmanPointUpdater>();

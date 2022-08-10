@@ -4,25 +4,27 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
-using Marten.Linq.LastModified;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Web.Infrastructure;
+using NServiceBus;
 using Web.Rounds;
-using Web.Users;
+using Web.Users.Handlers;
 
-namespace Web.Courses
+namespace Web.Users
 {
-    public class DiscmanPointUpdater : IHostedService, IDisposable
+    public class DiscmanEloUpdater : IHostedService, IDisposable
     {
-        private readonly ILogger<DiscmanPointUpdater> _logger;
+        private readonly ILogger<DiscmanEloUpdater> _logger;
         private readonly IDocumentStore _documentStore;
+        private readonly IMessageSession _messageSession;
         private Timer _timer;
 
-        public DiscmanPointUpdater(ILogger<DiscmanPointUpdater> logger, IDocumentStore documentStore)
+        public DiscmanEloUpdater(ILogger<DiscmanEloUpdater> logger, IDocumentStore documentStore,
+            IMessageSession messageSession)
         {
             _logger = logger;
             _documentStore = documentStore;
+            _messageSession = messageSession;
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
@@ -39,32 +41,28 @@ namespace Web.Courses
             var users = documentSession.Query<User>().ToList();
             foreach (var user in users)
             {
-                var points = 0;
-                var rounds = documentSession
-                    .Query<Round>()
-                    .Where(r => r.PlayerScores.Any(p => p.PlayerName == user.Username))
-                    .ToList();
-
-                foreach (var round in rounds)
-                {
-                    points += 1;
-                    var holes = round.PlayerScores
-                        .Where(s => s.PlayerName == user.Username)
-                        .SelectMany(s => s.Scores)
-                        .ToList();
-
-                    var birdies = holes.Count(h => h.RelativeToPar == -1);
-                    var aces = holes.Count(h => h.Strokes == 1);
-
-                    points += birdies;
-                    points += aces * 10;
-                }
-
-                user.DiscmanPoints = points;
+                user.Elo = 1500.0;
+                user.RatingHistory = new List<Rating>();
                 documentSession.Update(user);
             }
-
             documentSession.SaveChanges();
+
+            var rounds = documentSession.Query<Round>().OrderBy(r => r.StartTime).ToList();
+            foreach (var round in rounds)
+            {
+                round.RatingChanges = new List<RatingChange>();
+                documentSession.Update(round);
+            }
+            documentSession.SaveChanges();
+            
+            foreach (var round in rounds)
+            {
+                _messageSession.SendLocal<UpdateRatingsCommand>(e => { e.RoundId = round.Id; }).GetAwaiter()
+                    .GetResult();
+            }
+
+
+            _logger.LogInformation("Sending UpdateRatingsCommands!!");
         }
 
         public Task StopAsync(CancellationToken stoppingToken)

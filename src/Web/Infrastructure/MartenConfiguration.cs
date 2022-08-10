@@ -1,3 +1,4 @@
+using System;
 using Marten;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,8 @@ namespace Web.Infrastructure
     {
         public static void ConfigureMarten(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnvironment)
         {
+            var constring = configuration.GetValue<string>("POSTGRES_CON_STRING");
+            Console.WriteLine(constring);
             var store = DocumentStore.For(_ =>
             {
                 _.DatabaseSchemaName = $"disclive_{hostEnvironment.EnvironmentName}";

@@ -93,6 +93,12 @@ export interface Round {
   signatures: PlayerSignature[];
   achievements: UserAchievement[];
   spectators: string[];
+  ratingChanges: RatingChange[];
+}
+
+export interface RatingChange {
+  change: number;
+  username: string;
 }
 
 export interface PlayerSignature {

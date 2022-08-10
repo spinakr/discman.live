@@ -13,6 +13,7 @@ namespace Web.Infrastructure
             transport.ConnectionString(Environment.GetEnvironmentVariable("DOTNET_RABBITMQ_CON_STRING"));
 
             endpointConfiguration.EnableInstallers();
+            endpointConfiguration.LimitMessageProcessingConcurrencyTo(1);
             return endpointConfiguration;
         }
     }

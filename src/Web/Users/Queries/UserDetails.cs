@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Web.Common.Mapping;
 using Web.Tournaments.Domain;
@@ -16,10 +17,12 @@ namespace Web.Users.Queries
         public string Country { get; set; }
         public bool RegisterPutDistance { get; set; }
         public int DiscmanPoints { get; set; }
+        public double Elo { get; set; }
         public List<string> NewsIdsSeen { get; set; }
         public List<string> Friends { get; set; }
         public Guid? ActiveRound { get; set; }
         public bool SettingsInitialized { get; set; }
+        public List<RatingVm> RatingHistory { get; set; }
 
         public void Mapping(Profile profile)
         {
@@ -27,5 +30,11 @@ namespace Web.Users.Queries
                 .ForMember(d => d.ActiveRound,
                     opt => opt.Ignore());
         }
+    }
+
+    public class RatingVm : IMapFrom<Rating>
+    {
+        public double Elo { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }
