@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Marten;
 using MediatR;
 using Microsoft.Extensions.Configuration;
+using NServiceBus;
 using Web.Users.NSBEvents;
 
 namespace Web.Users.Commands
@@ -24,14 +25,14 @@ namespace Web.Users.Commands
     public class CreateNewUserCommandHandler : IRequestHandler<CreateNewUserCommand, AuthenticatedUser>
     {
         private readonly IDocumentSession _documentSession;
-        private readonly IMediator _mediator;
         private readonly string _tokenSecret;
+        private readonly IMessageSession _messageSession;
 
-        public CreateNewUserCommandHandler(IDocumentSession documentSession, IConfiguration configuration, IMediator mediator)
+        public CreateNewUserCommandHandler(IDocumentSession documentSession, IConfiguration configuration, IMediator mediator, IMessageSession messageSession)
         {
             _documentSession = documentSession;
-            _mediator = mediator;
             _tokenSecret = configuration.GetValue<string>("TOKEN_SECRET");
+            _messageSession = messageSession;
         }
 
         public async Task<AuthenticatedUser> Handle(CreateNewUserCommand request, CancellationToken cancellationToken)
@@ -42,7 +43,7 @@ namespace Web.Users.Commands
             _documentSession.Store(newUser);
             await _documentSession.SaveChangesAsync(cancellationToken);
             var authenticatedUser = newUser.Authenticated(_tokenSecret);
-            await _mediator.Publish(new NewUserWasCreated { Username = newUser.Username }, cancellationToken);
+            await _messageSession.Publish(new NewUserWasCreated { Username = newUser.Username });
             return authenticatedUser;
         }
     }

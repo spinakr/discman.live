@@ -44,13 +44,13 @@ namespace Web
                 .Enrich.WithProperty("ApplicationName", "discman.live")
                 .MinimumLevel.Warning();
 
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            var enableElk = Environment.GetEnvironmentVariable("DOTNET_ENABLE_ELK");
-            var isDevelopment = environment == Environments.Development;
-            if (!isDevelopment && enableElk is not null && enableElk == "true")
-            {
-                logConfig.WriteTo.Http("http://logstash:7000");
-            }
+            // var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            // var enableElk = Environment.GetEnvironmentVariable("DOTNET_ENABLE_ELK");
+            // var isDevelopment = environment == Environments.Development;
+            // if (!isDevelopment && enableElk is not null && enableElk == "true")
+            // {
+            //     logConfig.WriteTo.Http("http://logstash:7000");
+            // }
 
             string tableName = "discman_logs";
 
@@ -66,8 +66,7 @@ namespace Web
                 {"machine_name", new SinglePropertyColumnWriter("MachineName", PropertyWriteMethod.ToString, NpgsqlDbType.Text, "l") }
             };
 
-            // logConfig.WriteTo.PostgreSQL(Environment.GetEnvironmentVariable("DOTNET_POSTGRES_CON_STRING"), tableName, columnWriters, needAutoCreateTable: true);
-            //
+            logConfig.WriteTo.PostgreSQL(Environment.GetEnvironmentVariable("DOTNET_POSTGRES_CON_STRING"), tableName, columnWriters, needAutoCreateTable: true);
             Log.Logger = logConfig.CreateLogger();
         }
 
