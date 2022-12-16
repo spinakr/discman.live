@@ -10,6 +10,7 @@ import UserAchievements from "./UserAchievements";
 import Tournaments from "../Tournaments/Tournaments";
 import { countries } from "./CountryPicker";
 import RatingHistory from "./RatingHistory";
+import { Link } from "react-router-dom";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -34,6 +35,10 @@ const UserComponent = (props: Props) => {
     props.user?.usersDetails &&
     props.user.usersDetails.find((d) => d.username === username);
 
+  const thisYear = new Date().getFullYear();
+  const thisMonth = new Date().getMonth();
+  const summaryYear = thisMonth > 10 ? thisYear : thisYear - 1;
+
   return (
     <div>
       <h3 className="title is-3 has-text-centered">
@@ -42,7 +47,15 @@ const UserComponent = (props: Props) => {
         {userDetails?.emoji}&nbsp;
         {Math.round(userDetails?.elo || 0)}
       </h3>
-
+      {(thisMonth > 10 || thisMonth < 3) && (
+        <div className="has-text-centered">
+          <Link to={`/user/yearsummary/${summaryYear}`}>
+            <button className="button is-medium is-warning is-rounded m-3">
+              See your yearly summary!
+            </button>
+          </Link>
+        </div>
+      )}
       <div className="tabs is-small is-fullwidth is-centered">
         <ul>
           <li

@@ -50,6 +50,18 @@ export interface Rating {
   datetime: Date;
 }
 
+export interface YearSummary {
+  hoursPlayed: number;
+  roundsPlayed: number;
+  totalScore: number;
+  bestCardmate: string;
+  bestCardmateAverageScore: number;
+  worstCardmate: string;
+  worstCardmateAverageScore: number;
+  mostPlayedCourse: number;
+  mostPlayedCourseRoundsCount: number;
+}
+
 export interface UserAchievement {
   achievementName: string;
   username: string;
@@ -68,6 +80,7 @@ export interface UserState {
   failedLoginMessage: string | null;
   userStats: UserStats | null;
   userRounds: PagedRounds | null;
+  userYearSummary: YearSummary | null;
   userAchievements: GroupedAchievement[];
   searchedUsers: string[];
   feed: Feed | null;
@@ -111,6 +124,11 @@ export interface FetchFeedSuccessAction {
 export interface SpectatorJoindAction {
   type: "SPEC_JOINED";
   roundId: string;
+}
+
+export interface FetchUserYearSummarySuccessAction {
+  type: "FETCH_USER_YEARS_SUMMARY_SUCCESS";
+  yearSummary: YearSummary;
 }
 
 export interface SpectatorLeftAction {
@@ -243,6 +261,7 @@ export type KnownAction =
   | EmojiUpdatedSuccessAction
   | ClearFeedAction
   | NewRoundCreatedAction
+  | FetchUserYearSummarySuccessAction
   | RoundWasDeletedAction
   | SpectatorLeftAction;
 
@@ -261,6 +280,7 @@ const initialState: UserState = user
       userStats: null,
       userRounds: null,
       userAchievements: [],
+      userYearSummary: null,
       searchedUsers: [],
       feed: null,
     }
@@ -273,6 +293,7 @@ const initialState: UserState = user
       userStats: null,
       userRounds: null,
       userAchievements: [],
+      userYearSummary: null,
       searchedUsers: [],
       feed: null,
     };
@@ -882,6 +903,41 @@ export const actionCreators = {
         );
       });
   },
+  fetchUserYearSummary: (
+    username: string,
+    year: number
+  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    const appState = getState();
+    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+      return;
+
+    fetch(`api/users/${username}/yearsummary/2022`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${appState.user.user.token}`,
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json() as Promise<YearSummary>;
+        }
+        throw new Error("No joy!");
+      })
+      .then((data) => {
+        dispatch({
+          type: "FETCH_USER_YEARS_SUMMARY_SUCCESS",
+          yearSummary: data,
+        });
+      })
+      .catch((err: Error) => {
+        notificationActions.showNotification(
+          `Fetch user details failed: ${err.message}`,
+          "error",
+          dispatch
+        );
+      });
+  },
   fetchUserDetails: (
     onlyIfDisconnected?: boolean
   ): AppThunkAction<KnownAction> => (dispatch, getState) => {
@@ -1106,6 +1162,11 @@ export const reducer: Reducer<UserState> = (
         userRounds: action.pagedRounds,
         // roundInProgress:
         //   action.pagedRounds.rounds.find((r) => !r.isCompleted) || null,
+      };
+    case "FETCH_USER_YEARS_SUMMARY_SUCCESS":
+      return {
+        ...state,
+        userYearSummary: action.yearSummary,
       };
     case "FETCH_USER_DETAILS_SUCCESS":
       return {

@@ -67,7 +67,7 @@ namespace Web.Rounds
         public bool Deleted { get; set; }
         public List<RatingChange> RatingChanges { get; set; } = new List<RatingChange>();
 
-        public double RoundDuration => IsCompleted ? Math.Round((CompletedAt - StartTime).TotalMinutes) : Math.Round((DateTime.Now - StartTime).TotalMinutes);
+        public double DurationMinutes => IsCompleted ? Math.Round((CompletedAt - StartTime).TotalMinutes) : Math.Round((DateTime.Now - StartTime).TotalMinutes);
 
         private static List<PlayerScore> GenerateEmptyScoreCard(List<Hole> courseHoles, List<User> players)
         {

@@ -109,6 +109,13 @@ namespace Web.Users
             return Ok(userAchievements);
         }
 
+        [HttpGet("{username}/yearsummary/{year}")]
+        public async Task<IActionResult> GetUserYearSummary(string username, int year)
+        {
+            var userYearSummary = await _mediator.Send(new GetYearSummaryQuery { Username = username, Year = year });
+            return Ok(userYearSummary);
+        }
+
         [HttpPut("{username}/password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand req)
         {

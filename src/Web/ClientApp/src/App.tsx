@@ -19,6 +19,7 @@ import { connect, ConnectedProps } from "react-redux";
 import queryString from "query-string";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import UserYearSummary from "./components/User/UserYearSummary";
 
 export interface AppCompProps {
   token: string | undefined;
@@ -122,6 +123,11 @@ export class App extends React.PureComponent<Props, AppCompState> {
             <Route exact path="/settings" component={UserSettings} />
             <Route exact path="/leaders" component={Leaders} />
             <Route exact path="/users/:usernameParam" component={User} />
+            <Route
+              exact
+              path="/user/:usernameParam?/yearsummary/:yearParam?"
+              component={UserYearSummary}
+            />
             <Route exact path="/friends" component={Friends} />
             <Route
               exact
