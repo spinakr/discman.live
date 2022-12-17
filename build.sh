@@ -1,5 +1,13 @@
+echo "Building Discman.Classic"
 dotnet build Discman.Classic.sln 
 
+echo "Building Discman Web Client App"
+cd Web/ClientApp
+npm install
+npm run build
+cd ../..
 
+echo "Building Discman Web 2.0"
+dotnet build Discman.Next.sln
+dotnet test Discman.Next.sln
 
-#docker build -t sp1nakr/disclive:0.383 .

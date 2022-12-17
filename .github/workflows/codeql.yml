@@ -1,13 +1,9 @@
 name: "CodeQL"
 
+#Run CodeQL scan every Friday at 8:30 AM
 on:
-  push:
-    branches: ["main"]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: ["main"]
   schedule:
-    - cron: "28 8 * * 5"
+    - cron: "30 8 * * 5"
 
 jobs:
   analyze:
@@ -34,7 +30,7 @@ jobs:
           languages: ${{ matrix.language }}
 
       - run: |
-          echo "Bulding application"
+          echo "Bulding Discman!"
           sh ./build.sh
 
       - name: Perform CodeQL Analysis
