@@ -2,7 +2,7 @@ echo "Building Discman.Classic"
 dotnet build Discman.Classic.sln 
 
 echo "Building Discman Web Client App"
-cd Web/ClientApp
+cd src/Web/ClientApp
 npm install
 npm run build
 cd ../..
