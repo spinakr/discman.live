@@ -14,14 +14,8 @@ const CoursesMap = ({
   coursesAvailable,
 }: CoursesMapProps) => {
   const [mapAvailable, setMapAvailable] = useState(true);
-  const [center, setCenter] = useState([
-    59.91614272103729,
-    10.746863315787369,
-  ] as Point);
-  const [, setCourse] = useState([
-    59.91614272103729,
-    10.746863315787369,
-  ] as Point);
+  const [center, setCenter] = useState([59.91614272103729, 10.746863315787369]);
+  const [, setCourse] = useState([59.91614272103729, 10.746863315787369]);
   const [zoom, setZoom] = useState(12);
   useEffect(() => {
     if (selectedCourse?.coordinates) {
@@ -48,7 +42,7 @@ const CoursesMap = ({
       height={selectedCourse ? 100 : 200}
       zoom={zoom}
       center={center}
-      onBoundsChanged={({ center, zoom }) => {
+      onBoundsChanged={({ center, zoom }: { center: any; zoom: any }) => {
         setCenter(center);
         setZoom(zoom);
       }}
@@ -59,7 +53,7 @@ const CoursesMap = ({
           <Marker
             key={c.id}
             width={30}
-            anchor={[c.coordinates.latitude, c.coordinates.longitude] as Point}
+            anchor={[c.coordinates.latitude, c.coordinates.longitude]}
           />
         ))}
     </Map>

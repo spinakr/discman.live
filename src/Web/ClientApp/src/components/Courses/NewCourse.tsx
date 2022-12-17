@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import { ApplicationState } from "../../store";
@@ -35,15 +34,12 @@ const NewCourse = (props: Props) => {
   const [par5s, setPar5s] = useState<number[]>([]);
 
   const [mapAvailable, setMapAvailable] = useState(true);
-  const [center, setCenter] = useState([
-    59.91614272103729,
-    10.746863315787369,
-  ] as Point);
+  const [center, setCenter] = useState([59.91614272103729, 10.746863315787369]);
   const [zoom, setZoom] = useState(13);
   const [courseLocation, setCourseLocation] = useState([
     59.91614272103729,
     10.746863315787369,
-  ] as Point);
+  ]);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -76,7 +72,13 @@ const NewCourse = (props: Props) => {
                 height={200}
                 center={center}
                 zoom={zoom}
-                onBoundsChanged={({ center, zoom }) => {
+                onBoundsChanged={({
+                  center,
+                  zoom,
+                }: {
+                  center: any;
+                  zoom: any;
+                }) => {
                   setCenter(center);
                   setZoom(zoom);
                   setCourseLocation(center);

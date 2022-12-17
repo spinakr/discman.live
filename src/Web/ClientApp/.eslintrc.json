@@ -1,18 +1,12 @@
 {
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-        "ecmaVersion": 6,
-        "sourceType": "module"
-    },
-    "extends": [
-        "react-app",
-        "prettier",
-        "prettier/react"
-      ],
-    "plugins": [
-        "prettier"
-    ],
-    "rules": {
-        "prettier/prettier": "error"
-    }
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "extends": ["prettier", "prettier/react"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": 0
+  }
 }

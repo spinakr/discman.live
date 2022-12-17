@@ -98,7 +98,7 @@ export const actionCreators = {
   createCourse: (
     courseName: string,
     layoutName: string,
-    courseLocation: Point,
+    courseLocation: any,
     numberOfHoles: number,
     par4s: number[],
     par5s: number[]
