@@ -16,7 +16,8 @@ RUN ls
 
 
 WORKDIR /build
-RUN dotnet publish --configuration Release -o out 
+RUN ls
+RUN dotnet publish ./src/Web/Web.csproj --configuration Release -o out 
 WORKDIR /build/ClientApp
 RUN npm install
 RUN npm run build
