@@ -18,10 +18,10 @@ RUN ls
 WORKDIR /build
 RUN ls
 RUN dotnet publish ./src/Web/Web.csproj --configuration Release -o out 
-WORKDIR /build/ClientApp
+WORKDIR /build/src/Web/ClientApp
 RUN npm install
 RUN npm run build
-RUN cp -r build ../out/ClientApp
+RUN cp -R build/* ../../../out/ClientApp
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
