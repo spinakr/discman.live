@@ -1,7 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import colors from "../../colors";
 import { Round, PlayerCourseStats } from "../../store/Rounds";
+import colors, { scoreColorStyle } from "../../colors";
+import HoleScoreIndicator from "./HoleScoreIndicator";
+import SmallInfoWithHeader from "./SmallInfoWithHeader";
 
 export interface ScoreCardProps {
   username: string;
@@ -27,12 +29,16 @@ const HoleScoreComponent = ({
 
   const holeScore = playerScores[activeHole];
 
-  const playersBirdies = playersStats.map((p) => {
+  const playersHoleStats = playersStats.map((p) => {
     return {
       name: p.playerName,
-      holeBirdied: p.holeStats[activeHole].birdie,
+      holeStats: p.holeStats[activeHole],
     };
   });
+
+  const playerHoleStats = playersHoleStats.find(
+    (x) => x.name === username
+  )?.holeStats;
 
   const courseHoles = playerScores;
   const currentHole = courseHoles[activeHole];
@@ -43,27 +49,67 @@ const HoleScoreComponent = ({
   const prevHole = activeHole - 1 > -1 ? courseHoles[activeHole - 1] : null;
 
   const playersToDisplay = round.playerScores; //consider not showing all players
-  // round.playerScores.length > 4 ? [activePlayerScores] : round.playerScores;
 
   return (
     <div className="pt-1 pb-0">
       <div className="tour-stats">
         <div className="columns is-centered is-mobile">
           <span className="column has-text-centered pb-0">
-            <h6 className="title is-6">Hole</h6>
-            {holeScore?.hole.number}
+            <SmallInfoWithHeader title="Hole" value={holeScore?.hole.number} />
           </span>
           <span className="column has-text-centered pb-0">
-            <h6 className="title is-6">Par</h6>
-            {holeScore?.hole.par}
+            <SmallInfoWithHeader title="Par" value={holeScore?.hole.par} />
           </span>
           <span className="column has-text-centered  pb-0">
-            <h6 className="title is-6">Avg.</h6>
-            {holeScore?.hole.average.toFixed(1)}
+            <SmallInfoWithHeader
+              title="avg"
+              value={holeScore?.hole.average.toFixed(1)}
+            />
           </span>
           <span className="column has-text-centered pb-0">
-            <h6 className="title is-6 ">Rating</h6>
-            {holeScore?.hole.rating}
+            <SmallInfoWithHeader title="rank" value={holeScore?.hole.rating} />
+          </span>
+        </div>
+      </div>
+      <div>
+        <div className="columns is-centered is-mobile">
+          <span className="column has-text-centered pb-0">
+            <SmallInfoWithHeader
+              title="best"
+              small
+              value={
+                <HoleScoreIndicator
+                  holeScore={playerHoleStats?.bestScore}
+                  tight
+                />
+              }
+            />
+          </span>
+          <span className="column has-text-centered pb-0">
+            <SmallInfoWithHeader
+              title="avg"
+              small
+              value={playerHoleStats?.averageScore.toFixed(1)}
+            />
+          </span>
+          <span className="column has-text-centered pb-0">
+            {playerHoleStats?.last10Scores.length && (
+              <>
+                <SmallInfoWithHeader
+                  title="prev"
+                  small
+                  value={
+                    <>
+                      {playerHoleStats?.last10Scores.slice(0, 5).map((x, i) => {
+                        return (
+                          <HoleScoreIndicator holeScore={x} key={i} tight />
+                        );
+                      })}
+                    </>
+                  }
+                />
+              </>
+            )}
           </span>
         </div>
       </div>
@@ -75,7 +121,6 @@ const HoleScoreComponent = ({
         >
           <thead>
             <tr>
-              <td></td>
               <td></td>
               {prevHole && (
                 <th
@@ -113,9 +158,6 @@ const HoleScoreComponent = ({
                   key={i}
                   className={p.playerName === username ? "active-user-row" : ""}
                 >
-                  <td className="px-0 has-text-centered">
-                    <span className="is-size-5">{p.playerEmoji}</span>
-                  </td>
                   <td
                     style={{
                       minWidth: "75px",
@@ -130,8 +172,8 @@ const HoleScoreComponent = ({
                       return total + score.relativeToPar;
                     }, 0)}
                     )
-                    {playersBirdies.find((x) => x.name === p.playerName)
-                      ?.holeBirdied && (
+                    {playersHoleStats.find((x) => x.name === p.playerName)
+                      ?.holeStats.birdie && (
                       <span className="icon is-small">
                         <i className="fas fa-dove"></i>
                       </span>

@@ -98,7 +98,7 @@ services:
   #     - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.391
+    image: sp1nakr/disclive:0.392
     container_name: discmanweb
     restart: unless-stopped
     mem_limit: 2g

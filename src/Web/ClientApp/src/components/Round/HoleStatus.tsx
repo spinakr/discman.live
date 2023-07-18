@@ -2,6 +2,7 @@ import React from "react";
 import colors, { scoreColorStyle } from "../../colors";
 import { HoleScore, PlayerCourseStats, Round } from "../../store/Rounds";
 import RoundPredictions from "./RoundPredictions";
+import HoleScoreIndicator from "./HoleScoreIndicator";
 
 export interface HoleStatusProps {
   gotoNextHole: () => void;
@@ -101,14 +102,7 @@ export default ({
                   <tr key={s.username}>
                     <td>{s.username}</td>
                     <td>
-                      <span
-                        className={`p-1 ${scoreColorStyle(
-                          s.scores.relativeToPar,
-                          s.scores.strokeSpecs
-                        )}`}
-                      >
-                        {s.scores.strokes === 0 ? "-" : s.scores.strokes}
-                      </span>
+                      <HoleScoreIndicator holeScore={s.scores} />
                     </td>
                     <td>{scoreText(s.scores)}</td>
                   </tr>

@@ -33,21 +33,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 type Props = PropsFromRedux & {};
 
-// const calculateDurationString = (round: Round) => {
-//   if (round.isCompleted && round.completedAt === "0001-01-01T00:00:00")
-//     return "";
-//   const durationMinutes = round.roundDuration;
-//   const hours = durationMinutes / 60;
-//   const rhours = Math.floor(hours);
-//   const minutes = (hours - rhours) * 60;
-//   const rminutes = Math.round(minutes);
-
-//   const hourPart = rhours !== 0 ? `${rhours} h ` : "";
-//   const minPart = `${rminutes} min`;
-
-//   return `${hourPart}${minPart}`;
-// };
-
 const toDateString = (date: Date) => {
   const dateTimeFormat = new Intl.DateTimeFormat("en", {
     year: "numeric",

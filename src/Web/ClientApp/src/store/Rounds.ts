@@ -60,9 +60,13 @@ export interface PlayerCourseStats {
 
 export interface HoleStats {
   holeNumber: number;
-  bestScore: number;
+  bestScore: HoleScore;
   averageScore: number;
   birdie: boolean;
+  birdies: number;
+  pars: number;
+  worseThanPar: number;
+  last10Scores: HoleScore[];
 }
 
 export interface PlayerRoundProgression {
@@ -283,16 +287,16 @@ const initialState: RoundsState = {
 };
 
 export const actionCreators = {
-  setEditHole: (editHole: boolean): AppThunkAction<KnownAction> => (
-    dispatch
-  ) => {
-    dispatch({ type: "SET_EDIT_HOLE", editHole });
-  },
-  setScorecardOpen: (open: boolean): AppThunkAction<KnownAction> => (
-    dispatch
-  ) => {
-    dispatch({ type: "TOGGLE_SCORECARD", open });
-  },
+  setEditHole:
+    (editHole: boolean): AppThunkAction<KnownAction> =>
+    (dispatch) => {
+      dispatch({ type: "SET_EDIT_HOLE", editHole });
+    },
+  setScorecardOpen:
+    (open: boolean): AppThunkAction<KnownAction> =>
+    (dispatch) => {
+      dispatch({ type: "TOGGLE_SCORECARD", open });
+    },
   roundWasUpdated: (round: Round) => {
     return { type: "ROUND_WAS_UPDATED", round: round };
   },
@@ -305,121 +309,117 @@ export const actionCreators = {
   specLeft: (roundId: string, username: string) => {
     return { type: "SPECTATOR_LEFT", roundId, username };
   },
-  fetchLastRounds: (numberOfRounds?: number): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
-    const username = appState.user.user.username;
-    fetch(`api/rounds?username=${username}&count=${numberOfRounds || 5}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          UserActions.logout()(dispatch);
-        }
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
+  fetchLastRounds:
+    (numberOfRounds?: number): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
+      const username = appState.user.user.username;
+      fetch(`api/rounds?username=${username}&count=${numberOfRounds || 5}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
       })
-      .then((response) => response.json() as Promise<Round[]>)
-      .then((data) => {
-        dispatch({
-          type: "FETCH_ROUNDS_SUCCEED",
-          rounds: data,
+        .then((res) => {
+          if (res.status === 401) {
+            UserActions.logout()(dispatch);
+          }
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => response.json() as Promise<Round[]>)
+        .then((data) => {
+          dispatch({
+            type: "FETCH_ROUNDS_SUCCEED",
+            rounds: data,
+          });
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Fetch rounds failed: ${err.message}`,
+            "error",
+            dispatch
+          );
         });
+    },
+  fetchUserStats:
+    (roundId: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
+      fetch(`api/rounds/${roundId}/stats`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
       })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Fetch rounds failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  fetchUserStats: (roundId: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
-    fetch(`api/rounds/${roundId}/stats`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
-      })
-      .then((response) => response.json() as Promise<UserStats[]>)
-      .then((data) => {
-        dispatch({
-          type: "FETCH_ROUND_STATS_SUCCESS",
-          userStats: data,
+        .then((res) => {
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => response.json() as Promise<UserStats[]>)
+        .then((data) => {
+          dispatch({
+            type: "FETCH_ROUND_STATS_SUCCESS",
+            userStats: data,
+          });
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Fetch round stats failed: ${err.message}`,
+            "error",
+            dispatch
+          );
         });
+    },
+  fetchStatsOnCourse:
+    (roundId: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
+      fetch(`api/rounds/${roundId}/courseStats`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
       })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Fetch round stats failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  fetchStatsOnCourse: (roundId: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
-    fetch(`api/rounds/${roundId}/courseStats`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          UserActions.logout()(dispatch);
-        }
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
-      })
-      .then((response) => response.json() as Promise<PlayerCourseStats[]>)
-      .then((data) => {
-        dispatch({
-          type: "FETCH_COURSE_STATS_SUCCEED",
-          stats: data,
+        .then((res) => {
+          if (res.status === 401) {
+            UserActions.logout()(dispatch);
+          }
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => response.json() as Promise<PlayerCourseStats[]>)
+        .then((data) => {
+          dispatch({
+            type: "FETCH_COURSE_STATS_SUCCEED",
+            stats: data,
+          });
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Fetch course stats failed: ${err.message}`,
+            "error",
+            dispatch
+          );
         });
-      })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Fetch course stats failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  fetchRound: (roundId: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
-    fetchRound(roundId, appState.user.user, dispatch);
-  },
+    },
+  fetchRound:
+    (roundId: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
+      fetchRound(roundId, appState.user.user, dispatch);
+    },
   refreshRound: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     const appState = getState();
     const activeRound = appState.rounds?.round?.id;
@@ -433,369 +433,364 @@ export const actionCreators = {
   dissconnectHub: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
     dispatch({ type: "DISCONNECT_TO_HUB" });
   },
-  newRound: (
-    courseId: string | undefined,
-    players: string[],
-    roundName: string,
-    scoreMode: ScoreMode
-  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
-    const username = appState.user.user.username;
-    if (!players.some((p) => p === username)) {
-      players = [...players, username];
-    }
-    fetch(`api/rounds`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-      body: JSON.stringify({
-        courseId: courseId,
-        players: players,
-        roundName,
-        scoreMode,
-      }),
-    })
-      .then((response) => {
-        if (response.status === 401) {
-          UserActions.logout()(dispatch);
-        }
-        if (response.status === 409) {
-          window.alert(
-            "A round with you in it was just started, redirecting to that round"
+  newRound:
+    (
+      courseId: string | undefined,
+      players: string[],
+      roundName: string,
+      scoreMode: ScoreMode
+    ): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
+      const username = appState.user.user.username;
+      if (!players.some((p) => p === username)) {
+        players = [...players, username];
+      }
+      fetch(`api/rounds`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
+        body: JSON.stringify({
+          courseId: courseId,
+          players: players,
+          roundName,
+          scoreMode,
+        }),
+      })
+        .then((response) => {
+          if (response.status === 401) {
+            UserActions.logout()(dispatch);
+          }
+          if (response.status === 409) {
+            window.alert(
+              "A round with you in it was just started, redirecting to that round"
+            );
+          }
+          if (!response.ok && response.status !== 409)
+            throw new Error(`${response.status} - ${response.statusText}`);
+          return response.json() as Promise<Round>;
+        })
+        .then((data) => {
+          dispatch({
+            type: "NEW_ROUND_CREATED",
+            round: data,
+          });
+          dispatch(push(`/rounds/${data.id}`));
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Create round failed: ${err.message}`,
+            "error",
+            dispatch
           );
-        }
-        if (!response.ok && response.status !== 409)
-          throw new Error(`${response.status} - ${response.statusText}`);
-        return response.json() as Promise<Round>;
-      })
-      .then((data) => {
-        dispatch({
-          type: "NEW_ROUND_CREATED",
-          round: data,
         });
-        dispatch(push(`/rounds/${data.id}`));
+    },
+  addHole:
+    (
+      holeNumber: number,
+      par: number,
+      length: number
+    ): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
+      const roundId = appState.rounds?.round?.id;
+      fetch(`api/rounds/${roundId}/holes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
+        body: JSON.stringify({ holeNumber, par, length }),
       })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Create round failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  addHole: (
-    holeNumber: number,
-    par: number,
-    length: number
-  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
-    const roundId = appState.rounds?.round?.id;
-    fetch(`api/rounds/${roundId}/holes`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-      body: JSON.stringify({ holeNumber, par, length }),
-    })
-      .then((response) => {
-        if (!response.ok)
-          throw new Error(`${response.status} - ${response.statusText}`);
-        return response.json() as Promise<Round>;
-      })
-      .then((data) => {})
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Add hole failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
+        .then((response) => {
+          if (!response.ok)
+            throw new Error(`${response.status} - ${response.statusText}`);
+          return response.json() as Promise<Round>;
+        })
+        .then((data) => {})
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Add hole failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
 
   roundWasDeleted: (roundId: string) => {
     return { type: "ROUND_WAS_DELETED", roundId: roundId };
   },
-  deleteRound: (roundId: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
+  deleteRound:
+    (roundId: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
 
-    fetch(`api/rounds/${roundId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          UserActions.logout()(dispatch);
-        }
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
+      fetch(`api/rounds/${roundId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
       })
-      .then((response) => {
-        dispatch(push("/"));
-        dispatch({ type: "ROUND_WAS_DELETED", roundId });
+        .then((res) => {
+          if (res.status === 401) {
+            UserActions.logout()(dispatch);
+          }
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => {
+          dispatch(push("/"));
+          dispatch({ type: "ROUND_WAS_DELETED", roundId });
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Delete round failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
+  skipHole:
+    (roundId: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
+
+      const activeHoleIndex = appState.rounds?.activeHoleIndex;
+      if (activeHoleIndex === null || activeHoleIndex === undefined) return;
+      const holeNumber =
+        appState.rounds?.round?.playerScores[0].scores[activeHoleIndex].hole
+          .number;
+      if (!holeNumber || !roundId) return;
+      fetch(`api/rounds/${roundId}/holes/${holeNumber}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
       })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Delete round failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  skipHole: (roundId: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
+        .then((res) => {
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          dispatch({ type: "HOLE_WAS_DELETED", holeNumber });
+          return res;
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Delete hole failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
+  leaveRound:
+    (roundId: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      if (!appState.user || !appState.user.loggedIn || !appState.user.user)
+        return;
 
-    const activeHoleIndex = appState.rounds?.activeHoleIndex;
-    if (activeHoleIndex === null || activeHoleIndex === undefined) return;
-    const holeNumber =
-      appState.rounds?.round?.playerScores[0].scores[activeHoleIndex].hole
-        .number;
-    if (!holeNumber || !roundId) return;
-    fetch(`api/rounds/${roundId}/holes/${holeNumber}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        dispatch({ type: "HOLE_WAS_DELETED", holeNumber });
-        return res;
+      if (!roundId) return;
+      fetch(`api/rounds/${roundId}/users`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${appState.user.user.token}`,
+        },
       })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Delete hole failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  leaveRound: (roundId: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    if (!appState.user || !appState.user.loggedIn || !appState.user.user)
-      return;
+        .then((res) => {
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          dispatch(push("/"));
+          return res;
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Leave round failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
+  setScore:
+    (score: number, strokes: StrokeOutcome[]): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      const loggedInUser = appState?.user?.user;
 
-    if (!roundId) return;
-    fetch(`api/rounds/${roundId}/users`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${appState.user.user.token}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        dispatch(push("/"));
-        return res;
-      })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Leave round failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  setScore: (
-    score: number,
-    strokes: StrokeOutcome[]
-  ): AppThunkAction<KnownAction> => (dispatch, getState) => {
-    const appState = getState();
-    const loggedInUser = appState?.user?.user;
+      const round = appState.rounds?.round;
+      const holeIndex = appState.rounds?.activeHoleIndex;
+      if (!loggedInUser || !round || holeIndex === undefined || holeIndex < 0)
+        return;
 
-    const round = appState.rounds?.round;
-    const holeIndex = appState.rounds?.activeHoleIndex;
-    if (!loggedInUser || !round || holeIndex === undefined || holeIndex < 0)
-      return;
-
-    const playerScores = round.playerScores.find(
-      (p) => p.playerName === loggedInUser.username
-    );
-    const holeScore = playerScores && playerScores.scores[holeIndex];
-    if (holeScore && holeScore.strokes !== 0) {
-      const goOn = window.confirm(
-        "You are overwriting an existing score, continue?"
+      const playerScores = round.playerScores.find(
+        (p) => p.playerName === loggedInUser.username
       );
-      if (!goOn) return;
-    }
+      const holeScore = playerScores && playerScores.scores[holeIndex];
+      if (holeScore && holeScore.strokes !== 0) {
+        const goOn = window.confirm(
+          "You are overwriting an existing score, continue?"
+        );
+        if (!goOn) return;
+      }
 
-    fetch(`api/rounds/${round.id}/scores`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${loggedInUser.token}`,
-      },
-      body: JSON.stringify({
-        holeIndex: holeIndex,
-        strokes: score,
-        strokeOutcomes: strokes,
-        username: loggedInUser.username,
-      }),
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          UserActions.logout()(dispatch);
-        }
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
+      fetch(`api/rounds/${round.id}/scores`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loggedInUser.token}`,
+        },
+        body: JSON.stringify({
+          holeIndex: holeIndex,
+          strokes: score,
+          strokeOutcomes: strokes,
+          username: loggedInUser.username,
+        }),
       })
-      .then((response) => response.json() as Promise<Round>)
-      .then((data) => {
+        .then((res) => {
+          if (res.status === 401) {
+            UserActions.logout()(dispatch);
+          }
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => response.json() as Promise<Round>)
+        .then((data) => {
+          dispatch({
+            type: "SCORE_UPDATED_SUCCESS",
+            round: data,
+            username: loggedInUser.username,
+          });
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Set score failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
+  setScoringMode:
+    (mode: ScoreMode): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      const loggedInUser = appState?.user?.user;
+      const roundId = appState.rounds?.round?.id;
+      if (!loggedInUser || !roundId) return;
+
+      fetch(`api/rounds/${roundId}/scoremode`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loggedInUser.token}`,
+        },
+        body: JSON.stringify({ scoreMode: mode }),
+      })
+        .then((res) => {
+          if (res.status === 401) {
+            UserActions.logout()(dispatch);
+          }
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => {})
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Set scoring mode failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
+  completeRound:
+    (base64Signature: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      const loggedInUser = appState?.user?.user;
+
+      const roundId = appState.rounds?.round?.id;
+      if (!loggedInUser || !roundId) return;
+
+      fetch(`api/rounds/${roundId}/complete`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loggedInUser.token}`,
+        },
+        body: JSON.stringify({ base64Signature }),
+      })
+        .then((res) => {
+          if (res.status === 401) {
+            UserActions.logout()(dispatch);
+          }
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => {
+          if (response.ok) dispatch({ type: "ROUND_WAS_COMPLETED" });
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Complete round failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
+  saveAsCourse:
+    (courseName: string): AppThunkAction<KnownAction> =>
+    (dispatch, getState) => {
+      const appState = getState();
+      const loggedInUser = appState?.user?.user;
+      const roundId = appState.rounds?.round?.id;
+      if (!loggedInUser || !roundId) return;
+
+      fetch(`api/rounds/${roundId}/savecourse`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${loggedInUser.token}`,
+        },
+        body: JSON.stringify({ courseName }),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
+          return res;
+        })
+        .then((response) => {
+          if (response.ok) dispatch({ type: "COURSE_WAS_SAVED" });
+        })
+        .catch((err: Error) => {
+          notificationActions.showNotification(
+            `Complete round failed: ${err.message}`,
+            "error",
+            dispatch
+          );
+        });
+    },
+  setActiveHole:
+    (holeIndex: number): AppThunkAction<KnownAction> =>
+    (dispatch) => {
+      dispatch({ type: "SET_ACTIVE_HOLE", holeIndex: holeIndex });
+    },
+  goToNextPersonalHole:
+    (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+      const appState = getState();
+      const loggedInUser = appState?.user?.user;
+      loggedInUser &&
         dispatch({
-          type: "SCORE_UPDATED_SUCCESS",
-          round: data,
+          type: "GOTO_NEXT_PERSONAL_HOLE",
           username: loggedInUser.username,
         });
-      })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Set score failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  setScoringMode: (mode: ScoreMode): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    const loggedInUser = appState?.user?.user;
-    const roundId = appState.rounds?.round?.id;
-    if (!loggedInUser || !roundId) return;
-
-    fetch(`api/rounds/${roundId}/scoremode`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${loggedInUser.token}`,
-      },
-      body: JSON.stringify({ scoreMode: mode }),
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          UserActions.logout()(dispatch);
-        }
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
-      })
-      .then((response) => {})
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Set scoring mode failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  completeRound: (base64Signature: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    const loggedInUser = appState?.user?.user;
-
-    const roundId = appState.rounds?.round?.id;
-    if (!loggedInUser || !roundId) return;
-
-    fetch(`api/rounds/${roundId}/complete`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${loggedInUser.token}`,
-      },
-      body: JSON.stringify({ base64Signature }),
-    })
-      .then((res) => {
-        if (res.status === 401) {
-          UserActions.logout()(dispatch);
-        }
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
-      })
-      .then((response) => {
-        if (response.ok) dispatch({ type: "ROUND_WAS_COMPLETED" });
-      })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Complete round failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  saveAsCourse: (courseName: string): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    const loggedInUser = appState?.user?.user;
-    const roundId = appState.rounds?.round?.id;
-    if (!loggedInUser || !roundId) return;
-
-    fetch(`api/rounds/${roundId}/savecourse`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${loggedInUser.token}`,
-      },
-      body: JSON.stringify({ courseName }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`${res.status} - ${res.statusText}`);
-        return res;
-      })
-      .then((response) => {
-        if (response.ok) dispatch({ type: "COURSE_WAS_SAVED" });
-      })
-      .catch((err: Error) => {
-        notificationActions.showNotification(
-          `Complete round failed: ${err.message}`,
-          "error",
-          dispatch
-        );
-      });
-  },
-  setActiveHole: (holeIndex: number): AppThunkAction<KnownAction> => (
-    dispatch
-  ) => {
-    dispatch({ type: "SET_ACTIVE_HOLE", holeIndex: holeIndex });
-  },
-  goToNextPersonalHole: (): AppThunkAction<KnownAction> => (
-    dispatch,
-    getState
-  ) => {
-    const appState = getState();
-    const loggedInUser = appState?.user?.user;
-    loggedInUser &&
-      dispatch({
-        type: "GOTO_NEXT_PERSONAL_HOLE",
-        username: loggedInUser.username,
-      });
-  },
+    },
 };
 
 //wait for all to score
