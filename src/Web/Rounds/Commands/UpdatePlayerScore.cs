@@ -57,17 +57,9 @@ namespace Web.Rounds.Commands
 
             round.OrderByTeeHonours();
 
-            if (round.PlayerScores.Sum(p => p.Scores.Count(s => s.Strokes != 0)) == 1)
-            {
-                foreach (var playerScore in round.PlayerScores)
-                {
-                    // var firstHoleIndex = playerScore.Scores.FindIndex(x => x.Hole.Number == request.Hole);
-                    playerScore.Scores = playerScore.Scores
-                        .Skip(request.HoleIndex)
-                        .Concat(playerScore.Scores.Take(request.HoleIndex))
-                        .ToList();
-                }
-            }
+            CalculateNewStartingHole(request.HoleIndex, round);
+
+            CalculateStatusEmoji(request.Username, round);
 
             _documentSession.Update(round);
             await _documentSession.SaveChangesAsync(cancellationToken);
@@ -84,6 +76,64 @@ namespace Web.Rounds.Commands
             });
 
             return round;
+        }
+
+        private static void CalculateStatusEmoji(string username, Round round)
+        {
+            //Calculate emojies based on the holes played for the active user
+            var playerScore = round.PlayerScores.Single(x => x.PlayerName == username);
+            var holesPlayed = playerScore.Scores.Where(x => x.Strokes != 0);
+            var prevHole = holesPlayed.LastOrDefault();
+
+
+            if (prevHole.RelativeToPar > 2)
+                playerScore.PlayerRoundStatusEmoji = "💣";
+
+            if (holesPlayed.TakeLast(5).Sum(x => x.RelativeToPar) < -1)
+                playerScore.PlayerRoundStatusEmoji = "🔥";
+
+            if (holesPlayed.TakeLast(5).Sum(x => x.RelativeToPar) > 5)
+                playerScore.PlayerRoundStatusEmoji = "🤮";
+
+            if (holesPlayed.Sum(x => x.RelativeToPar) < holesPlayed.Count() && !holesPlayed.Any(x => x.RelativeToPar > 1))
+                playerScore.PlayerRoundStatusEmoji = "🐢";
+
+            if (holesPlayed.Sum(x => x.RelativeToPar) > holesPlayed.Count() / 2 &&
+                holesPlayed.TakeLast(5).Sum(x => x.RelativeToPar) < -1)
+            {
+                playerScore.PlayerRoundStatusEmoji = "🚀";
+            }
+
+            if (holesPlayed.Count(x => x.RelativeToPar < 0) < 2 && holesPlayed.Count(x => x.RelativeToPar > 0) < 5)
+                playerScore.PlayerRoundStatusEmoji = "🤷";
+
+            if (holesPlayed.TakeLast(3).All(x => x.RelativeToPar < 0))
+                playerScore.PlayerRoundStatusEmoji = "🦃";
+
+            if (holesPlayed.TakeLast(5).All(x => x.RelativeToPar > 0))
+                playerScore.PlayerRoundStatusEmoji = "🗑️";
+
+            if (holesPlayed.Sum(x => x.RelativeToPar) == 0)
+                playerScore.PlayerRoundStatusEmoji = "👌";
+
+            if (holesPlayed.Sum(x => x.RelativeToPar) < -3)
+                playerScore.PlayerRoundStatusEmoji = "🍆";
+
+        }
+
+        private static void CalculateNewStartingHole(int holeIndex, Round round)
+        {
+            if (round.PlayerScores.Sum(p => p.Scores.Count(s => s.Strokes != 0)) == 1)
+            {
+                foreach (var playerScore in round.PlayerScores)
+                {
+                    // var firstHoleIndex = playerScore.Scores.FindIndex(x => x.Hole.Number == request.Hole);
+                    playerScore.Scores = playerScore.Scores
+                        .Skip(holeIndex)
+                        .Concat(playerScore.Scores.Take(holeIndex))
+                        .ToList();
+                }
+            }
         }
     }
 }

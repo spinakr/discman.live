@@ -122,6 +122,7 @@ const HoleScoreComponent = ({
           <thead>
             <tr>
               <td></td>
+              <td></td>
               {prevHole && (
                 <th
                   className="has-text-centered px-2"
@@ -158,6 +159,7 @@ const HoleScoreComponent = ({
                   key={i}
                   className={p.playerName === username ? "active-user-row" : ""}
                 >
+                  <td>{p.playerRoundStatusEmoji}</td>
                   <td
                     style={{
                       minWidth: "75px",

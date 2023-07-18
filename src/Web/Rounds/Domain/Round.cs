@@ -175,6 +175,7 @@ namespace Web.Rounds
     {
         public string PlayerName { get; set; }
         public string PlayerEmoji { get; set; }
+        public string PlayerRoundStatusEmoji { get; set; }
         public double CourseAverageAtTheTime { get; set; }
         public int NumberOfHcpStrokes { get; set; }
         public List<HoleScore> Scores { get; set; }
