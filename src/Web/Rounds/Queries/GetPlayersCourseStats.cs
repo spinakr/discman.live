@@ -17,13 +17,20 @@ namespace Web.Rounds.Queries
     public class GetPlayersCourseStatsQueryHandler : IRequestHandler<GetPlayersCourseStatsQuery, List<PlayerCourseStats>>
     {
         private readonly IDocumentSession _documentSession;
+        private readonly PlayerCourseStatsCache _playerCourseStatsCache;
 
-        public GetPlayersCourseStatsQueryHandler(IDocumentSession documentSession)
+        public GetPlayersCourseStatsQueryHandler(IDocumentSession documentSession, PlayerCourseStatsCache playerCourseStatsCache)
         {
             _documentSession = documentSession;
+            _playerCourseStatsCache = playerCourseStatsCache;
         }
 
         public async Task<List<PlayerCourseStats>> Handle(GetPlayersCourseStatsQuery request, CancellationToken cancellationToken)
+        {
+            return await _playerCourseStatsCache.GetOrCreate(request.RoundId, () => CalculatePlayersCourseStats(request, cancellationToken));
+        }
+
+        private async Task<List<PlayerCourseStats>> CalculatePlayersCourseStats(GetPlayersCourseStatsQuery request, CancellationToken cancellationToken)
         {
             var activeRound = await _documentSession
                 .Query<Round>()
@@ -64,7 +71,7 @@ namespace Web.Rounds.Queries
                         Birdies = x.Count(s => s.RelativeToPar == -1),
                         Pars = x.Count(s => s.RelativeToPar == 0),
                         WorseThanPar = x.Count(s => s.RelativeToPar > 0),
-                        Last10Scores = x.Take(10).ToArray()
+                        Last10Scores = x.OrderByDescending(x => x.RegisteredAt).Take(10).ToArray()
                     }).ToList()
                     : new List<HoleStats>();
 

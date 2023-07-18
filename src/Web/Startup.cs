@@ -22,6 +22,7 @@ using Web.Courses;
 using Web.Infrastructure;
 using Web.Leaderboard;
 using Web.Matches;
+using Web.Rounds;
 using Web.Tournaments;
 using Web.Users;
 
@@ -71,6 +72,7 @@ namespace Web
             services.AddSingleton<UserStatsCache>();
             services.AddSingleton<TournamentCache>();
             services.AddSingleton<CourseStatsCache>();
+            services.AddSingleton<PlayerCourseStatsCache>();
 
             var secret = Configuration.GetValue<string>("TOKEN_SECRET");
             services.AddAuthentication(x =>

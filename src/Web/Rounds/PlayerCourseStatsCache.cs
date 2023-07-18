@@ -1,0 +1,33 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+
+namespace Web.Rounds
+{
+
+    public class PlayerCourseStatsCache
+    {
+        private readonly MemoryCache _cache = new MemoryCache(new MemoryCacheOptions()
+        {
+            SizeLimit = 100
+        });
+
+        public async Task<List<PlayerCourseStats>> GetOrCreate(object key, Func<Task<List<PlayerCourseStats>>> createItem)
+        {
+            if (!_cache.TryGetValue(key, out List<PlayerCourseStats> cacheEntry))
+            {
+                cacheEntry = await createItem();
+
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetSize(1)//Size amount
+                    .SetPriority(CacheItemPriority.High)
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
+
+                _cache.Set(key, cacheEntry, cacheEntryOptions);
+            }
+            return cacheEntry;
+        }
+    }
+}
