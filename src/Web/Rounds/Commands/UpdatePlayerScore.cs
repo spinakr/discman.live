@@ -83,8 +83,19 @@ namespace Web.Rounds.Commands
             //Calculate emojies based on the holes played for the active user
             var playerScore = round.PlayerScores.Single(x => x.PlayerName == username);
             var holesPlayed = playerScore.Scores.Where(x => x.Strokes != 0);
+
+            if (holesPlayed.Count() < 5) return;
+
             var prevHole = holesPlayed.LastOrDefault();
 
+            if (holesPlayed.Count(x => x.RelativeToPar < 0) < 2 && holesPlayed.Count(x => x.RelativeToPar > 0) < 5)
+                playerScore.PlayerRoundStatusEmoji = "🤷";
+
+            if (holesPlayed.Sum(x => x.RelativeToPar) == 0)
+                playerScore.PlayerRoundStatusEmoji = "👌";
+
+            if (holesPlayed.Sum(x => x.RelativeToPar) < holesPlayed.Count() && !holesPlayed.Any(x => x.RelativeToPar > 1))
+                playerScore.PlayerRoundStatusEmoji = "🐢";
 
             if (prevHole.RelativeToPar > 2)
                 playerScore.PlayerRoundStatusEmoji = "💣";
@@ -95,26 +106,17 @@ namespace Web.Rounds.Commands
             if (holesPlayed.TakeLast(5).Sum(x => x.RelativeToPar) > 5)
                 playerScore.PlayerRoundStatusEmoji = "🤮";
 
-            if (holesPlayed.Sum(x => x.RelativeToPar) < holesPlayed.Count() && !holesPlayed.Any(x => x.RelativeToPar > 1))
-                playerScore.PlayerRoundStatusEmoji = "🐢";
-
             if (holesPlayed.Sum(x => x.RelativeToPar) > holesPlayed.Count() / 2 &&
                 holesPlayed.TakeLast(5).Sum(x => x.RelativeToPar) < -1)
             {
                 playerScore.PlayerRoundStatusEmoji = "🚀";
             }
 
-            if (holesPlayed.Count(x => x.RelativeToPar < 0) < 2 && holesPlayed.Count(x => x.RelativeToPar > 0) < 5)
-                playerScore.PlayerRoundStatusEmoji = "🤷";
-
             if (holesPlayed.TakeLast(3).All(x => x.RelativeToPar < 0))
                 playerScore.PlayerRoundStatusEmoji = "🦃";
 
             if (holesPlayed.TakeLast(5).All(x => x.RelativeToPar > 0))
                 playerScore.PlayerRoundStatusEmoji = "🗑️";
-
-            if (holesPlayed.Sum(x => x.RelativeToPar) == 0)
-                playerScore.PlayerRoundStatusEmoji = "👌";
 
             if (holesPlayed.Sum(x => x.RelativeToPar) < -3)
                 playerScore.PlayerRoundStatusEmoji = "🍆";

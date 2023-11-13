@@ -7,6 +7,7 @@ import "./HoleScore.css";
 import RoundStatus from "./RoundStatus";
 import * as UserStore from "../../store/User";
 import colors from "../../colors";
+import DiscgolfBasketIcon from "./DiscgolfBasketIcon";
 
 const mapState = (state: ApplicationState) => {
   return {
@@ -31,7 +32,7 @@ const outcomeStyle = (s: StrokeOutcome) => {
     case "Fairway":
       return <i className="has-text-weight-bold is-family-code is-size-4">F</i>;
     case "Basket":
-      return <i className="fas fa-lg fa-shopping-basket is-size-4"></i>;
+      return <DiscgolfBasketIcon></DiscgolfBasketIcon>;
     case "Circle1":
       return (
         <i className="has-text-weight-bold is-family-code is-size-4">10m</i>
@@ -256,7 +257,7 @@ const HoleScoreSelector = (props: Props) => {
             </div>
             <div className="control py-1">
               <button
-                className="button is-large tour-score-basket"
+                className="button is-large"
                 title="In basket"
                 onClick={() => {
                   const newStrokes: StrokeOutcome[] = [...strokes, "Basket"];
@@ -266,9 +267,11 @@ const HoleScoreSelector = (props: Props) => {
                 style={{ backgroundColor: colors.background }}
               >
                 <span className="icon is-large has-text-primary">
-                  <i className="fas fa-shopping-basket">
-                    &nbsp;{countScore(strokes) + 1}&nbsp;
-                  </i>
+                  <span className="icon is-large has-text-primary">
+                    <i className="fas fa-shopping-basket">
+                      &nbsp;{countScore(strokes) + 1}&nbsp;
+                    </i>
+                  </span>
                 </span>
               </button>
             </div>
