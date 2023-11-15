@@ -14,6 +14,8 @@ services:
       - "80:80"
       - "443:443"
     command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    depends_on:
+      - web
 
   certbot:
     image: certbot/certbot
@@ -98,12 +100,9 @@ services:
   #     - elasticsearch
 
   web:
-    image: sp1nakr/disclive:0.397
+    image: sp1nakr/disclive:0.401
     container_name: discmanweb
     restart: unless-stopped
-    mem_limit: 2g
-    #ports:
-    #  - "80:80"
     env_file:
       - ./variables.env
     depends_on:

@@ -1,4 +1,4 @@
-FROM nginx
+FROM nginx:1.17.9
 
 COPY /nginx/content /usr/share/nginx
 COPY /nginx/conf /etc/nginx

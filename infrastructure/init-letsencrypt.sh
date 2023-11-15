@@ -8,6 +8,7 @@ data_path="./certbot"
 email="anders.kfd@gmail.com" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
+
 echo "### Downloading recommended TLS parameters into certbot container"
 docker-compose run --rm --entrypoint "\
   wget -O /etc/letsencrypt/options-ssl-nginx.conf https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf 
@@ -22,7 +23,7 @@ echo "### Creating dummy certificate for $domains ... in nginx letsencrypt volum
 path="/etc/letsencrypt/live/$domains"
 docker-compose run --rm --entrypoint "mkdir -p '/etc/letsencrypt/live/$domains'" certbot
 docker-compose run --rm --entrypoint "\
-  openssl req -x509 -nodes -newkey rsa:1024 -days 1\
+  openssl req -x509 -nodes -newkey rsa:2048 -days 1\
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
     -subj '/CN=localhost'" certbot
@@ -56,7 +57,7 @@ esac
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 echo "Create certbot directory and request letsencrypt cert for domains"
-# docker-compose run --rm --entrypoint "mkdir -p '/var/www/certbot'" certbot
+docker-compose run --rm --entrypoint "mkdir -p '/var/www/certbot'" certbot
 docker-compose run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $staging_arg \
